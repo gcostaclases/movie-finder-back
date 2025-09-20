@@ -1,0 +1,67 @@
+GET http://localhost:3000/api/v1/ping HTTP/1.1
+
+### Login
+POST http://localhost:3000/api/v1/auth/login HTTP/1.1
+Content-Type: application/json
+
+# JUAN PEREZ
+# {
+#   "identifier": "juanp",
+#   "password": "JuanP1234."
+# }
+
+# MARIA GARCIA (ADMIN)
+{
+  "identifier": "mariagarcia@gmail.com",
+  "password": "MariaG1234."
+}
+
+### Register
+POST http://localhost:3000/api/v1/auth/register HTTP/1.1
+Content-Type: application/json
+
+# JUAN PEREZ
+# {
+#   "username": "juanp",
+#   "password": "JuanP1234.",
+#   "email": "juanperez@gmail.com"
+# }
+
+# MARIA GARCIA (ADMIN)
+{
+  "username": "mariag",
+  "password": "MariaG1234.",
+  "email": "mariagarcia@gmail.com"
+}
+
+### Get all providers
+GET http://localhost:3000/api/v1/providers HTTP/1.1
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k
+
+# TODO: Revisar, me esta fallando
+### Get provider by ID
+GET http://localhost:3000/api/v1/providers/1 HTTP/1.1
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k
+
+# TODO: Revisar, me dice no autorizado
+### Create provider (solo ADMIN)
+POST http://localhost:3000/api/v1/providers HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k
+
+{
+  "nombre": "Netflix"
+}
+
+### Update provider (solo ADMIN)
+PATCH http://localhost:3000/api/v1/providers/2 HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k
+
+{
+  "nombre": "Disney+"
+}
+
+### Delete provider (solo ADMIN)
+DELETE http://localhost:3000/api/v1/providers/2 HTTP/1.1
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k

@@ -1,0 +1,596 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "Películas y Series API",
+		"description": "API RESTful para la gestión de usuarios, proveedores de streaming y sus listas de series/películas.\n\nPermite:\n- Registro y autenticación de usuarios\n- Gestión de proveedores (CRUD solo admin)\n- Gestión de la lista de proveedores de cada usuario\n\n**Universidad ORT Uruguay - Proyecto Backend**",
+		"version": "1.0.0",
+		"contact": {
+			"name": "Guillermina Costa",
+			"email": "gcostaclases@gmail.com"
+		},
+		"license": {
+			"name": "ISC"
+		}
+	},
+	"servers": [
+		{
+			"url": "http://localhost:3000",
+			"description": "Servidor de desarrollo local"
+		}
+	],
+	"security": [
+		{
+			"ApiKeyAuth": []
+		}
+	],
+	"paths": {
+		"/ping": {
+			"get": {
+				"tags": ["Public"],
+				"summary": "Health check endpoint",
+				"description": "Endpoint público para verificar que la API está funcionando",
+				"security": [],
+				"responses": {
+					"200": {
+						"description": "API funcionando correctamente",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "string",
+									"example": "pong"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"tags": ["Authentication"],
+				"summary": "Iniciar sesión",
+				"description": "Autentica un usuario y devuelve un JWT token",
+				"security": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Login exitoso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Credenciales inválidas",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"tags": ["Authentication"],
+				"summary": "Registrar nuevo usuario",
+				"description": "Crea una nueva cuenta de usuario",
+				"security": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SignupRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Usuario creado exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "El email o username ya existe",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/providers": {
+			"get": {
+				"tags": ["Providers"],
+				"summary": "Obtener todos los proveedores",
+				"description": "Devuelve la lista de todos los proveedores de streaming",
+				"responses": {
+					"200": {
+						"description": "Lista de proveedores",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Provider"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["Providers"],
+				"summary": "Crear proveedor (solo admin)",
+				"description": "Crea un nuevo proveedor de streaming (requiere rol admin)",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProviderRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Proveedor creado exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Provider"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Proveedor ya existe o no autorizado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/providers/{id}": {
+			"get": {
+				"tags": ["Providers"],
+				"summary": "Obtener proveedor por ID",
+				"description": "Devuelve un proveedor por su ID",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Proveedor encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Provider"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Proveedor no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["Providers"],
+				"summary": "Actualizar proveedor (solo admin)",
+				"description": "Actualiza un proveedor existente (requiere rol admin)",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProviderRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Proveedor actualizado exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Provider"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Proveedor no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Providers"],
+				"summary": "Eliminar proveedor (solo admin)",
+				"description": "Elimina un proveedor existente (requiere rol admin)",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Proveedor eliminado correctamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Proveedor no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/me/providers": {
+			"get": {
+				"tags": ["UserProviders"],
+				"summary": "Obtener mis proveedores",
+				"description": "Devuelve la lista de proveedores contratados por el usuario autenticado",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Lista de proveedores del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Provider"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["UserProviders"],
+				"summary": "Agregar proveedor a mi lista",
+				"description": "Agrega un proveedor a la lista del usuario autenticado",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddProviderToUserRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Proveedor agregado a la lista del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "El proveedor ya está en la lista",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/me/providers/{providerId}": {
+			"delete": {
+				"tags": ["UserProviders"],
+				"summary": "Quitar proveedor de mi lista",
+				"description": "Elimina un proveedor de la lista del usuario autenticado",
+				"security": [
+					{
+						"ApiKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "providerId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Proveedor eliminado de la lista del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Proveedor no estaba en la lista",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"ApiKeyAuth": {
+				"type": "apiKey",
+				"in": "header",
+				"name": "Authorization",
+				"description": "JWT token obtenido del endpoint /auth/login.\n\nFormato: `Authorization: <token>` (sin prefijo Bearer)"
+			}
+		},
+		"schemas": {
+			"LoginRequest": {
+				"type": "object",
+				"required": ["identifier", "password"],
+				"properties": {
+					"identifier": {
+						"type": "string",
+						"description": "Email o nombre de usuario"
+					},
+					"password": {
+						"type": "string",
+						"description": "Contraseña del usuario"
+					}
+				}
+			},
+			"SignupRequest": {
+				"type": "object",
+				"required": ["username", "email", "password"],
+				"properties": {
+					"username": {
+						"type": "string",
+						"description": "Nombre de usuario único"
+					},
+					"email": {
+						"type": "string",
+						"description": "Email del usuario"
+					},
+					"password": {
+						"type": "string",
+						"description": "Contraseña del usuario"
+					}
+				}
+			},
+			"Provider": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"nombre": {
+						"type": "string"
+					}
+				}
+			},
+			"CreateProviderRequest": {
+				"type": "object",
+				"required": ["nombre"],
+				"properties": {
+					"nombre": {
+						"type": "string",
+						"description": "Nombre del proveedor"
+					}
+				}
+			},
+			"UpdateProviderRequest": {
+				"type": "object",
+				"properties": {
+					"nombre": {
+						"type": "string",
+						"description": "Nuevo nombre del proveedor"
+					}
+				}
+			},
+			"AddProviderToUserRequest": {
+				"type": "object",
+				"required": ["providerId"],
+				"properties": {
+					"providerId": {
+						"type": "string",
+						"description": "ID del proveedor a agregar"
+					}
+				}
+			},
+			"LoginResponse": {
+				"type": "object",
+				"properties": {
+					"token": {
+						"type": "string",
+						"description": "JWT token para autenticación"
+					}
+				}
+			},
+			"SuccessResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "Public",
+			"description": "Endpoints públicos que no requieren autenticación"
+		},
+		{
+			"name": "Authentication",
+			"description": "Endpoints para registro y autenticación de usuarios"
+		},
+		{
+			"name": "Providers",
+			"description": "Endpoints para gestión de proveedores"
+		},
+		{
+			"name": "UserProviders",
+			"description": "Endpoints para gestión de la lista de proveedores del usuario"
+		}
+	]
+}

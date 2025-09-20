@@ -1,0 +1,27 @@
+{
+	"name": "pelis-y-series-api",
+	"version": "1.0.0",
+	"main": "index.js",
+	"type": "module",
+	"author": "Guillermina Costa",
+	"description": "**API RESTful de películas y series** desarrollada con **Node.js**, **Express** y **MongoDB**.  \r Permite buscar películas y series, puntuarlas, reseñarlas y ver en que servicio de streaming se encuentran, entre otras cosas.",
+	"license": "ISC",
+	"keywords": [],
+	"scripts": {
+		"dev": "nodemon --experimental-json-modules src/index.js"
+	},
+	"dependencies": {
+		"bcrypt": "^6.0.0",
+		"express": "^5.1.0",
+		"joi": "^18.0.1",
+		"jsonwebtoken": "^9.0.2",
+		"mongoose": "^8.18.1",
+		"morgan": "^1.10.1",
+		"swagger-ui-express": "^5.0.1"
+	},
+	"devDependencies": {
+		"dotenv": "^17.2.2",
+		"nodemon": "^3.1.10"
+	}
+}
+
