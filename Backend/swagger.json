@@ -24,7 +24,7 @@
 		}
 	],
 	"paths": {
-		"/ping": {
+		"/api/v1/ping": {
 			"get": {
 				"tags": ["Public"],
 				"summary": "Health check endpoint",
@@ -45,7 +45,7 @@
 				}
 			}
 		},
-		"/auth/login": {
+		"/api/v1/auth/login": {
 			"post": {
 				"tags": ["Authentication"],
 				"summary": "Iniciar sesión",
@@ -95,7 +95,7 @@
 				}
 			}
 		},
-		"/auth/register": {
+		"/api/v1/auth/register": {
 			"post": {
 				"tags": ["Authentication"],
 				"summary": "Registrar nuevo usuario",
@@ -145,7 +145,7 @@
 				}
 			}
 		},
-		"/providers": {
+		"/api/v1/providers": {
 			"get": {
 				"tags": ["Providers"],
 				"summary": "Obtener todos los proveedores",
@@ -219,7 +219,7 @@
 				}
 			}
 		},
-		"/providers/{id}": {
+		"/api/v1/providers/{id}": {
 			"get": {
 				"tags": ["Providers"],
 				"summary": "Obtener proveedor por ID",
@@ -352,7 +352,7 @@
 				}
 			}
 		},
-		"/users/me/providers": {
+		"/api/v1/users/me/providers": {
 			"get": {
 				"tags": ["UserProviders"],
 				"summary": "Obtener mis proveedores",
@@ -421,7 +421,7 @@
 				}
 			}
 		},
-		"/users/me/providers/{providerId}": {
+		"/api/v1/users/me/providers/{providerId}": {
 			"delete": {
 				"tags": ["UserProviders"],
 				"summary": "Quitar proveedor de mi lista",
