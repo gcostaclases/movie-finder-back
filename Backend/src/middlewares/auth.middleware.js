@@ -13,6 +13,8 @@ const authMiddleware = (req, res, next) => {
 		return;
 	}
 	req.user = verified;
+	console.log("Verified user:", req.user);
+
 	next();
 };
 

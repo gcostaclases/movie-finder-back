@@ -48,7 +48,9 @@ export const postLogin = async (req, res) => {
 		// Si está todo bien genero el token y mando mensaje exitoso
 
 		// Genero el token
-		const token = signToken(user.id, user.rol);
+		console.log("Usuario ID:", user.id, " - Rol:", user.role);
+
+		const token = signToken(user.id, user.role);
 
 		// Retorno el token y un mensaje de éxito
 		return res.json({

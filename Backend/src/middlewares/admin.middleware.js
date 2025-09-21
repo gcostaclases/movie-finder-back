@@ -2,6 +2,7 @@ import { UNAUTHORIZED_MESSAGE } from "../utils/constants.js";
 
 const adminMiddleware = (req, res, next) => {
 	const { userRole } = req.user;
+	console.log(userRole);
 
 	// Verificamos que el rol sea "admin"
 	if (userRole !== "admin") {

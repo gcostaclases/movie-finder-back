@@ -27,8 +27,11 @@ const userSchema = new mongoose.Schema(
 				},
 				{
 					validator: async function (value) {
-						// Solo valida si es un documento nuevo o si el username fue modificado
-						const count = await mongoose.models.User.countDocuments({ username: value });
+						// Excluye el propio documento en updates
+						const count = await mongoose.models.User.countDocuments({
+							username: value,
+							_id: { $ne: this._id },
+						});
 						return count === 0;
 					},
 					message: "El nombre de usuario ya está registrado.",
@@ -46,9 +49,10 @@ const userSchema = new mongoose.Schema(
 				},
 				{
 					validator: async function (value) {
-						// Solo valida si es un documento nuevo o si el email fue modificado
-						const count = await mongoose.models.User.countDocuments({ email: value });
-						// Si es nuevo, debe ser 0; si es update, permite el propio documento
+						const count = await mongoose.models.User.countDocuments({
+							email: value,
+							_id: { $ne: this._id },
+						});
 						return count === 0;
 					},
 					message: "El email ya está registrado.",

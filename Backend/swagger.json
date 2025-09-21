@@ -24,7 +24,7 @@
 		}
 	],
 	"paths": {
-		"/api/v1/ping": {
+		"/api/v1/health/ping": {
 			"get": {
 				"tags": ["Public"],
 				"summary": "Health check endpoint",
