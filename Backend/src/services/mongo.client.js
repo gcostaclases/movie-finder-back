@@ -1,4 +1,7 @@
+//#region  ----------- IMPORTS -----------
+// Importo mongoose
 import mongoose from "mongoose";
+//#endregion ----------- IMPORTS -----------
 
 const connectToMongoDB = async () => {
 	const { MONGODB_CONNECTION_STRING, MONGODB_DB_NAME, MONGODB_SERVER_SELECTION_TIMEOUT_MS } = process.env;

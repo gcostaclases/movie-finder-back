@@ -1,5 +1,10 @@
+//#region  ----------- IMPORTS -----------
+// Importo constantes
 import { UNAUTHORIZED_MESSAGE } from "../utils/constants.js";
+
+// Importo la función para verificar el token
 import { verifyToken } from "../utils/jwt.js";
+//#endregion ----------- IMPORTS -----------
 
 const authMiddleware = (req, res, next) => {
 	const token = req.headers["authorization"];

@@ -1,5 +1,7 @@
+//#region  ----------- IMPORTS -----------
 // Importamos el modelo de proveedor
 import Provider from "../models/provider.model.js";
+//#endregion ----------- IMPORTS -----------
 
 // Buscar un proveedor
 export const findProvider = async (filter) => {

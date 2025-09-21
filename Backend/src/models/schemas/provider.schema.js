@@ -1,5 +1,7 @@
+//#region  ----------- IMPORTS -----------
 // Importo mongoose
 import mongoose from "mongoose";
+//#endregion ----------- IMPORTS -----------
 
 const providerSchema = new mongoose.Schema(
 	{

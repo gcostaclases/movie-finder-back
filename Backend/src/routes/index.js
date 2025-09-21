@@ -1,9 +1,11 @@
+//#region  ----------- IMPORTS -----------
 // Importo las rutas
 import healthRouter from "./health.router.js";
 import documentationRouter from "./documentation.router.js";
 import v1AuthRouter from "./auth.router.js";
 import v1ProviderRouter from "./provider.router.js";
 import v1UserRouter from "./user.router.js";
+//#endregion ----------- IMPORTS -----------
 
 const setupRoutes = (app) => {
 	// Public Routes (NO requieren autenticación)

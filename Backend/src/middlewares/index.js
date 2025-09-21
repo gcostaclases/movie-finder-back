@@ -1,8 +1,11 @@
+//#region  ----------- IMPORTS -----------
 // Importo express
 import express from "express";
+
 // Importo morgan para logging
-// Morgan es un middleware que nos permite hacer logging de las requests que llegan al servidor
+/* Morgan es un middleware que nos permite hacer logging de las requests que llegan al servidor */
 import morgan from "morgan";
+//#endregion ----------- IMPORTS -----------
 
 const setupMiddlewares = (app) => {
 	// Common Middlewares

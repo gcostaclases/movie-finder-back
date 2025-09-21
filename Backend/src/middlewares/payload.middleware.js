@@ -1,4 +1,7 @@
+//#region  ----------- IMPORTS -----------
+// Importo constantes
 import { INVALID_PAYLOAD_MESSAGE } from "../utils/constants.js";
+//#endregion ----------- IMPORTS -----------
 
 const payloadMiddleWare = (schema) => {
 	return (req, res, next) => {
