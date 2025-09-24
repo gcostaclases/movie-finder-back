@@ -5,6 +5,7 @@ import documentationRouter from "./documentation.router.js";
 import v1AuthRouter from "./auth.router.js";
 import v1ProviderRouter from "./provider.router.js";
 import v1UserRouter from "./user.router.js";
+import v1MovieRouter from "./movie.router.js";
 //#endregion ----------- IMPORTS -----------
 
 const setupRoutes = (app) => {
@@ -16,6 +17,7 @@ const setupRoutes = (app) => {
 	// Private Routes (SÍ requieren autenticación)
 	app.use("/api/v1/providers", v1ProviderRouter);
 	app.use("/api/v1/me", v1UserRouter);
+	app.use("/api/v1/movies", v1MovieRouter);
 };
 
 export default setupRoutes;

@@ -78,6 +78,11 @@ const userSchema = new mongoose.Schema(
 			ref: "Provider",
 			default: [],
 		},
+		watchlist: {
+			type: [mongoose.Schema.Types.ObjectId],
+			ref: "Movie",
+			default: [],
+		},
 	},
 	{
 		timestamps: true,

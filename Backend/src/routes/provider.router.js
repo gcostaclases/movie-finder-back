@@ -16,6 +16,12 @@ import {
 	updateProviderController,
 	deleteProviderController,
 } from "../controllers/provider.controller.js";
+
+// Importo el middleware para validar el payload
+import payloadMiddleWare from "../middlewares/payload.middleware.js";
+
+// Importo los schemas de validación de Joi
+import { providerCreateSchema, providerUpdateSchema } from "./validations/provider.router.schema.js";
 //#endregion ----------- IMPORTS -----------
 
 // Defino el conjunto de rutas dentro del router
@@ -31,10 +37,10 @@ v1ProviderRouter.get("/", getAllProvidersController);
 v1ProviderRouter.get("/:id", getProviderByIdController);
 
 // Crear proveedor (solo admin)
-v1ProviderRouter.post("/", adminMiddleware, createProviderController);
+v1ProviderRouter.post("/", adminMiddleware, payloadMiddleWare(providerCreateSchema), createProviderController);
 
 // Editar proveedor (solo admin)
-v1ProviderRouter.patch("/:id", adminMiddleware, updateProviderController);
+v1ProviderRouter.patch("/:id", adminMiddleware, payloadMiddleWare(providerUpdateSchema), updateProviderController);
 
 // Eliminar proveedor (solo admin)
 v1ProviderRouter.delete("/:id", adminMiddleware, deleteProviderController);

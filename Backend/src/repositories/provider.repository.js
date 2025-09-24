@@ -5,12 +5,12 @@ import Provider from "../models/provider.model.js";
 
 // Buscar un proveedor
 export const findProvider = async (filter) => {
-	return await Provider.findOne(filter);
+	return await Provider.findOne(filter).select("-createdAt -updatedAt -__v"); // Le quito los campos que no quiero que se vean en el listado;
 };
 
 // Buscar todos los proveedores
 export const findAllProviders = async () => {
-	return await Provider.find();
+	return await Provider.find().select("-createdAt -updatedAt -__v"); // Le quito los campos que no quiero que se vean en el listado
 };
 
 // Contar proveedores por filtro (para validar duplicados)
@@ -26,6 +26,9 @@ export const saveProvider = async (nombre) => {
 
 // Actualizar proveedor
 export const updateProvider = async (id, nombre) => {
+	// { new: true, runValidators: true }
+	// new: true -> para que me devuelva el objeto actualizado y no el antiguo
+	// runValidators: true -> para que corra las validaciones del schema al actualizar y no solo al crear
 	return await Provider.findByIdAndUpdate(id, { nombre }, { new: true, runValidators: true });
 };
 

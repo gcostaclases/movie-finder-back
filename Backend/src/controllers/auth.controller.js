@@ -28,13 +28,6 @@ export const postLogin = async (req, res) => {
 
 		// Si llegué hasta acá, es porque encontré el usuario
 
-		//#region Verificación de la contraseña (anterior a nivel del repositorio)
-		/*
-		// Verifico que la contraseña sea correcta
-		const isPassOK = await userPasswordMatch(password, user.password);
-		*/
-		//#endregion
-
 		// Verifico que la contraseña sea correcta usando el método definido en el esquema
 		const isPassOK = await user.isValidPassword(password);
 

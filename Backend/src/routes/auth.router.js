@@ -8,8 +8,8 @@ import { postLogin, postSignup } from "../controllers/auth.controller.js";
 // Importo el middleware para validar el payload
 import payloadMiddleWare from "../middlewares/payload.middleware.js";
 
-// Importo los schemas de validación
-import { userLoginSchema, userSignUpSchema } from "./validations/user.router.schema.js";
+// Importo los schemas de validación de Joi
+import { userLoginSchema, userSignUpSchema } from "./validations/auth.router.schema.js";
 //#endregion ----------- IMPORTS -----------
 
 // Defino el conjunto de rutas dentro del router

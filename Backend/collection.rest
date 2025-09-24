@@ -36,21 +36,21 @@ Content-Type: application/json
 
 ### Get all providers
 GET http://localhost:3000/api/v1/providers HTTP/1.1
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJpYXQiOjE3NTg0MDEzMTYsImV4cCI6MTc1ODQwNDkxNn0.7oWOnsv5EAhUdS64en171IXu4NV1ZPZowDjQuo5U20k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODcxNzg1MCwiZXhwIjoxNzU4NzIxNDUwfQ.2lOfVyNIQRDiFB9Ahr_CC--LNohy4tvMp3vMzHV8wvk
 
 # TODO: verificar si no se puede validar el schema para que no paen un id inválido y no se rompa todo
 ### Get provider by ID
-GET http://localhost:3000/api/v1/providers/68d03d6b372c31577eb533ce HTTP/1.1
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NDc3NjUxLCJleHAiOjE3NTg0ODEyNTF9.g1Qw4gbqsauC8DINUELHOOJVxvwvbuXuxJB2qtrWB_w
+GET http://localhost:3000/api/v1/providers/68d055c86aa347d04a2053da HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODcxNzg1MCwiZXhwIjoxNzU4NzIxNDUwfQ.2lOfVyNIQRDiFB9Ahr_CC--LNohy4tvMp3vMzHV8wvk
 
 ### Create provider (solo ADMIN)
 POST http://localhost:3000/api/v1/providers HTTP/1.1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NDgzODY3LCJleHAiOjE3NTg0ODc0Njd9.Jpfkq41xP0MiTIM5Wjvb7Paczk6eiwzCb0Ahk_Ulc5k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NTY4MTU4LCJleHAiOjE3NTg1NzE3NTh9.vh72KTB_EWaWiMv1xROrZKh3NGyhxJhNpxb4hY-x1H0
 
-{
-  "nombre": "Netflix"
-}
+# {
+#   "nombre": "Netflix"
+# }
 
 # {
 #   "nombre": "Prime Video"
@@ -60,27 +60,31 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgz
 #   "nombre": "Disney+"
 # }
 
+{
+  "nombre": "Ho"
+}
+
 ### Update provider (solo ADMIN)
-PATCH http://localhost:3000/api/v1/providers/68d03dc7372c31577eb533d6 HTTP/1.1
+PATCH http://localhost:3000/api/v1/providers/68d19f2ba4688d7933d4e28d HTTP/1.1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NDc3NjUxLCJleHAiOjE3NTg0ODEyNTF9.g1Qw4gbqsauC8DINUELHOOJVxvwvbuXuxJB2qtrWB_w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NTY4MTU4LCJleHAiOjE3NTg1NzE3NTh9.vh72KTB_EWaWiMv1xROrZKh3NGyhxJhNpxb4hY-x1H0
 
 {
-  "nombre": "Disney +"
+  "nombre": "Paramount+"
 }
 
 ### Delete provider (solo ADMIN)
 DELETE http://localhost:3000/api/v1/providers/68d03dc7372c31577eb533d6 HTTP/1.1
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NDc3NjUxLCJleHAiOjE3NTg0ODEyNTF9.g1Qw4gbqsauC8DINUELHOOJVxvwvbuXuxJB2qtrWB_w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBlMzgzNDczMzkxYjczN2EwZWQiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NDc3NjUxLCJleHAiOjE3NTg0ODEyNTF9.g1Qw4gbqsauC8DINUELHOOJVxvwvbuXuxJB2qtrWB_w
 
 ### Obtener los proveedores del usuario autenticado
 GET http://localhost:3000/api/v1/me/providers HTTP/1.1
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODQ4Mzk2NywiZXhwIjoxNzU4NDg3NTY3fQ.cR1n4YZY5rXG-Dhbct_c0ZUKWrGNDM8MZgBgL1hEuCg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODU3MDA1MywiZXhwIjoxNzU4NTczNjUzfQ.slyRC2cbOXLPCYKHsvGZXOEKSHmUCY6FaoI8txUlHME
 
 ### Agregar un proveedor a la lista del usuario autenticado
 POST http://localhost:3000/api/v1/me/providers HTTP/1.1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODQ4MzgyMiwiZXhwIjoxNzU4NDg3NDIyfQ._nZyEZweO-QKasKrnvg4v6xbwyWIKpuR9Jwe_1p_l8w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODQ4MzgyMiwiZXhwIjoxNzU4NDg3NDIyfQ._nZyEZweO-QKasKrnvg4v6xbwyWIKpuR9Jwe_1p_l8w
 
 {
   "providerId": "68d055db6aa347d04a2053e2"
@@ -88,5 +92,35 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgz
 
 ### Quitar un proveedor de la lista del usuario autenticado
 DELETE http://localhost:3000/api/v1/me/providers/68d055db6aa347d04a2053e2 HTTP/1.1
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODQ4MzgyMiwiZXhwIjoxNzU4NDg3NDIyfQ._nZyEZweO-QKasKrnvg4v6xbwyWIKpuR9Jwe_1p_l8w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNmMTBhODgzNDczMzkxYjczN2EwZTciLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODQ4MzgyMiwiZXhwIjoxNzU4NDg3NDIyfQ._nZyEZweO-QKasKrnvg4v6xbwyWIKpuR9Jwe_1p_l8w
 
+### Obtener todas las películas
+GET http://localhost:3000/api/v1/movies HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NjY4MzcxLCJleHAiOjE3NTg2NzE5NzF9.cPICJrJzl416IiUhDBzhzxpe2MBvT3pFxXAkiIOA_HM
+
+### Obtener todas las películas filtrando por título (ejemplo: "Matrix")
+GET http://localhost:3000/api/v1/movies?title=Matrix HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NjY4MzcxLCJleHAiOjE3NTg2NzE5NzF9.cPICJrJzl416IiUhDBzhzxpe2MBvT3pFxXAkiIOA_HM
+
+### Obtener la watchlist del usuario autenticado
+GET http://localhost:3000/api/v1/me/watchlist HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NjY4MzcxLCJleHAiOjE3NTg2NzE5NzF9.cPICJrJzl416IiUhDBzhzxpe2MBvT3pFxXAkiIOA_HM
+
+### Agregar una película a la watchlist del usuario autenticado
+POST http://localhost:3000/api/v1/me/watchlist HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU4NjY4MzcxLCJleHAiOjE3NTg2NzE5NzF9.cPICJrJzl416IiUhDBzhzxpe2MBvT3pFxXAkiIOA_HM
+
+# Cómo entrenar a tu dragón
+# {
+#   "movieId": "68d30243f5be4f51a4c4a9ee"
+# }
+
+# F1
+{
+  "movieId": "68d30243f5be4f51a4c4a9e2"
+}
+
+### Quitar una película de la watchlist del usuario autenticado
+DELETE http://localhost:3000/api/v1/me/watchlist/68d30243f5be4f51a4c4a9ee HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1ODY2OTI0OCwiZXhwIjoxNzU4NjcyODQ4fQ.80YhUnQrFuFj5n_jidQN5iWmd1fuoJdJCg27AByv48Q
