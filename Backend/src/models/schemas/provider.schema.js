@@ -20,7 +20,11 @@ const providerSchema = new mongoose.Schema(
 				},
 				{
 					validator: async function (value) {
-						const count = await mongoose.models.Provider.countDocuments({ nombre: value });
+						// Excluyo el propio documento en updates con $ne: this._id
+						const count = await mongoose.models.Provider.countDocuments({
+							nombre: value,
+							_id: { $ne: this._id },
+						});
 						return count === 0;
 					},
 					message: "El proveedor ya existe.",

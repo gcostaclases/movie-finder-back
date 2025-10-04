@@ -1,7 +1,7 @@
 //#region  ----------- IMPORTS -----------
-// Importo dotenv para poder usar variables de entorno
-// import dotenv from "dotenv";
-import "dotenv/config"; // Este comando importa y disponibiliza ya las variables de entorno (ejecuta automáticamente dotenv.config())
+// Importo y cargo las variables de entorno PRIMERO que nada
+import "./config/env.js";
+//import "dotenv/config"; // Este comando importa y disponibiliza ya las variables de entorno (ejecuta automáticamente dotenv.config())
 
 // Importo la función para conectar a MongoDB
 import connectToMongoDB from "./services/mongo.client.js";

@@ -49,8 +49,10 @@ export const getProviderByIdController = async (req, res) => {
 // Crear proveedor
 export const createProviderController = async (req, res) => {
 	const { nombre } = req.body;
+	console.log("BODY:", req.body);
 	// Validar que no exista un proveedor con ese nombre
 	const count = await countProviders({ nombre });
+	//console.log("COUNT:", count);
 	if (count > 0) {
 		return res.status(403).json({
 			message: INVALID_PAYLOAD_MESSAGE,
