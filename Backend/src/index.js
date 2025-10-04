@@ -6,6 +6,9 @@ import "./config/env.js";
 // Importo la función para conectar a MongoDB
 import connectToMongoDB from "./services/mongo.client.js";
 
+// Importo la función para conectar a Redis
+import connectToRedis from "./services/redis.client.js";
+
 // Importo la función que crea la app de express
 import createApp from "./app/app.js";
 //#endregion ----------- IMPORTS -----------
@@ -18,6 +21,17 @@ import createApp from "./app/app.js";
 		console.log("Conexión a MongoDB OK");
 	} catch (error) {
 		console.log("Error conectando a MongoDB:", error);
+		process.exit(1); // Salgo de la aplicación con código de error
+	}
+})();
+
+// Conecto a Redis
+(async () => {
+	try {
+		connectToRedis();
+		console.log("Conexión a Redis OK");
+	} catch (error) {
+		console.log("Error conectando a Redis:", error);
 		process.exit(1); // Salgo de la aplicación con código de error
 	}
 })();

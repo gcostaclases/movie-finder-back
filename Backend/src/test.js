@@ -1,7 +1,9 @@
+import "dotenv/config";
 import Joi from "joi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { Redis } from "@upstash/redis";
 
 // ------------ Prueba de Joi ------------
 console.log("---------************  PRUEBAS DE JOI  ************---------");
@@ -224,6 +226,29 @@ async function test() {
 		console.log("[ERROR] Error conectando a MongoDB:", error);
 	}
 		*/
+
+	// ------------ Prueba de Redis ------------
+	console.log("---------************  PRUEBAS DE REDIS  ************---------");
+
+	// Traigo las credenciales desde las variables de entorno
+	const { REDIS_TEST_URL, REDIS_TEST_TOKEN } = process.env;
+
+	//INICIALIZACIÓN
+	const redisClient = new Redis({
+		url: REDIS_TEST_URL,
+		token: REDIS_TEST_TOKEN,
+	});
+
+	//ALMACENAMIENTO
+	// await redisClient.set("test", "Hola mundo");
+	await redisClient.setex("test", 60, "Hola mundo con expiración de 60 segundos");
+
+	//CONSULTA
+	const result = await redisClient.get("test");
+	console.log("Valor de 'test' en Redis:", result);
+
+	//PARA ELIMINAR UNA KEY
+	// await redisClient.del("test");
 }
 
 test();
