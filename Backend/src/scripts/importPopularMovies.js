@@ -1,9 +1,6 @@
 //#region  ----------- IMPORTS -----------
-// Importo dotenv para poder usar variables de entorno
-/*
- Como esto lo estoy ejecutando como script independiente las tengo que importar acá también
-*/
-import "dotenv/config";
+// Importo y cargo las variables de entorno PRIMERO antes que nada
+import "../config/env.js";
 
 // Importo mongoose para poder desconectarme de la base de datos al finalizar
 import mongoose from "mongoose";
@@ -26,7 +23,7 @@ const importPopularMovies = async () => {
 		// Recorro las películas y las guardo en la base de datos si no existen
 		for (const tmdbMovie of movies) {
 			const exists = await findMovie({ tmdbId: tmdbMovie.id });
-			
+
 			if (!exists) {
 				await saveMovie({
 					tmdbId: tmdbMovie.id,
