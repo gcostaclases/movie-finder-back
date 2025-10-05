@@ -17,4 +17,9 @@ const connectToRedis = () => {
 	return redisClient;
 };
 
-export default connectToRedis;
+const getRedisClient = () => {
+	return connectToRedis();
+};
+
+export default getRedisClient;
+
