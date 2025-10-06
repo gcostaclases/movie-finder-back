@@ -6,20 +6,37 @@ import { createRepositoryAdapter } from "./adapters/index.js";
  */
 class RepositoryManager {
 	#type;
+	#debug;
 
 	/**
 	 * Crea una instancia del RepositoryManager
 	 * @param {string|null} type - Tipo de adaptador a usar ('mongoose', etc.)
+	 * @param {boolean|null} debug - Activar modo debug
 	 */
-	constructor(type = null) {
+	constructor(type = null, debug = null) {
 		this.#type = type || process.env.STORAGE_TYPE || "mongoose";
+		this.#debug = debug !== null ? debug : process.env.DB_DEBUG === "true";
+
 		try {
+			if (this.#debug) {
+				console.log(`[RepositoryManager] Initializing ${this.#type.toUpperCase()} adapter...`);
+			}
+
 			this.adapter = createRepositoryAdapter(this.#type);
+
+			// Solo logueo cuando la conexión termine
+			this.adapter.then(() => {
+				if (this.#debug) {
+					console.log(`[RepositoryManager] ${this.#type.toUpperCase()} adapter initialized successfully`);
+				}
+			});
 		} catch (error) {
+			console.error(`[RepositoryManager] Failed to initialize ${this.#type} adapter:`, error.message);
 			throw error;
 		}
 	}
 
+	//* Acá a los métodos les añadí debug también
 	// ========== USER METHODS ==========
 
 	/**
@@ -28,6 +45,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Usuario encontrado o null
 	 */
 	async findUser(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding user with filter:`, filter);
+		}
 		return (await this.adapter).findUser(filter);
 	}
 
@@ -37,6 +57,9 @@ class RepositoryManager {
 	 * @returns {Promise<number>} Cantidad de usuarios
 	 */
 	async countUsers(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Counting users with filter:`, filter);
+		}
 		return (await this.adapter).countUsers(filter);
 	}
 
@@ -48,6 +71,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object>} Usuario creado
 	 */
 	async saveUser(username, email, password) {
+		if (this.#debug) {
+			console.log(`[Repository] Saving new user: ${username} (${email})`);
+		}
 		return (await this.adapter).saveUser(username, email, password);
 	}
 
@@ -57,6 +83,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Usuario con proveedores populados
 	 */
 	async populateUserProviders(user) {
+		if (this.#debug) {
+			console.log(`[Repository] Populating providers for user: ${user._id}`);
+		}
 		return (await this.adapter).populateUserProviders(user);
 	}
 
@@ -67,6 +96,9 @@ class RepositoryManager {
 	 * @returns {Promise<boolean|null>} true si se agregó, false si ya existía, null si no se encontró el usuario
 	 */
 	async addProviderToUser(providerId, userId) {
+		if (this.#debug) {
+			console.log(`[Repository] Adding provider ${providerId} to user ${userId}`);
+		}
 		return (await this.adapter).addProviderToUser(providerId, userId);
 	}
 
@@ -77,6 +109,9 @@ class RepositoryManager {
 	 * @returns {Promise<boolean|null>} true si se removió, false si no existía, null si no se encontró el usuario
 	 */
 	async removeProviderFromUser(userId, providerId) {
+		if (this.#debug) {
+			console.log(`[Repository] Removing provider ${providerId} from user ${userId}`);
+		}
 		return (await this.adapter).removeProviderFromUser(userId, providerId);
 	}
 
@@ -86,6 +121,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Usuario con watchlist populada
 	 */
 	async populateUserWatchlist(user) {
+		if (this.#debug) {
+			console.log(`[Repository] Populating watchlist for user: ${user._id}`);
+		}
 		return (await this.adapter).populateUserWatchlist(user);
 	}
 
@@ -96,6 +134,9 @@ class RepositoryManager {
 	 * @returns {Promise<boolean|null>} true si se agregó, false si ya existía, null si no se encontró el usuario
 	 */
 	async addMovieToWatchlist(userId, movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Adding movie ${movieId} to watchlist of user ${userId}`);
+		}
 		return (await this.adapter).addMovieToWatchlist(userId, movieId);
 	}
 
@@ -106,6 +147,9 @@ class RepositoryManager {
 	 * @returns {Promise<boolean|null>} true si se removió, false si no existía, null si no se encontró el usuario
 	 */
 	async removeMovieFromWatchlist(userId, movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Removing movie ${movieId} from watchlist of user ${userId}`);
+		}
 		return (await this.adapter).removeMovieFromWatchlist(userId, movieId);
 	}
 
@@ -117,6 +161,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Proveedor encontrado o null
 	 */
 	async findProvider(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding provider with filter:`, filter);
+		}
 		return (await this.adapter).findProvider(filter);
 	}
 
@@ -125,6 +172,9 @@ class RepositoryManager {
 	 * @returns {Promise<Array>} Lista de proveedores
 	 */
 	async findAllProviders() {
+		if (this.#debug) {
+			console.log(`[Repository] Finding all providers`);
+		}
 		return (await this.adapter).findAllProviders();
 	}
 
@@ -134,6 +184,9 @@ class RepositoryManager {
 	 * @returns {Promise<number>} Cantidad de proveedores
 	 */
 	async countProviders(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Counting providers with filter:`, filter);
+		}
 		return (await this.adapter).countProviders(filter);
 	}
 
@@ -143,6 +196,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object>} Proveedor creado
 	 */
 	async saveProvider(nombre) {
+		if (this.#debug) {
+			console.log(`[Repository] Saving new provider: ${nombre}`);
+		}
 		return (await this.adapter).saveProvider(nombre);
 	}
 
@@ -153,6 +209,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Proveedor actualizado o null
 	 */
 	async updateProvider(id, nombre) {
+		if (this.#debug) {
+			console.log(`[Repository] Updating provider ${id} with name: ${nombre}`);
+		}
 		return (await this.adapter).updateProvider(id, nombre);
 	}
 
@@ -162,6 +221,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Proveedor eliminado o null
 	 */
 	async deleteProvider(id) {
+		if (this.#debug) {
+			console.log(`[Repository] Deleting provider: ${id}`);
+		}
 		return (await this.adapter).deleteProvider(id);
 	}
 
@@ -173,6 +235,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Película encontrada o null
 	 */
 	async findMovie(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding movie with filter:`, filter);
+		}
 		return (await this.adapter).findMovie(filter);
 	}
 
@@ -182,6 +247,9 @@ class RepositoryManager {
 	 * @returns {Promise<Array>} Lista de películas
 	 */
 	async findAllMovies(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding all movies with filter:`, filter);
+		}
 		return (await this.adapter).findAllMovies(filter);
 	}
 
@@ -191,6 +259,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object>} Película creada
 	 */
 	async saveMovie(movieData) {
+		if (this.#debug) {
+			console.log(`[Repository] Saving new movie:`, movieData.title || movieData.tmdbId);
+		}
 		return (await this.adapter).saveMovie(movieData);
 	}
 
@@ -205,6 +276,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object>} Reseña creada
 	 */
 	async saveReview(userId, movieId, rating, comment) {
+		if (this.#debug) {
+			console.log(`[Repository] Saving review: user ${userId}, movie ${movieId}, rating ${rating}`);
+		}
 		return (await this.adapter).saveReview(userId, movieId, rating, comment);
 	}
 
@@ -214,6 +288,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Reseña encontrada o null
 	 */
 	async findReview(filter) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding review with filter:`, filter);
+		}
 		return (await this.adapter).findReview(filter);
 	}
 
@@ -223,6 +300,9 @@ class RepositoryManager {
 	 * @returns {Promise<Array>} Lista de reseñas
 	 */
 	async findReviewsByMovie(movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding reviews for movie: ${movieId}`);
+		}
 		return (await this.adapter).findReviewsByMovie(movieId);
 	}
 
@@ -232,6 +312,9 @@ class RepositoryManager {
 	 * @returns {Promise<Array>} Lista de reseñas
 	 */
 	async findReviewsByUser(userId) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding reviews by user: ${userId}`);
+		}
 		return (await this.adapter).findReviewsByUser(userId);
 	}
 
@@ -243,6 +326,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Reseña actualizada o null
 	 */
 	async updateReview(reviewId, rating, comment) {
+		if (this.#debug) {
+			console.log(`[Repository] Updating review ${reviewId}: rating ${rating}`);
+		}
 		return (await this.adapter).updateReview(reviewId, rating, comment);
 	}
 
@@ -252,6 +338,9 @@ class RepositoryManager {
 	 * @returns {Promise<Object|null>} Reseña eliminada o null
 	 */
 	async deleteReview(reviewId) {
+		if (this.#debug) {
+			console.log(`[Repository] Deleting review: ${reviewId}`);
+		}
 		return (await this.adapter).deleteReview(reviewId);
 	}
 
@@ -261,8 +350,22 @@ class RepositoryManager {
 	 * @returns {Promise<Object>} Objeto con averageRating y totalReviews
 	 */
 	async getAverageRating(movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Getting average rating for movie: ${movieId}`);
+		}
 		return (await this.adapter).getAverageRating(movieId);
+	}
+
+	// ========== UTILITY METHODS ==========
+
+	getType() {
+		return this.#type;
+	}
+
+	isDebugEnabled() {
+		return this.#debug;
 	}
 }
 
 export default RepositoryManager;
+

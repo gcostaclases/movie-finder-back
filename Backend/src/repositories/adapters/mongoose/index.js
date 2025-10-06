@@ -1,6 +1,9 @@
+//#region  ----------- IMPORTS -----------
+// Importo mongoose
 import mongoose from "mongoose";
 
-// User Repository
+// Importo las funciones del repositorio de usuario
+// USER REPOSITORY
 import {
 	findUser,
 	countUsers,
@@ -13,7 +16,8 @@ import {
 	removeMovieFromWatchlist,
 } from "./user.repository.js";
 
-// Provider Repository
+// Importo las funciones del repositorio de proveedor
+// PROVIDER REPOSITORY
 import {
 	findProvider,
 	findAllProviders,
@@ -23,10 +27,12 @@ import {
 	deleteProvider,
 } from "./provider.repository.js";
 
-// Movie Repository
+// Importo las funciones del repositorio de película
+// MOVIE REPOSITORY
 import { findMovie, findAllMovies, saveMovie } from "./movie.repository.js";
 
-// Review Repository
+// Importo las funciones del repositorio de reseña
+// REVIEW REPOSITORY
 import {
 	saveReview,
 	findReview,
@@ -36,6 +42,7 @@ import {
 	deleteReview,
 	getAverageRating,
 } from "./review.repository.js";
+//#endregion ----------- IMPORTS -----------
 
 /**
  * Crea el adaptador de Mongoose para MongoDB
@@ -43,15 +50,31 @@ import {
  * @returns {Promise<Object>} Objeto con todos los métodos de repositorio
  */
 const createMongooseAdapter = async () => {
-	const { MONGODB_CONNECTION_STRING, MONGODB_DATABASE_NAME, MONGODB_SERVER_SELECTION_TIMEOUT } = process.env;
+	const { MONGODB_CONNECTION_STRING, MONGODB_DB_NAME, MONGODB_SERVER_SELECTION_TIMEOUT_MS } = process.env;
 
-	await mongoose.connect(MONGODB_CONNECTION_STRING, {
-		dbName: MONGODB_DATABASE_NAME,
-		serverSelectionTimeoutMS: Number(MONGODB_SERVER_SELECTION_TIMEOUT),
-	});
+	try {
+		await mongoose.connect(MONGODB_CONNECTION_STRING, {
+			dbName: MONGODB_DB_NAME,
+			serverSelectionTimeoutMS: Number(MONGODB_SERVER_SELECTION_TIMEOUT_MS),
+		});
+
+		console.log(`[MongoDB] Connected successfully to database: ${MONGODB_DB_NAME}`);
+
+		// Event listeners para monitorear la conexión
+		mongoose.connection.on("disconnected", () => {
+			console.warn("[MongoDB] Connection lost");
+		});
+
+		mongoose.connection.on("error", (err) => {
+			console.error("[MongoDB] Connection error:", err.message);
+		});
+	} catch (error) {
+		console.error("[MongoDB] Connection failed:", error.message);
+		throw error; // Re-lanzo el error para que el RepositoryManager lo maneje
+	}
 
 	return {
-		// User Repository
+		// USER REPOSITORY
 		findUser,
 		countUsers,
 		saveUser,
@@ -62,7 +85,7 @@ const createMongooseAdapter = async () => {
 		addMovieToWatchlist,
 		removeMovieFromWatchlist,
 
-		// Provider Repository
+		// PROVIDER REPOSITORY
 		findProvider,
 		findAllProviders,
 		countProviders,
@@ -70,12 +93,12 @@ const createMongooseAdapter = async () => {
 		updateProvider,
 		deleteProvider,
 
-		// Movie Repository
+		// MOVIE REPOSITORY
 		findMovie,
 		findAllMovies,
 		saveMovie,
 
-		// Review Repository
+		// REVIEW REPOSITORY
 		saveReview,
 		findReview,
 		findReviewsByMovie,
@@ -87,3 +110,4 @@ const createMongooseAdapter = async () => {
 };
 
 export default createMongooseAdapter;
+
