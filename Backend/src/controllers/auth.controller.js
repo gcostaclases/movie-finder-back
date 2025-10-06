@@ -9,6 +9,16 @@ import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 import { signToken } from "../utils/jwt.js";
 //#endregion ----------- IMPORTS -----------
 
+/**
+ * Inicia sesión de usuario
+ * POST /auth/login
+ * @param {Object} req - Request de Express
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.identifier - Email o username del usuario
+ * @param {string} req.body.password - Contraseña del usuario
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con token JWT y mensaje de éxito o error 403
+ */
 export const postLogin = async (req, res) => {
 	// Desestructuro el body para obtener identifier y password
 	const { identifier, password } = req.body; // identifier puede ser email o username
@@ -58,6 +68,17 @@ export const postLogin = async (req, res) => {
 	}
 };
 
+/**
+ * Registra un nuevo usuario
+ * POST /auth/signup
+ * @param {Object} req - Request de Express
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.username - Nombre de usuario (3-20 caracteres)
+ * @param {string} req.body.email - Email del usuario
+ * @param {string} req.body.password - Contraseña (min 8 caracteres, mayúscula, minúscula, número y símbolo)
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de éxito (201) o error 403/500
+ */
 export const postSignup = async (req, res) => {
 	const { username, email, password } = req.body;
 

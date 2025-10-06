@@ -6,8 +6,17 @@ import repoFactory from "../repositories/repositories.service.js";
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
 
-// PROVIDERS
-// Obtener los proveedores del usuario autenticado
+//#region ----------- PROVIDERS -----------
+
+/**
+ * Obtiene los proveedores del usuario autenticado
+ * GET /users/me/providers
+ * @param {Object} req - Request de Express
+ * @param {Object} req.user - Usuario autenticado (desde middleware)
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con array de proveedores del usuario
+ */
 export const getMyProvidersController = async (req, res) => {
 	const { userId } = req.user;
 	try {
@@ -27,7 +36,17 @@ export const getMyProvidersController = async (req, res) => {
 	}
 };
 
-// Agregar un proveedor a la lista del usuario autenticado
+/**
+ * Agrega un proveedor a la lista del usuario autenticado
+ * POST /users/me/providers
+ * @param {Object} req - Request de Express
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.providerId - ID del proveedor a agregar
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de confirmación o error
+ */
 export const addProviderToUserController = async (req, res) => {
 	const { providerId } = req.body;
 	const { userId } = req.user;
@@ -54,7 +73,16 @@ export const addProviderToUserController = async (req, res) => {
 	}
 };
 
-// Quitar un proveedor de la lista del usuario autenticado
+/**
+ * Remueve un proveedor de la lista del usuario autenticado
+ * DELETE /users/me/providers/:providerId
+ * @param {Object} req - Request de Express
+ * @param {string} req.params.providerId - ID del proveedor a remover
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de confirmación o error 404
+ */
 export const removeProviderFromUserController = async (req, res) => {
 	const { providerId } = req.params;
 	const { userId } = req.user;
@@ -81,8 +109,19 @@ export const removeProviderFromUserController = async (req, res) => {
 	}
 };
 
-// WATCHLIST
-// Obtener la watchlist del usuario autenticado
+//#endregion ----------- PROVIDERS -----------
+
+//#region ----------- WATCHLIST -----------
+
+/**
+ * Obtiene la watchlist del usuario autenticado
+ * GET /users/me/watchlist
+ * @param {Object} req - Request de Express
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con array de películas en la watchlist
+ */
 export const getMyWatchlistController = async (req, res) => {
 	const { userId } = req.user;
 	try {
@@ -102,7 +141,17 @@ export const getMyWatchlistController = async (req, res) => {
 	}
 };
 
-// Agregar película a la watchlist
+/**
+ * Agrega una película a la watchlist del usuario autenticado
+ * POST /users/me/watchlist
+ * @param {Object} req - Request de Express
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.movieId - ID de la película a agregar
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de confirmación o error
+ */
 export const addMovieToWatchlistController = async (req, res) => {
 	const { movieId } = req.body;
 	const { userId } = req.user;
@@ -129,7 +178,16 @@ export const addMovieToWatchlistController = async (req, res) => {
 	}
 };
 
-// Quitar película de la watchlist
+/**
+ * Remueve una película de la watchlist del usuario autenticado
+ * DELETE /users/me/watchlist/:movieId
+ * @param {Object} req - Request de Express
+ * @param {string} req.params.movieId - ID de la película a remover
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de confirmación o error 404
+ */
 export const removeMovieFromWatchlistController = async (req, res) => {
 	const { movieId } = req.params;
 	const { userId } = req.user;
@@ -155,3 +213,5 @@ export const removeMovieFromWatchlistController = async (req, res) => {
 		});
 	}
 };
+
+//#endregion ----------- WATCHLIST -----------
