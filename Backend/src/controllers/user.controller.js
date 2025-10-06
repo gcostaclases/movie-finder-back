@@ -1,14 +1,6 @@
 //#region  ----------- IMPORTS -----------
 // Importo las funciones del repositorio
-import {
-	findUser,
-	populateUserProviders,
-	addProviderToUser,
-	removeProviderFromUser,
-	addMovieToWatchlist,
-	removeMovieFromWatchlist,
-	populateUserWatchlist,
-} from "../repositories/user.repository.js";
+import repoFactory from "../repositories/repositories.service.js";
 
 // Importo constantes
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
@@ -19,13 +11,13 @@ import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 export const getMyProvidersController = async (req, res) => {
 	const { userId } = req.user;
 	try {
-		const user = await findUser({ _id: userId });
+		const user = await repoFactory.findUser({ _id: userId });
 		if (!user) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
 			});
 		}
-		const userWithProviders = await populateUserProviders(user);
+		const userWithProviders = await repoFactory.populateUserProviders(user);
 		return res.status(200).json(userWithProviders.providers);
 	} catch (error) {
 		console.error("Error al obtener proveedores del usuario:", error);
@@ -40,7 +32,7 @@ export const addProviderToUserController = async (req, res) => {
 	const { providerId } = req.body;
 	const { userId } = req.user;
 	try {
-		const result = await addProviderToUser({ providerId }, userId);
+		const result = await repoFactory.addProviderToUser(providerId, userId);
 		if (result === null) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
@@ -67,7 +59,7 @@ export const removeProviderFromUserController = async (req, res) => {
 	const { providerId } = req.params;
 	const { userId } = req.user;
 	try {
-		const result = await removeProviderFromUser(userId, providerId);
+		const result = await repoFactory.removeProviderFromUser(userId, providerId);
 		if (result === null) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
@@ -94,13 +86,19 @@ export const removeProviderFromUserController = async (req, res) => {
 export const getMyWatchlistController = async (req, res) => {
 	const { userId } = req.user;
 	try {
-		const user = await findUser({ _id: userId });
-		if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-		const userWithWatchlist = await populateUserWatchlist(user);
+		const user = await repoFactory.findUser({ _id: userId });
+		if (!user) {
+			return res.status(404).json({
+				message: "Usuario no encontrado",
+			});
+		}
+		const userWithWatchlist = await repoFactory.populateUserWatchlist(user);
 		return res.status(200).json(userWithWatchlist.watchlist);
 	} catch (error) {
 		console.error("Error al obtener watchlist:", error);
-		return res.status(500).json({ message: "Error interno del servidor" });
+		return res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
 	}
 };
 
@@ -109,13 +107,25 @@ export const addMovieToWatchlistController = async (req, res) => {
 	const { movieId } = req.body;
 	const { userId } = req.user;
 	try {
-		const result = await addMovieToWatchlist(userId, movieId);
-		if (result === null) return res.status(404).json({ message: "Usuario no encontrado" });
-		if (result === false) return res.status(400).json({ message: "La película ya está en tu watchlist" });
-		return res.status(201).json({ message: "Película agregada a tu watchlist" });
+		const result = await repoFactory.addMovieToWatchlist(userId, movieId);
+		if (result === null) {
+			return res.status(404).json({
+				message: "Usuario no encontrado",
+			});
+		}
+		if (result === false) {
+			return res.status(400).json({
+				message: "La película ya está en tu watchlist",
+			});
+		}
+		return res.status(201).json({
+			message: "Película agregada a tu watchlist",
+		});
 	} catch (error) {
 		console.error("Error al agregar película a la watchlist:", error);
-		return res.status(500).json({ message: "Error interno del servidor" });
+		return res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
 	}
 };
 
@@ -124,12 +134,24 @@ export const removeMovieFromWatchlistController = async (req, res) => {
 	const { movieId } = req.params;
 	const { userId } = req.user;
 	try {
-		const result = await removeMovieFromWatchlist(userId, movieId);
-		if (result === null) return res.status(404).json({ message: "Usuario no encontrado" });
-		if (result === false) return res.status(404).json({ message: "La película no estaba en tu watchlist" });
-		return res.status(200).json({ message: "Película eliminada de tu watchlist" });
+		const result = await repoFactory.removeMovieFromWatchlist(userId, movieId);
+		if (result === null) {
+			return res.status(404).json({
+				message: "Usuario no encontrado",
+			});
+		}
+		if (result === false) {
+			return res.status(404).json({
+				message: "La película no estaba en tu watchlist",
+			});
+		}
+		return res.status(200).json({
+			message: "Película eliminada de tu watchlist",
+		});
 	} catch (error) {
 		console.error("Error al quitar película de la watchlist:", error);
-		return res.status(500).json({ message: "Error interno del servidor" });
+		return res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
 	}
 };

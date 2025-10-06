@@ -1,12 +1,12 @@
 //#region  ----------- IMPORTS -----------
 // Importo el factory de repositorios (patrón Adapter)
-import repoFactory from "../repositories/index.js";
+import repoFactory from "../repositories/repositories.service.js";
 
 // Importo el servicio de cache
 import cacheService from "../services/cache/index.js";
 
 // Importo constantes
-import { INTERNAL_SERVER_ERROR } from "../constants/messages.constants.js";
+import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
 
 /**

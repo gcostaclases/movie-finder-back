@@ -1,6 +1,6 @@
 //#region  ----------- IMPORTS -----------
-// Importo las funciones del repositorio
-import { findAllMovies } from "../repositories/movie.repository.js";
+// Importo el factory de repositorios
+import repoFactory from "../repositories/repositories.service.js";
 
 // Importo constantes
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
@@ -13,7 +13,7 @@ export const getMoviesController = async (req, res) => {
 		if (title) {
 			filter.title = { $regex: title, $options: "i" }; // Búsqueda insensible a mayúsculas
 		}
-		const movies = await findAllMovies(filter);
+		const movies = await repoFactory.findAllMovies(filter);
 		res.status(200).json(movies);
 	} catch (error) {
 		console.error("Error al obtener películas:", error);

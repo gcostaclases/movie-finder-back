@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 // Importo las expresiones regulares
-import { emailRegex, passwordRegex } from "../../utils/regex.js";
+import { emailRegex, passwordRegex } from "../../../../../utils/regex.js";
 //#endregion ----------- IMPORTS -----------
 
 const userSchema = new mongoose.Schema(
@@ -111,3 +111,4 @@ userSchema.methods.isValidPassword = async function (password) {
 };
 
 export default userSchema;
+

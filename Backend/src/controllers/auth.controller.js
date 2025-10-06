@@ -1,6 +1,6 @@
 //#region  ----------- IMPORTS -----------
-// Importo las funciones del repositorio
-import { findUser, countUsers, saveUser } from "../repositories/user.repository.js";
+// Importo el factory de repositorios
+import repoFactory from "../repositories/repositories.service.js";
 
 // Importo constantes
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
@@ -15,7 +15,7 @@ export const postLogin = async (req, res) => {
 
 	try {
 		// Busco el usuario por email o username
-		const user = await findUser({
+		const user = await repoFactory.findUser({
 			$or: [{ email: identifier }, { username: identifier }],
 		});
 
@@ -62,7 +62,7 @@ export const postSignup = async (req, res) => {
 	const { username, email, password } = req.body;
 
 	// Verifico si el email ya existe
-	const emailCount = await countUsers({ email });
+	const emailCount = await repoFactory.countUsers({ email });
 	if (emailCount > 0) {
 		return res.status(403).json({
 			message: "El email ya está registrado",
@@ -70,7 +70,7 @@ export const postSignup = async (req, res) => {
 	}
 
 	// Verifico si el username ya existe
-	const usernameCount = await countUsers({ username });
+	const usernameCount = await repoFactory.countUsers({ username });
 	if (usernameCount > 0) {
 		return res.status(403).json({
 			message: "El nombre de usuario ya está registrado",
@@ -79,7 +79,7 @@ export const postSignup = async (req, res) => {
 
 	try {
 		// Validación de datos del usuario
-		await saveUser(username, email, password);
+		await repoFactory.saveUser(username, email, password);
 
 		// Retorno 201 con mensaje de éxito
 		return res.status(201).json({
