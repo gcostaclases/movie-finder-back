@@ -1,6 +1,6 @@
 //#region  ----------- IMPORTS -----------
 // Importamos el modelo de película
-import Movie from "../models/movie.model.js";
+import Movie from "./models/movie.model.js";
 //#endregion  ----------- IMPORTS -----------
 
 // Buscar una película
@@ -18,3 +18,4 @@ export const saveMovie = async (movieData) => {
 	const movie = new Movie(movieData);
 	return await movie.save();
 };
+

@@ -1,6 +1,6 @@
 //#region  ----------- IMPORTS -----------
 // Importamos el modelo de usuario
-import User from "../models/user.model.js";
+import User from "./models/user.model.js";
 //#endregion ----------- IMPORTS -----------
 
 // Buscar un usuario
@@ -80,3 +80,4 @@ export const removeMovieFromWatchlist = async (userId, movieId) => {
 	await user.save();
 	return true;
 };
+

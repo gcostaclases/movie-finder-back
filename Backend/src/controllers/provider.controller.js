@@ -1,22 +1,39 @@
 //#region  ----------- IMPORTS -----------
-// Importo las funciones del repositorio
-import {
-	findAllProviders,
-	findProvider,
-	countProviders,
-	saveProvider,
-	updateProvider,
-	deleteProvider,
-} from "../repositories/provider.repository.js";
+// Importo el factory de repositorios (patrón Adapter)
+import repoFactory from "../repositories/index.js";
+
+// Importo el servicio de cache
+import cacheService from "../services/cache/index.js";
 
 // Importo constantes
-import { INVALID_PAYLOAD_MESSAGE, INTERNAL_SERVER_ERROR } from "../utils/constants.js";
+import { INTERNAL_SERVER_ERROR } from "../constants/messages.constants.js";
 //#endregion ----------- IMPORTS -----------
 
-// Obtener todos los proveedores
+/**
+ * Obtiene todos los proveedores de streaming
+ * GET /providers
+ * @param {Object} req - Request de Express
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con array de proveedores
+ */
 export const getAllProvidersController = async (req, res) => {
+	// Genero clave de cache consistente
+	const cacheKey = "providers:all";
+
 	try {
-		const providers = await findAllProviders();
+		// Intento obtener del cache primero
+		let providers = await cacheService.get(cacheKey);
+
+		if (!providers) {
+			// Si no está en cache, consulto BD
+			providers = await repoFactory.findAllProviders();
+
+			// Guardo en cache (300 segundos = 5 minutos)
+			if (providers && providers.length > 0) {
+				await cacheService.set(cacheKey, providers, 300);
+			}
+		}
+
 		return res.json(providers);
 	} catch (error) {
 		console.error("Error al obtener proveedores:", error);
@@ -26,16 +43,37 @@ export const getAllProvidersController = async (req, res) => {
 	}
 };
 
-// Obtener proveedor por ID
+/**
+ * Obtiene un proveedor específico por su ID
+ * GET /providers/:id
+ * @param {Object} req - Request de Express
+ * @param {string} req.params.id - ID del proveedor
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con el proveedor o error 404
+ */
 export const getProviderByIdController = async (req, res) => {
 	const { id } = req.params;
+	// Genero clave de cache con el ID
+	const cacheKey = `provider:id:${id}`;
+
 	try {
-		const provider = await findProvider({ _id: id });
+		// Intento obtener del cache primero
+		let provider = await cacheService.get(cacheKey);
+
 		if (!provider) {
-			return res.status(404).json({
-				message: INVALID_PAYLOAD_MESSAGE,
-			});
+			// Si no está en cache, consulto BD
+			provider = await repoFactory.findProvider({ _id: id });
+
+			if (!provider) {
+				return res.status(404).json({
+					message: "Proveedor no encontrado",
+				});
+			}
+
+			// Guardar en cache (600 segundos = 10 minutos)
+			await cacheService.set(cacheKey, provider, 600);
 		}
+
 		return res.json(provider);
 	} catch (error) {
 		console.error("Error al obtener proveedor:", error);
@@ -46,20 +84,34 @@ export const getProviderByIdController = async (req, res) => {
 };
 
 //#region ----------- ADMIN CONTROLLERS -----------
-// Crear proveedor
+
+/**
+ * Crea un nuevo proveedor de streaming
+ * POST /providers
+ * @param {Object} req - Request de Express
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.nombre - Nombre del proveedor
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con el proveedor creado o error
+ */
 export const createProviderController = async (req, res) => {
 	const { nombre } = req.body;
-	console.log("BODY:", req.body);
-	// Validar que no exista un proveedor con ese nombre
-	const count = await countProviders({ nombre });
-	//console.log("COUNT:", count);
-	if (count > 0) {
-		return res.status(403).json({
-			message: INVALID_PAYLOAD_MESSAGE,
-		});
-	}
+
 	try {
-		const newProvider = await saveProvider(nombre);
+		// Valido que no exista
+		const count = await repoFactory.countProviders({ nombre });
+		if (count > 0) {
+			return res.status(400).json({
+				message: "El proveedor ya existe",
+			});
+		}
+
+		// Creo el proveedor
+		const newProvider = await repoFactory.saveProvider(nombre);
+
+		// Invalido cache después de crear
+		await cacheService.delete("providers:all");
+
 		return res.status(201).json(newProvider);
 	} catch (error) {
 		console.error("Error al crear proveedor:", error);
@@ -69,17 +121,34 @@ export const createProviderController = async (req, res) => {
 	}
 };
 
-// Actualizar proveedor
+/**
+ * Actualiza un proveedor existente
+ * PATCH /providers/:id
+ * @param {Object} req - Request de Express
+ * @param {string} req.params.id - ID del proveedor
+ * @param {Object} req.body - Cuerpo de la petición
+ * @param {string} req.body.nombre - Nuevo nombre del proveedor
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con el proveedor actualizado o error 404
+ */
 export const updateProviderController = async (req, res) => {
 	const { id } = req.params;
 	const { nombre } = req.body;
+
 	try {
-		const updatedProvider = await updateProvider(id, nombre);
+		// Actualizo en BD
+		const updatedProvider = await repoFactory.updateProvider(id, nombre);
+
 		if (!updatedProvider) {
 			return res.status(404).json({
-				message: INVALID_PAYLOAD_MESSAGE,
+				message: "Proveedor no encontrado",
 			});
 		}
+
+		// Invalido caches relacionados después de actualizar
+		const keysToInvalidate = [`provider:id:${id}`, "providers:all"];
+		await cacheService.invalidateMultiple(keysToInvalidate);
+
 		return res.json(updatedProvider);
 	} catch (error) {
 		console.error("Error al actualizar proveedor:", error);
@@ -89,17 +158,34 @@ export const updateProviderController = async (req, res) => {
 	}
 };
 
-// Eliminar proveedor
+/**
+ * Elimina un proveedor de streaming
+ * DELETE /providers/:id
+ * @param {Object} req - Request de Express
+ * @param {string} req.params.id - ID del proveedor
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con mensaje de confirmación o error 404
+ */
 export const deleteProviderController = async (req, res) => {
 	const { id } = req.params;
+
 	try {
-		const deletedProvider = await deleteProvider(id);
+		// Elimino de BD
+		const deletedProvider = await repoFactory.deleteProvider(id);
+
 		if (!deletedProvider) {
 			return res.status(404).json({
-				message: INVALID_PAYLOAD_MESSAGE,
+				message: "Proveedor no encontrado",
 			});
 		}
-		return res.json({ message: "Proveedor eliminado correctamente" });
+
+		// Invalido caches relacionados después de eliminar
+		const keysToInvalidate = [`provider:id:${id}`, `provider:nombre:${deletedProvider.nombre}`, "providers:all"];
+		await cacheService.invalidateMultiple(keysToInvalidate);
+
+		return res.json({
+			message: "Proveedor eliminado correctamente",
+		});
 	} catch (error) {
 		console.error("Error al eliminar proveedor:", error);
 		return res.status(500).json({
@@ -107,4 +193,6 @@ export const deleteProviderController = async (req, res) => {
 		});
 	}
 };
+
 //#endregion ----------- ADMIN CONTROLLERS -----------
+
