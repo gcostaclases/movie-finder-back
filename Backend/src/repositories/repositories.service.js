@@ -195,6 +195,76 @@ class RepositoryFactory {
 	async saveMovie(movieData) {
 		return await this.getInstance().saveMovie(movieData);
 	}
+
+	// ========== REVIEW METHODS ==========
+
+	/**
+	 * Crea una nueva reseña
+	 * @param {string} userId - ID del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {number} rating - Puntuación (1-10)
+	 * @param {string} comment - Comentario opcional
+	 * @returns {Promise<Object>} Reseña creada
+	 */
+	async saveReview(userId, movieId, rating, comment) {
+		return await this.getInstance().saveReview(userId, movieId, rating, comment);
+	}
+
+	/**
+	 * Busca una reseña por filtro
+	 * @param {Object} filter - Filtro de búsqueda
+	 * @returns {Promise<Object|null>} Reseña encontrada o null
+	 */
+	async findReview(filter) {
+		return await this.getInstance().findReview(filter);
+	}
+
+	/**
+	 * Busca todas las reseñas de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<Array>} Lista de reseñas
+	 */
+	async findReviewsByMovie(movieId) {
+		return await this.getInstance().findReviewsByMovie(movieId);
+	}
+
+	/**
+	 * Busca todas las reseñas de un usuario
+	 * @param {string} userId - ID del usuario
+	 * @returns {Promise<Array>} Lista de reseñas
+	 */
+	async findReviewsByUser(userId) {
+		return await this.getInstance().findReviewsByUser(userId);
+	}
+
+	/**
+	 * Actualiza una reseña
+	 * @param {string} reviewId - ID de la reseña
+	 * @param {number} rating - Nueva puntuación
+	 * @param {string} comment - Nuevo comentario
+	 * @returns {Promise<Object|null>} Reseña actualizada o null
+	 */
+	async updateReview(reviewId, rating, comment) {
+		return await this.getInstance().updateReview(reviewId, rating, comment);
+	}
+
+	/**
+	 * Elimina una reseña
+	 * @param {string} reviewId - ID de la reseña
+	 * @returns {Promise<Object|null>} Reseña eliminada o null
+	 */
+	async deleteReview(reviewId) {
+		return await this.getInstance().deleteReview(reviewId);
+	}
+
+	/**
+	 * Obtiene estadísticas de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<Object>} Objeto con averageRating y totalReviews
+	 */
+	async getAverageRating(movieId) {
+		return await this.getInstance().getAverageRating(movieId);
+	}
 }
 
 // Exportar instancia singleton

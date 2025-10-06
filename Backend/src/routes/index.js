@@ -6,6 +6,7 @@ import v1AuthRouter from "./auth.router.js";
 import v1ProviderRouter from "./provider.router.js";
 import v1UserRouter from "./user.router.js";
 import v1MovieRouter from "./movie.router.js";
+import v1ReviewRouter from "./review.router.js";
 //#endregion ----------- IMPORTS -----------
 
 const setupRoutes = (app) => {
@@ -18,6 +19,8 @@ const setupRoutes = (app) => {
 	app.use("/api/v1/providers", v1ProviderRouter);
 	app.use("/api/v1/me", v1UserRouter);
 	app.use("/api/v1/movies", v1MovieRouter);
+	app.use("/api/v1/reviews", v1ReviewRouter);
 };
 
 export default setupRoutes;
+

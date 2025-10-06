@@ -33,7 +33,7 @@ export const populateUserProviders = async (user) => {
 };
 
 // Agregar proveedor a la lista del usuario
-export const addProviderToUser = async ({ providerId }, userId) => {
+export const addProviderToUser = async (providerId, userId) => {
 	const user = await User.findById(userId);
 	if (!user) return null;
 	if (user.providers.includes(providerId)) return false;

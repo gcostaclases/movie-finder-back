@@ -26,6 +26,17 @@ import {
 // Movie Repository
 import { findMovie, findAllMovies, saveMovie } from "./movie.repository.js";
 
+// Review Repository
+import {
+	saveReview,
+	findReview,
+	findReviewsByMovie,
+	findReviewsByUser,
+	updateReview,
+	deleteReview,
+	getAverageRating,
+} from "./review.repository.js";
+
 /**
  * Crea el adaptador de Mongoose para MongoDB
  * Conecta a la base de datos y retorna todos los métodos de repositorio disponibles
@@ -63,6 +74,15 @@ const createMongooseAdapter = async () => {
 		findMovie,
 		findAllMovies,
 		saveMovie,
+
+		// Review Repository
+		saveReview,
+		findReview,
+		findReviewsByMovie,
+		findReviewsByUser,
+		updateReview,
+		deleteReview,
+		getAverageRating,
 	};
 };
 
