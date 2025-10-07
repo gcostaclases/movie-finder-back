@@ -27,6 +27,16 @@ const swaggerUiDistPath = getAbsoluteFSPath();
 // Opciones personalizadas para Swagger UI
 const swaggerUiOptions = {
 	explorer: true,
+	customCss: `
+    .swagger-ui .opblock .opblock-summary-path-description-wrapper {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 10px;
+      padding: 0 10px;
+      width: 100%;
+    }
+  `,
 	customCssUrl: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css",
 	customfavIcon: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/favicon-32x32.png",
 };
@@ -38,4 +48,3 @@ documentationRouter.use("/swagger-static", express.static(swaggerUiDistPath));
 documentationRouter.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
 
 export default documentationRouter;
-
