@@ -19,7 +19,7 @@
 	],
 	"functions": {
 		"src/api/index.js": {
-			"includeFiles": ["swagger.json"]
+			"includeFiles": "swagger.json"
 		}
 	}
 }
