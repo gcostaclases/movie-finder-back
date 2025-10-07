@@ -1,9 +1,6 @@
 //#region  ----------- IMPORTS -----------
-// Importo y cargo las variables de entorno PRIMERO que nada
-import "./config/env.js";
-
 // Importo la función que crea la app de express
-import createApp from "./app/app.js";
+import createApp from "../app/app.js";
 //#endregion ----------- IMPORTS -----------
 
 // Creo la app de express
@@ -16,4 +13,3 @@ const { PORT } = process.env;
 app.listen(PORT, () => {
 	console.log(`El servidor esta corriendo en http://localhost:${PORT}`);
 });
-
