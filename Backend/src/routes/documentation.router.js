@@ -28,6 +28,7 @@ const swaggerUiDistPath = getAbsoluteFSPath();
 const swaggerUiOptions = {
 	explorer: true,
 	customCssUrl: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css",
+	customfavIcon: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/favicon-32x32.png",
 };
 
 // Servir los recursos estáticos de Swagger UI
@@ -37,3 +38,4 @@ documentationRouter.use("/swagger-static", express.static(swaggerUiDistPath));
 documentationRouter.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
 
 export default documentationRouter;
+
