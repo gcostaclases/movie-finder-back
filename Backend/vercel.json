@@ -1,7 +1,7 @@
 {
 	"version": 2,
 	"functions": {
-		"src/api/index.js": {
+		"api/index.js": {
 			"includeFiles": "swagger.json"
 		}
 	},
@@ -13,7 +13,7 @@
 		},
 		{
 			"src": "/(.*)",
-			"dest": "src/api/index.js"
+			"dest": "api/index.js"
 		}
 	]
 }

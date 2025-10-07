@@ -14,9 +14,9 @@
 		"mongodb"
 	],
 	"scripts": {
-		"dev": "nodemon src/api/dev.js",
-		"start": "node src/api/index.js",
-		"prod": "cross-env NODE_ENV=production nodemon src/api/dev.js",
+		"dev": "nodemon api/dev.js",
+		"start": "node api/index.js",
+		"prod": "cross-env NODE_ENV=production nodemon api/dev.js",
 		"import:movies": "node src/scripts/importPopularMovies.js",
 		"import:movies:prod": "cross-env NODE_ENV=production node src/scripts/importPopularMovies.js"
 	},
