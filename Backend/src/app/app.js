@@ -2,6 +2,9 @@
 // Importo y cargo las variables de entorno PRIMERO que nada
 import "../config/env.js";
 
+// Importo Sentry para monitoreo y manejo de errores
+import Sentry from "../utils/instrument.js";
+
 // Importo express
 import express from "express";
 
@@ -25,6 +28,10 @@ const createApp = () => {
 
 	// Setup routes
 	setupRoutes(app);
+
+	// Sentry error handler (debe ir al final de todo)
+	// Funciona como middleware, recoge métricas y las envía
+	Sentry.setupExpressErrorHandler(app);
 
 	return app;
 };
