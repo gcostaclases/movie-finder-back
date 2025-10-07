@@ -20,6 +20,9 @@ import { fileURLToPath } from "url";
 // Defino el conjunto de rutas dentro del router
 const documentationRouter = express.Router();
 
+// Fuente de la solución para servir Swagger UI en producción (Vercel):
+// https://github.com/swagger-api/swagger-ui/issues/8461
+
 /**
  * Ruta absoluta al archivo swagger.json
  *
