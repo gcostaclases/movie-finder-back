@@ -1,5 +1,6 @@
 # Variables globales
 @host = http://localhost:3000/api/v1
+# @host = https://pelis-y-series-app.vercel.app/api/v1
 @tokenClient = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1OTc5MTYwNCwiZXhwIjoxNzU5Nzk1MjA0fQ.aqeyXHbXGtNGpy6BpQXXhWaxZoEmklCNS7D28E6IlQk
 @tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzU5NzgwODkzLCJleHAiOjE3NTk3ODQ0OTN9.uYWdY9WA96eScl3QXztaegR-tvZCI_7C0AWof9I1q_s
 

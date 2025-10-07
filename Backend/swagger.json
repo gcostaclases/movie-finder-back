@@ -2,7 +2,7 @@
 	"openapi": "3.0.3",
 	"info": {
 		"title": "Películas y Series API",
-		"description": "API RESTful para la gestión de usuarios, proveedores de streaming y sus listas de series/películas.\n\nPermite:\n- Registro y autenticación de usuarios\n- Gestión de proveedores (CRUD solo admin)\n- Gestión de la lista de proveedores de cada usuario\n\n**Universidad ORT Uruguay - Proyecto Backend**",
+		"description": "API RESTful para la gestión de usuarios, proveedores de streaming, películas, watchlist y reseñas.\n\n**Funcionalidades:**\n- ✅ Registro y autenticación de usuarios (JWT)\n- ✅ Gestión de proveedores de streaming (CRUD - solo admin)\n- ✅ Gestión de lista de proveedores del usuario\n- ✅ Búsqueda de películas (con filtros)\n- ✅ Watchlist personal del usuario\n- ✅ Sistema de reseñas y puntuaciones\n\n**Universidad ORT Uruguay - Proyecto Backend**",
 		"version": "1.0.0",
 		"contact": {
 			"name": "Guillermina Costa",
@@ -14,21 +14,25 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:3000",
+			"url": "http://localhost:3000/api/v1",
 			"description": "Servidor de desarrollo local"
+		},
+		{
+			"url": "https://pelis-y-series-app.vercel.app/api/v1",
+			"description": "Servidor de producción (Vercel)"
 		}
 	],
 	"security": [
 		{
-			"ApiKeyAuth": []
+			"BearerAuth": []
 		}
 	],
 	"paths": {
-		"/api/v1/health/ping": {
+		"/health/ping": {
 			"get": {
-				"tags": ["Public"],
+				"tags": ["Health"],
 				"summary": "Health check endpoint",
-				"description": "Endpoint público para verificar que la API está funcionando",
+				"description": "Endpoint público para verificar que la API está funcionando correctamente",
 				"security": [],
 				"responses": {
 					"200": {
@@ -45,11 +49,11 @@
 				}
 			}
 		},
-		"/api/v1/auth/login": {
+		"/auth/login": {
 			"post": {
 				"tags": ["Authentication"],
 				"summary": "Iniciar sesión",
-				"description": "Autentica un usuario y devuelve un JWT token",
+				"description": "Autentica un usuario con email/username y contraseña, devuelve un JWT token",
 				"security": [],
 				"requestBody": {
 					"required": true,
@@ -57,6 +61,22 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/LoginRequest"
+							},
+							"examples": {
+								"withEmail": {
+									"summary": "Login con email",
+									"value": {
+										"identifier": "juanperez@gmail.com",
+										"password": "JuanP1234."
+									}
+								},
+								"withUsername": {
+									"summary": "Login con username",
+									"value": {
+										"identifier": "juanp",
+										"password": "JuanP1234."
+									}
+								}
 							}
 						}
 					}
@@ -68,97 +88,33 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/LoginResponse"
+								},
+								"example": {
+									"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1OTc5MTYwNCwiZXhwIjoxNzU5Nzk1MjA0fQ.aqeyXHbXGtNGpy6BpQXXhWaxZoEmklCNS7D28E6IlQk",
+									"message": "Inicio de sesión exitoso"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Credenciales inválidas",
+						"description": "Credenciales inválidas o usuario no encontrado",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Error interno del servidor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/v1/auth/register": {
-			"post": {
-				"tags": ["Authentication"],
-				"summary": "Registrar nuevo usuario",
-				"description": "Crea una nueva cuenta de usuario",
-				"security": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/SignupRequest"
-							}
-						}
-					}
-				},
-				"responses": {
-					"201": {
-						"description": "Usuario creado exitosamente",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "El email o username ya existe",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Error interno del servidor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/v1/providers": {
-			"get": {
-				"tags": ["Providers"],
-				"summary": "Obtener todos los proveedores",
-				"description": "Devuelve la lista de todos los proveedores de streaming",
-				"responses": {
-					"200": {
-						"description": "Lista de proveedores",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "#/components/schemas/Provider"
+								},
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"invalidPassword": {
+										"summary": "Contraseña incorrecta",
+										"value": {
+											"message": "Credenciales inválidas"
+										}
 									}
 								}
 							}
@@ -170,6 +126,133 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"tags": ["Authentication"],
+				"summary": "Registrar nuevo usuario",
+				"description": "Crea una nueva cuenta de usuario con validaciones de email único, username único y contraseña segura",
+				"security": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SignupRequest"
+							},
+							"example": {
+								"username": "juanp",
+								"email": "juanperez@gmail.com",
+								"password": "JuanP1234."
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Usuario creado exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Usuario creado exitosamente"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "El email o username ya está registrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"emailExists": {
+										"summary": "Email ya registrado",
+										"value": {
+											"message": "El email ya está registrado"
+										}
+									},
+									"usernameExists": {
+										"summary": "Username ya registrado",
+										"value": {
+											"message": "El nombre de usuario ya está registrado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/providers": {
+			"get": {
+				"tags": ["Providers"],
+				"summary": "Obtener todos los proveedores",
+				"description": "Devuelve la lista completa de proveedores de streaming disponibles (con cache de 5 minutos)",
+				"responses": {
+					"200": {
+						"description": "Lista de proveedores",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Provider"
+									}
+								},
+								"example": [
+									{
+										"_id": "68d055c86aa347d04a2053da",
+										"nombre": "Netflix"
+									},
+									{
+										"_id": "68d055db6aa347d04a2053e2",
+										"nombre": "Disney+"
+									},
+									{
+										"_id": "68d055e56aa347d04a2053e6",
+										"nombre": "Prime Video"
+									}
+								]
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -179,10 +262,10 @@
 			"post": {
 				"tags": ["Providers"],
 				"summary": "Crear proveedor (solo admin)",
-				"description": "Crea un nuevo proveedor de streaming (requiere rol admin)",
+				"description": "Crea un nuevo proveedor de streaming. **Requiere rol de administrador**. Invalida cache automáticamente.",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"requestBody": {
@@ -191,6 +274,9 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/CreateProviderRequest"
+							},
+							"example": {
+								"nombre": "HBO Max"
 							}
 						}
 					}
@@ -202,16 +288,62 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Provider"
+								},
+								"example": {
+									"_id": "68d05605d55c47d04a205400",
+									"nombre": "HBO Max"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "El proveedor ya existe o datos inválidos",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "El proveedor ya existe"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
 								}
 							}
 						}
 					},
 					"403": {
-						"description": "Proveedor ya existe o no autorizado",
+						"description": "No autorizado (requiere rol admin)",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Acceso denegado. Se requiere rol de administrador."
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -219,19 +351,21 @@
 				}
 			}
 		},
-		"/api/v1/providers/{id}": {
+		"/providers/{id}": {
 			"get": {
 				"tags": ["Providers"],
 				"summary": "Obtener proveedor por ID",
-				"description": "Devuelve un proveedor por su ID",
+				"description": "Devuelve un proveedor específico por su ID (con cache de 10 minutos)",
 				"parameters": [
 					{
 						"name": "id",
 						"in": "path",
 						"required": true,
+						"description": "ID del proveedor",
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "68d055c86aa347d04a2053da"
 					}
 				],
 				"responses": {
@@ -241,6 +375,10 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Provider"
+								},
+								"example": {
+									"_id": "68d055c86aa347d04a2053da",
+									"nombre": "Netflix"
 								}
 							}
 						}
@@ -251,6 +389,22 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Proveedor no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -260,10 +414,10 @@
 			"patch": {
 				"tags": ["Providers"],
 				"summary": "Actualizar proveedor (solo admin)",
-				"description": "Actualiza un proveedor existente (requiere rol admin)",
+				"description": "Actualiza el nombre de un proveedor existente. **Requiere rol de administrador**. Invalida cache automáticamente.",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"parameters": [
@@ -271,9 +425,11 @@
 						"name": "id",
 						"in": "path",
 						"required": true,
+						"description": "ID del proveedor a actualizar",
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "68d055c86aa347d04a2053da"
 					}
 				],
 				"requestBody": {
@@ -282,6 +438,9 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UpdateProviderRequest"
+							},
+							"example": {
+								"nombre": "Netflix Premium"
 							}
 						}
 					}
@@ -293,6 +452,36 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Provider"
+								},
+								"example": {
+									"_id": "68d055c86aa347d04a2053da",
+									"nombre": "Netflix Premium"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "No autorizado (requiere rol admin)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Acceso denegado. Se requiere rol de administrador."
 								}
 							}
 						}
@@ -303,6 +492,22 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Proveedor no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -312,10 +517,10 @@
 			"delete": {
 				"tags": ["Providers"],
 				"summary": "Eliminar proveedor (solo admin)",
-				"description": "Elimina un proveedor existente (requiere rol admin)",
+				"description": "Elimina un proveedor de forma permanente. **Requiere rol de administrador**. Invalida cache automáticamente.",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"parameters": [
@@ -323,9 +528,11 @@
 						"name": "id",
 						"in": "path",
 						"required": true,
+						"description": "ID del proveedor a eliminar",
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "68d055c86aa347d04a2053da"
 					}
 				],
 				"responses": {
@@ -335,6 +542,35 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Proveedor eliminado correctamente"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "No autorizado (requiere rol admin)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Acceso denegado. Se requiere rol de administrador."
 								}
 							}
 						}
@@ -345,6 +581,22 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Proveedor no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -352,14 +604,14 @@
 				}
 			}
 		},
-		"/api/v1/users/me/providers": {
+		"/me/providers": {
 			"get": {
-				"tags": ["UserProviders"],
+				"tags": ["User - Providers"],
 				"summary": "Obtener mis proveedores",
 				"description": "Devuelve la lista de proveedores contratados por el usuario autenticado",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"responses": {
@@ -372,6 +624,55 @@
 									"items": {
 										"$ref": "#/components/schemas/Provider"
 									}
+								},
+								"example": [
+									{
+										"_id": "68d055c86aa347d04a2053da",
+										"nombre": "Netflix"
+									},
+									{
+										"_id": "68d055db6aa347d04a2053e2",
+										"nombre": "Disney+"
+									}
+								]
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -379,12 +680,12 @@
 				}
 			},
 			"post": {
-				"tags": ["UserProviders"],
+				"tags": ["User - Providers"],
 				"summary": "Agregar proveedor a mi lista",
-				"description": "Agrega un proveedor a la lista del usuario autenticado",
+				"description": "Agrega un proveedor a la lista de proveedores contratados del usuario autenticado",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"requestBody": {
@@ -393,27 +694,75 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/AddProviderToUserRequest"
+							},
+							"example": {
+								"providerId": "68d055c86aa347d04a2053da"
 							}
 						}
 					}
 				},
 				"responses": {
-					"200": {
-						"description": "Proveedor agregado a la lista del usuario",
+					"201": {
+						"description": "Proveedor agregado correctamente",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Proveedor agregado a tu lista"
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "El proveedor ya está en la lista",
+						"description": "El proveedor ya está en la lista del usuario",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "El proveedor ya está en tu lista"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -421,14 +770,14 @@
 				}
 			}
 		},
-		"/api/v1/users/me/providers/{providerId}": {
+		"/me/providers/{providerId}": {
 			"delete": {
-				"tags": ["UserProviders"],
+				"tags": ["User - Providers"],
 				"summary": "Quitar proveedor de mi lista",
-				"description": "Elimina un proveedor de la lista del usuario autenticado",
+				"description": "Elimina un proveedor de la lista de proveedores contratados del usuario autenticado",
 				"security": [
 					{
-						"ApiKeyAuth": []
+						"BearerAuth": []
 					}
 				],
 				"parameters": [
@@ -436,28 +785,831 @@
 						"name": "providerId",
 						"in": "path",
 						"required": true,
+						"description": "ID del proveedor a eliminar",
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "68d055c86aa347d04a2053da"
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Proveedor eliminado de la lista del usuario",
+						"description": "Proveedor eliminado correctamente",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Proveedor eliminado de tu lista"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
 								}
 							}
 						}
 					},
 					"404": {
-						"description": "Proveedor no estaba en la lista",
+						"description": "Usuario o proveedor no encontrado en la lista",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"providerNotInList": {
+										"summary": "Proveedor no estaba en la lista",
+										"value": {
+											"message": "Proveedor no estaba en tu lista"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/movies": {
+			"get": {
+				"tags": ["Movies"],
+				"summary": "Obtener películas",
+				"description": "Devuelve la lista de películas. Permite filtrar por título (búsqueda case-insensitive)",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "title",
+						"in": "query",
+						"required": false,
+						"description": "Filtro por título de película (búsqueda parcial, case-insensitive)",
+						"schema": {
+							"type": "string"
+						},
+						"example": "Superman"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Lista de películas",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								},
+								"example": [
+									{
+										"_id": "68d30243f5be4f51a4c4a9d3",
+										"tmdbId": 1924,
+										"title": "Superman",
+										"overview": "Un bebé enviado desde el planeta Krypton es adoptado por una pareja en la Tierra...",
+										"releaseDate": "1978-12-15",
+										"posterPath": "/d7px1FQxW4tngdACVRsCSaZq0Xl.jpg",
+										"genres": ["Acción", "Ciencia ficción", "Aventura"],
+										"providers": [
+											{
+												"_id": "68d055c86aa347d04a2053da",
+												"nombre": "Netflix"
+											}
+										]
+									}
+								]
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/me/watchlist": {
+			"get": {
+				"tags": ["User - Watchlist"],
+				"summary": "Obtener mi watchlist",
+				"description": "Devuelve la lista de películas guardadas en la watchlist del usuario autenticado",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Watchlist del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Movie"
+									}
+								},
+								"example": [
+									{
+										"_id": "68d30243f5be4f51a4c4a9d3",
+										"tmdbId": 1924,
+										"title": "Superman",
+										"overview": "Un bebé enviado desde el planeta Krypton...",
+										"releaseDate": "1978-12-15",
+										"posterPath": "/d7px1FQxW4tngdACVRsCSaZq0Xl.jpg",
+										"genres": ["Acción", "Ciencia ficción", "Aventura"],
+										"providers": [
+											{
+												"_id": "68d055c86aa347d04a2053da",
+												"nombre": "Netflix"
+											}
+										]
+									}
+								]
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["User - Watchlist"],
+				"summary": "Agregar película a mi watchlist",
+				"description": "Agrega una película a la watchlist del usuario autenticado",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddMovieToWatchlistRequest"
+							},
+							"example": {
+								"movieId": "68d30243f5be4f51a4c4a9d3"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Película agregada correctamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Película agregada a tu watchlist"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "La película ya está en la watchlist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "La película ya está en tu watchlist"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/me/watchlist/{movieId}": {
+			"delete": {
+				"tags": ["User - Watchlist"],
+				"summary": "Quitar película de mi watchlist",
+				"description": "Elimina una película de la watchlist del usuario autenticado",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"description": "ID de la película a eliminar",
+						"schema": {
+							"type": "string"
+						},
+						"example": "68d30243f5be4f51a4c4a9d3"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Película eliminada correctamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Película eliminada de tu watchlist"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario o película no encontrados en la watchlist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"movieNotInWatchlist": {
+										"summary": "Película no estaba en la watchlist",
+										"value": {
+											"message": "La película no estaba en tu watchlist"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/reviews/movies/{movieId}": {
+			"get": {
+				"tags": ["Reviews"],
+				"summary": "Obtener reseñas de una película",
+				"description": "Devuelve todas las reseñas de una película específica (endpoint público)",
+				"security": [],
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"description": "ID de la película",
+						"schema": {
+							"type": "string"
+						},
+						"example": "68d30243f5be4f51a4c4a9d3"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Lista de reseñas de la película",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Review"
+									}
+								},
+								"example": [
+									{
+										"_id": "68e4002b1355ba01c8ded8fd",
+										"user": {
+											"_id": "68d31ad598655d0a37332581",
+											"username": "juanp"
+										},
+										"movie": "68d30243f5be4f51a4c4a9d3",
+										"rating": 9,
+										"comment": "Excelente película, un clásico imperdible de superhéroes.",
+										"createdAt": "2025-01-15T10:30:00.000Z"
+									}
+								]
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/reviews": {
+			"post": {
+				"tags": ["Reviews"],
+				"summary": "Crear reseña",
+				"description": "Crea una nueva reseña para una película (requiere autenticación). Solo se permite una reseña por usuario por película.",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateReviewRequest"
+							},
+							"example": {
+								"movieId": "68d30243f5be4f51a4c4a9d3",
+								"rating": 9,
+								"comment": "Excelente película, un clásico imperdible de superhéroes."
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Reseña creada exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Review"
+								},
+								"example": {
+									"_id": "68e4002b1355ba01c8ded8fd",
+									"user": "68d31ad598655d0a37332581",
+									"movie": "68d30243f5be4f51a4c4a9d3",
+									"rating": 9,
+									"comment": "Excelente película, un clásico imperdible de superhéroes.",
+									"createdAt": "2025-01-15T10:30:00.000Z"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Ya existe una reseña del usuario para esta película",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Ya has reseñado esta película"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/reviews/me": {
+			"get": {
+				"tags": ["Reviews"],
+				"summary": "Obtener mis reseñas",
+				"description": "Devuelve todas las reseñas creadas por el usuario autenticado",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Lista de reseñas del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Review"
+									}
+								},
+								"example": [
+									{
+										"_id": "68e4002b1355ba01c8ded8fd",
+										"user": "68d31ad598655d0a37332581",
+										"movie": {
+											"_id": "68d30243f5be4f51a4c4a9d3",
+											"title": "Superman",
+											"posterPath": "/d7px1FQxW4tngdACVRsCSaZq0Xl.jpg"
+										},
+										"rating": 9,
+										"comment": "Excelente película, un clásico imperdible de superhéroes.",
+										"createdAt": "2025-01-15T10:30:00.000Z"
+									}
+								]
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/reviews/{reviewId}": {
+			"patch": {
+				"tags": ["Reviews"],
+				"summary": "Actualizar mi reseña",
+				"description": "Actualiza una reseña existente del usuario autenticado. Solo puede modificar sus propias reseñas.",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "reviewId",
+						"in": "path",
+						"required": true,
+						"description": "ID de la reseña a actualizar",
+						"schema": {
+							"type": "string"
+						},
+						"example": "68e4002b1355ba01c8ded8fd"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateReviewRequest"
+							},
+							"example": {
+								"rating": 10,
+								"comment": "La mejor película de superhéroes. Obra maestra absoluta."
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Reseña actualizada exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Review"
+								},
+								"example": {
+									"_id": "68e4002b1355ba01c8ded8fd",
+									"user": "68d31ad598655d0a37332581",
+									"movie": "68d30243f5be4f51a4c4a9d3",
+									"rating": 10,
+									"comment": "La mejor película de superhéroes. Obra maestra absoluta.",
+									"createdAt": "2025-01-15T10:30:00.000Z",
+									"updatedAt": "2025-01-15T14:20:00.000Z"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "No autorizado para modificar esta reseña",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "No puedes modificar esta reseña"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Reseña no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Reseña no encontrada"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Reviews"],
+				"summary": "Eliminar mi reseña",
+				"description": "Elimina una reseña del usuario autenticado. Solo puede eliminar sus propias reseñas.",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "reviewId",
+						"in": "path",
+						"required": true,
+						"description": "ID de la reseña a eliminar",
+						"schema": {
+							"type": "string"
+						},
+						"example": "68e4002b1355ba01c8ded8fd"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Reseña eliminada correctamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Reseña eliminada correctamente"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Token inválido o expirado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Token inválido"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "No autorizado para eliminar esta reseña",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "No puedes eliminar esta reseña"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Reseña no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Reseña no encontrada"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
 								}
 							}
 						}
@@ -468,11 +1620,11 @@
 	},
 	"components": {
 		"securitySchemes": {
-			"ApiKeyAuth": {
-				"type": "apiKey",
-				"in": "header",
-				"name": "Authorization",
-				"description": "JWT token obtenido del endpoint /auth/login.\n\nFormato: `Authorization: <token>` (sin prefijo Bearer)"
+			"BearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"description": "JWT token obtenido del endpoint `/auth/login`.\n\n**Ejemplo de header:**\n```\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\n\n**Nota:** Incluir el prefijo `Bearer` seguido de un espacio y el token."
 			}
 		},
 		"schemas": {
@@ -482,11 +1634,14 @@
 				"properties": {
 					"identifier": {
 						"type": "string",
-						"description": "Email o nombre de usuario"
+						"description": "Email o nombre de usuario",
+						"example": "juanp"
 					},
 					"password": {
 						"type": "string",
-						"description": "Contraseña del usuario"
+						"format": "password",
+						"description": "Contraseña del usuario (mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y símbolo)",
+						"example": "JuanP1234."
 					}
 				}
 			},
@@ -496,15 +1651,23 @@
 				"properties": {
 					"username": {
 						"type": "string",
-						"description": "Nombre de usuario único"
+						"minLength": 3,
+						"maxLength": 20,
+						"description": "Nombre de usuario único (3-20 caracteres)",
+						"example": "juanp"
 					},
 					"email": {
 						"type": "string",
-						"description": "Email del usuario"
+						"format": "email",
+						"description": "Email del usuario (debe ser único)",
+						"example": "juanperez@gmail.com"
 					},
 					"password": {
 						"type": "string",
-						"description": "Contraseña del usuario"
+						"format": "password",
+						"minLength": 8,
+						"description": "Contraseña (mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y símbolo)",
+						"example": "JuanP1234."
 					}
 				}
 			},
@@ -512,10 +1675,118 @@
 				"type": "object",
 				"properties": {
 					"_id": {
-						"type": "string"
+						"type": "string",
+						"description": "ID único del proveedor",
+						"example": "68d055c86aa347d04a2053da"
 					},
 					"nombre": {
-						"type": "string"
+						"type": "string",
+						"description": "Nombre del proveedor de streaming",
+						"example": "Netflix"
+					}
+				}
+			},
+			"Movie": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "ID único de la película en nuestra DB",
+						"example": "68d30243f5be4f51a4c4a9d3"
+					},
+					"tmdbId": {
+						"type": "integer",
+						"description": "ID de la película en TMDB",
+						"example": 1924
+					},
+					"title": {
+						"type": "string",
+						"description": "Título de la película",
+						"example": "Superman"
+					},
+					"overview": {
+						"type": "string",
+						"description": "Sinopsis de la película",
+						"example": "Un bebé enviado desde el planeta Krypton es adoptado por una pareja en la Tierra..."
+					},
+					"releaseDate": {
+						"type": "string",
+						"format": "date",
+						"description": "Fecha de estreno",
+						"example": "1978-12-15"
+					},
+					"posterPath": {
+						"type": "string",
+						"description": "Ruta del póster en TMDB",
+						"example": "/d7px1FQxW4tngdACVRsCSaZq0Xl.jpg"
+					},
+					"genres": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Géneros de la película",
+						"example": ["Acción", "Ciencia ficción", "Aventura"]
+					},
+					"providers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Provider"
+						},
+						"description": "Proveedores donde está disponible la película"
+					}
+				}
+			},
+			"Review": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "ID único de la reseña",
+						"example": "68e4002b1355ba01c8ded8fd"
+					},
+					"user": {
+						"type": "object",
+						"description": "Usuario que creó la reseña (populado)",
+						"properties": {
+							"_id": {
+								"type": "string",
+								"example": "68d31ad598655d0a37332581"
+							},
+							"username": {
+								"type": "string",
+								"example": "juanp"
+							}
+						}
+					},
+					"movie": {
+						"type": "string",
+						"description": "ID de la película reseñada",
+						"example": "68d30243f5be4f51a4c4a9d3"
+					},
+					"rating": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 10,
+						"description": "Puntuación de la película (1-10)",
+						"example": 9
+					},
+					"comment": {
+						"type": "string",
+						"description": "Comentario de la reseña (opcional)",
+						"example": "Excelente película, un clásico imperdible de superhéroes."
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Fecha de creación de la reseña",
+						"example": "2025-01-15T10:30:00.000Z"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Fecha de última actualización",
+						"example": "2025-01-15T14:20:00.000Z"
 					}
 				}
 			},
@@ -525,7 +1796,10 @@
 				"properties": {
 					"nombre": {
 						"type": "string",
-						"description": "Nombre del proveedor"
+						"minLength": 2,
+						"maxLength": 20,
+						"description": "Nombre del proveedor (2-20 caracteres)",
+						"example": "HBO Max"
 					}
 				}
 			},
@@ -534,7 +1808,10 @@
 				"properties": {
 					"nombre": {
 						"type": "string",
-						"description": "Nuevo nombre del proveedor"
+						"minLength": 2,
+						"maxLength": 20,
+						"description": "Nuevo nombre del proveedor (2-20 caracteres)",
+						"example": "Netflix Premium"
 					}
 				}
 			},
@@ -544,7 +1821,59 @@
 				"properties": {
 					"providerId": {
 						"type": "string",
-						"description": "ID del proveedor a agregar"
+						"description": "ID del proveedor a agregar",
+						"example": "68d055c86aa347d04a2053da"
+					}
+				}
+			},
+			"AddMovieToWatchlistRequest": {
+				"type": "object",
+				"required": ["movieId"],
+				"properties": {
+					"movieId": {
+						"type": "string",
+						"description": "ID de la película a agregar",
+						"example": "68d30243f5be4f51a4c4a9d3"
+					}
+				}
+			},
+			"CreateReviewRequest": {
+				"type": "object",
+				"required": ["movieId", "rating"],
+				"properties": {
+					"movieId": {
+						"type": "string",
+						"description": "ID de la película a reseñar",
+						"example": "68d30243f5be4f51a4c4a9d3"
+					},
+					"rating": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 10,
+						"description": "Puntuación de la película (1-10)",
+						"example": 9
+					},
+					"comment": {
+						"type": "string",
+						"description": "Comentario sobre la película (opcional)",
+						"example": "Excelente película, un clásico imperdible de superhéroes."
+					}
+				}
+			},
+			"UpdateReviewRequest": {
+				"type": "object",
+				"properties": {
+					"rating": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 10,
+						"description": "Nueva puntuación (1-10)",
+						"example": 10
+					},
+					"comment": {
+						"type": "string",
+						"description": "Nuevo comentario",
+						"example": "La mejor película de superhéroes. Obra maestra absoluta."
 					}
 				}
 			},
@@ -553,7 +1882,12 @@
 				"properties": {
 					"token": {
 						"type": "string",
-						"description": "JWT token para autenticación"
+						"description": "JWT token para autenticación (válido por 1 hora)",
+						"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1OTc5MTYwNCwiZXhwIjoxNzU5Nzk1MjA0fQ.aqeyXHbXGtNGpy6BpQXXhWaxZoEmklCNS7D28E6IlQk"
+					},
+					"message": {
+						"type": "string",
+						"example": "Inicio de sesión exitoso"
 					}
 				}
 			},
@@ -561,7 +1895,9 @@
 				"type": "object",
 				"properties": {
 					"message": {
-						"type": "string"
+						"type": "string",
+						"description": "Mensaje de éxito",
+						"example": "Operación realizada exitosamente"
 					}
 				}
 			},
@@ -569,7 +1905,9 @@
 				"type": "object",
 				"properties": {
 					"message": {
-						"type": "string"
+						"type": "string",
+						"description": "Mensaje de error",
+						"example": "Error interno del servidor"
 					}
 				}
 			}
@@ -577,8 +1915,8 @@
 	},
 	"tags": [
 		{
-			"name": "Public",
-			"description": "Endpoints públicos que no requieren autenticación"
+			"name": "Health",
+			"description": "Endpoints de salud de la API (no requieren autenticación)"
 		},
 		{
 			"name": "Authentication",
@@ -586,11 +1924,23 @@
 		},
 		{
 			"name": "Providers",
-			"description": "Endpoints para gestión de proveedores"
+			"description": "Gestión de proveedores de streaming (rutas públicas y de administrador)"
 		},
 		{
-			"name": "UserProviders",
-			"description": "Endpoints para gestión de la lista de proveedores del usuario"
+			"name": "User - Providers",
+			"description": "Gestión de la lista personal de proveedores contratados del usuario"
+		},
+		{
+			"name": "Movies",
+			"description": "Búsqueda y consulta de películas disponibles"
+		},
+		{
+			"name": "User - Watchlist",
+			"description": "Gestión de la watchlist personal del usuario (películas para ver después)"
+		},
+		{
+			"name": "Reviews",
+			"description": "Sistema de reseñas y puntuaciones de películas"
 		}
 	]
 }
