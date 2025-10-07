@@ -8,7 +8,10 @@ import swaggerUi from "swagger-ui-express";
 // Importo el documento swagger
 //import swaggerDocument from "../../swagger.json" with { type: "json" };
 
+// Importo funciones de swagger-ui-dist para obtener la ruta absoluta de los recursos estáticos
 import { getAbsoluteFSPath } from "swagger-ui-dist";
+
+// Importo módulos para manejar archivos y rutas
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -17,14 +20,31 @@ import { fileURLToPath } from "url";
 // Defino el conjunto de rutas dentro del router
 const documentationRouter = express.Router();
 
-// Ruta absoluta al archivo swagger.json
+/**
+ * Ruta absoluta al archivo swagger.json
+ *
+ * - En local, el archivo swagger.json se encuentra en ../../swagger.json.
+ * - En producción (Vercel), tuve que asegurarnos de que el archivo se incluyera correctamente en el despliegue.
+ */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, "../../swagger.json"), "utf8"));
 
-// Ruta absoluta a los recursos estáticos de Swagger UI
+/**
+ * Ruta absoluta a los recursos estáticos de Swagger UI
+ *
+ * - Swagger UI necesita cargar archivos estáticos como CSS y JS para renderizar la documentación.
+ * - Use `swagger-ui-dist` para obtener la ruta absoluta de estos recursos y servirlos manualmente.
+ */
 const swaggerUiDistPath = getAbsoluteFSPath();
 
-// Opciones personalizadas para Swagger UI
+/**
+ * Opciones personalizadas para Swagger UI
+ *
+ * - Incluí un CSS personalizado para corregir el problema del texto en vertical en producción.
+ * - Cargué el CSS principal desde un CDN para evitar problemas con archivos bloqueados en Vercel.
+ * - Configuré el favicon desde el mismo CDN
+ * !(aunque no se está cargando correctamente).
+ */
 const swaggerUiOptions = {
 	explorer: true,
 	customCss: `

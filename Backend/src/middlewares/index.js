@@ -10,7 +10,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
 // Importo CORS
-//import cors from "cors";
+import cors from "cors";
 //#endregion ----------- IMPORTS -----------
 
 // Configuro el rate-limiter
@@ -25,7 +25,6 @@ const setupMiddlewares = (app) => {
 	app.use(express.json()); // Middleware para parsear JSON
 	app.use(morgan("dev")); // Middleware morgan para logging
 	app.use(limiter); // Middleware para limitar la cantidad de requests
-	/*
 	app.use(
 		cors({
 			origin: [
@@ -35,7 +34,6 @@ const setupMiddlewares = (app) => {
 			], // Desarrollo y producción. Acepta requests solo de estos orígenes
 		})
 	); // Middleware para habilitar CORS
-	*/
 };
 
 export default setupMiddlewares;
