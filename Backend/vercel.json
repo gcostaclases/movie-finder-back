@@ -11,6 +11,7 @@
 			"src": "/(.*)",
 			"dest": "src/api/index.js"
 		}
-	]
+	],
+	"redirects": [{ "source": "/", "destination": "/api/v1/documentation/swagger", "permanent": false }]
 }
 
