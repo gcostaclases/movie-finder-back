@@ -1,11 +1,10 @@
 {
 	"version": 2,
-	"builds": [
-		{
-			"src": "src/api/index.js",
-			"use": "@vercel/node"
+	"functions": {
+		"src/api/index.js": {
+			"includeFiles": "swagger.json"
 		}
-	],
+	},
 	"routes": [
 		{
 			"src": "/",
@@ -16,10 +15,5 @@
 			"src": "/(.*)",
 			"dest": "src/api/index.js"
 		}
-	],
-	"functions": {
-		"src/api/index.js": {
-			"includeFiles": "swagger.json"
-		}
-	}
+	]
 }
