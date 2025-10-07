@@ -29,7 +29,12 @@ const setupMiddlewares = (app) => {
 		cors({
 			origin: [
 				"http://localhost:3000",
+				"https://localhost:3000",
+				"http://pelis-y-series-app.vercel.app",
 				"https://pelis-y-series-app.vercel.app",
+				"http://pelis-y-series-app-gcostaclases-projects.vercel.app/",
+				"https://pelis-y-series-app-gcostaclases-projects.vercel.app/",
+				"http://pelis-y-series-app-git-fix-swagger-vercel-gcostaclases-projects.vercel.app",
 				"https://pelis-y-series-app-git-fix-swagger-vercel-gcostaclases-projects.vercel.app",
 			], // Desarrollo y producción. Acepta requests solo de estos orígenes
 		})
