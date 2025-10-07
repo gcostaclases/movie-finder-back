@@ -27,7 +27,11 @@ const setupMiddlewares = (app) => {
 	app.use(limiter); // Middleware para limitar la cantidad de requests
 	app.use(
 		cors({
-			origin: ["http://localhost:3000", "https://pelis-y-series-app.vercel.app"], // Desarrollo y producción. Acepta requests solo de estos orígenes
+			origin: [
+				"http://localhost:3000",
+				"https://pelis-y-series-app.vercel.app",
+				"https://pelis-y-series-app-git-fix-swagger-vercel-gcostaclases-projects.vercel.app",
+			], // Desarrollo y producción. Acepta requests solo de estos orígenes
 		})
 	); // Middleware para habilitar CORS
 };
