@@ -8,10 +8,13 @@
 	],
 	"routes": [
 		{
+			"src": "/",
+			"status": 302,
+			"headers": { "Location": "/api/v1/documentation/swagger" }
+		},
+		{
 			"src": "/(.*)",
 			"dest": "src/api/index.js"
 		}
-	],
-	"redirects": [{ "source": "/", "destination": "/api/v1/documentation/swagger", "permanent": false }]
+	]
 }
-
