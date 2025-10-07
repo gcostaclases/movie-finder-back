@@ -27,7 +27,7 @@ const documentationRouter = express.Router();
  * Ruta absoluta al archivo swagger.json
  *
  * - En local, el archivo swagger.json se encuentra en ../../swagger.json.
- * - En producción (Vercel), tuve que asegurarnos de que el archivo se incluyera correctamente en el despliegue.
+ * - En producción (Vercel), tuve que asegurarme de que el archivo se incluyera correctamente en el despliegue.
  */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, "../../swagger.json"), "utf8"));
