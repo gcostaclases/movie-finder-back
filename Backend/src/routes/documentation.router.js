@@ -45,8 +45,8 @@ const swaggerUiDistPath = getAbsoluteFSPath();
  *
  * - Incluí un CSS personalizado para corregir el problema del texto en vertical en producción.
  * - Cargué el CSS principal desde un CDN para evitar problemas con archivos bloqueados en Vercel.
- * - Configuré el favicon desde el mismo CDN
- * !(aunque no se está cargando correctamente).
+ * - Configuré el favicon desde el mismo CDN 
+ * !(aunque no se está cargando correctamente - el favicon).
  */
 const swaggerUiOptions = {
 	explorer: true,
