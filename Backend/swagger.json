@@ -860,7 +860,7 @@
 			"get": {
 				"tags": ["User"],
 				"summary": "Obtener watchlist del usuario",
-				"description": "Obtiene las películas guardadas en la watchlist del usuario con paginación (10 por página).",
+				"description": "Obtiene las películas guardadas en la watchlist del usuario con paginación.",
 				"parameters": [
 					{
 						"name": "page",
@@ -871,6 +871,16 @@
 							"minimum": 1
 						},
 						"description": "Número de página (por defecto: 1)"
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"schema": {
+							"type": "integer",
+							"default": 10,
+							"minimum": 1
+						},
+						"description": "Cantidad de resultados por página (por defecto: 10)"
 					}
 				],
 				"responses": {
@@ -881,39 +891,62 @@
 								"schema": {
 									"type": "object",
 									"properties": {
-										"watchlist": {
+										"movies": {
 											"type": "array",
 											"items": {
 												"$ref": "#/components/schemas/Movie"
 											}
 										},
-										"pagination": {
-											"$ref": "#/components/schemas/Pagination"
+										"total": {
+											"type": "integer",
+											"description": "Total de películas en la watchlist"
+										},
+										"page": {
+											"type": "integer",
+											"description": "Página actual"
+										},
+										"limit": {
+											"type": "integer",
+											"description": "Cantidad de resultados por página"
 										}
 									}
 								},
 								"example": {
-									"watchlist": [
+									"movies": [
 										{
-											"_id": "68d056886aa347d04a2053ef",
-											"tmdbId": 533535,
-											"title": "Deadpool & Wolverine",
-											"posterPath": "/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
-											"overview": "Un apático Wade Wilson se esfuerza por adaptarse a la vida civil. Sus días como el mercenario moralmente flexible Deadpool quedaron atrás. Cuando su mundo natal se enfrenta a una amenaza existencial, Wade debe vestirse de nuevo a regañadientes con un Wolverine aún más reacio.",
-											"releaseDate": "2024-07-24",
-											"genres": ["Acción", "Comedia", "Ciencia ficción"],
-											"spokenLanguages": ["Inglés"],
-											"actors": ["Ryan Reynolds", "Hugh Jackman", "Emma Corrin"]
+											"genres": [],
+											"_id": "68d30243f5be4f51a4c4a9e2",
+											"tmdbId": 911430,
+											"title": "F1 la película",
+											"overview": "El mítico piloto Sonny Hayes vuelve de su retiro, persuadido para liderar un equipo de Fórmula 1 en apuros y guiar a su joven promesa, en busca de una nueva oportunidad de éxito.",
+											"posterPath": "/6u4APbFBTcu3ieWBzFdyaGMLC9O.jpg",
+											"releaseDate": "2025-06-25T00:00:00.000Z",
+											"providers": [],
+											"createdAt": "2025-09-23T20:25:39.918Z",
+											"updatedAt": "2025-09-23T20:25:39.918Z",
+											"__v": 0,
+											"actors": [],
+											"directors": []
+										},
+										{
+											"genres": [],
+											"_id": "68d30243f5be4f51a4c4a9d3",
+											"tmdbId": 1061474,
+											"title": "Superman",
+											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter.",
+											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+											"releaseDate": "2025-07-09T00:00:00.000Z",
+											"providers": [],
+											"createdAt": "2025-09-23T20:25:39.911Z",
+											"updatedAt": "2025-09-23T20:25:39.911Z",
+											"__v": 0,
+											"actors": [],
+											"directors": []
 										}
 									],
-									"pagination": {
-										"currentPage": 1,
-										"totalPages": 2,
-										"totalMovies": 15,
-										"moviesPerPage": 10,
-										"hasNextPage": true,
-										"hasPrevPage": false
-									}
+									"total": 2,
+									"page": 1,
+									"limit": 10
 								}
 							}
 						}
@@ -938,122 +971,6 @@
 											"message": "No autorizado"
 										}
 									}
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Error interno del servidor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Error interno del servidor"
-								}
-							}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": ["User"],
-				"summary": "Agregar película a la watchlist",
-				"description": "Agrega una película a la watchlist del usuario.",
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["movieId"],
-								"properties": {
-									"movieId": {
-										"type": "string",
-										"description": "ID de la película a agregar"
-									}
-								}
-							},
-							"example": {
-								"movieId": "68d056886aa347d04a2053ef"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Película agregada exitosamente a la watchlist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								},
-								"example": {
-									"message": "Película agregada a la watchlist exitosamente"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "La película ya está en la watchlist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "La película ya está en tu watchlist"
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "No autenticado - Token faltante o inválido",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"examples": {
-									"noToken": {
-										"summary": "Token no proporcionado",
-										"value": {
-											"message": "No autorizado"
-										}
-									},
-									"invalidToken": {
-										"summary": "Token inválido",
-										"value": {
-											"message": "No autorizado"
-										}
-									}
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Datos inválidos",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Datos enviados inválidos"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Película no encontrada",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Película no encontrada"
 								}
 							}
 						}
