@@ -32,12 +32,19 @@ export const findReview = async (filter) => {
 };
 
 /**
- * Busca todas las reseñas de una película
+ * Busca todas las reseñas de una película con paginación
  * @param {string} movieId - ID de la película
+ * @param {number} [page=1] - Número de página para la paginación
+ * @param {number} [limit=10] - Cantidad de resultados por página
  * @returns {Promise<Array>} Lista de reseñas con datos del usuario
  */
-export const findReviewsByMovie = async (movieId) => {
-	return await Review.find({ movieId }).populate("userId", "username").select("-__v").sort({ createdAt: -1 });
+export const findReviewsByMovie = async (movieId, page = 1, limit = 10) => {
+	return await Review.find({ movieId })
+		.populate("userId", "username")
+		.select("-__v")
+		.sort({ createdAt: -1 })
+		.skip((page - 1) * limit) // Salto resultados para paginación
+		.limit(limit); // Limito la cantidad de resultados;
 };
 
 /**
@@ -70,20 +77,47 @@ export const deleteReview = async (reviewId) => {
 };
 
 /**
- * Calcula el promedio de puntuación de una película
- * @param {string} movieId - ID de la película
- * @returns {Promise<Object>} Objeto con averageRating y totalReviews
+ * Calcula el promedio de puntuación y total de reseñas de una película
+ *
+ * Utilizo MongoDB Aggregation Pipeline para:
+ * 1. Filtrar todas las reseñas de la película específica ($match)
+ * 2. Agruparlas por movieId ($group)
+ * 3. Calcular el promedio aritmético de los ratings ($avg)
+ * 4. Contar el total de reseñas ($sum)
+ *
+ * Ejemplo de resultado:
+ * - Si hay 3 reseñas con ratings [8, 9, 10]:
+ *   averageRating = (8 + 9 + 10) / 3 = 9
+ *   totalReviews = 3
+ *
+ * - Si no hay reseñas:
+ *   averageRating = 0
+ *   totalReviews = 0
+ *
+ * @param {string} movieId - ID de la película (MongoDB ObjectId)
+ * @returns {Promise<Object>} Objeto con las estadísticas
+ * @returns {number} averageRating - Promedio de puntuaciones (0-10, puede tener decimales)
+ * @returns {number} totalReviews - Cantidad total de reseñas
+ *
+ * @example
+ * const stats = await getAverageRating("68d30243f5be4f51a4c4a9d3");
+ * // Retorna: { averageRating: 8.5, totalReviews: 127 }
  */
 export const getAverageRating = async (movieId) => {
+	// Pipeline de agregación de MongoDB
 	const result = await Review.aggregate([
+		// Paso 1: Filtro solo las reseñas de esta película
 		{ $match: { movieId: new mongoose.Types.ObjectId(movieId) } },
+		// Paso 2: Agrupo y calculo estadísticas
 		{
 			$group: {
-				_id: "$movieId",
-				averageRating: { $avg: "$rating" },
-				totalReviews: { $sum: 1 },
+				_id: "$movieId", // Agrupo por película
+				averageRating: { $avg: "$rating" }, // Calculo promedio de ratings
+				totalReviews: { $sum: 1 }, // Cuento cantidad de reseñas
 			},
 		},
 	]);
+	// Si no hay reseñas, retorno valores por defecto (0)
 	return result.length > 0 ? result[0] : { averageRating: 0, totalReviews: 0 };
 };
+

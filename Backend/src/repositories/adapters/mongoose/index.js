@@ -29,7 +29,7 @@ import {
 
 // Importo las funciones del repositorio de película
 // MOVIE REPOSITORY
-import { findMovie, findAllMovies, saveMovie } from "./movie.repository.js";
+import { findMovie, findMovies, saveMovie } from "./movie.repository.js";
 
 // Importo las funciones del repositorio de reseña
 // REVIEW REPOSITORY
@@ -42,6 +42,14 @@ import {
 	deleteReview,
 	getAverageRating,
 } from "./review.repository.js";
+
+// AVAILABILITY REPOSITORY
+import {
+	saveAvailability,
+	getMovieAvailabilityStats,
+	availabilityExists,
+	getPersonalizedAvailability,
+} from "./availability.repository.js";
 //#endregion ----------- IMPORTS -----------
 
 /**
@@ -95,7 +103,7 @@ const createMongooseAdapter = async () => {
 
 		// MOVIE REPOSITORY
 		findMovie,
-		findAllMovies,
+		findMovies,
 		saveMovie,
 
 		// REVIEW REPOSITORY
@@ -106,6 +114,12 @@ const createMongooseAdapter = async () => {
 		updateReview,
 		deleteReview,
 		getAverageRating,
+
+		// AVAILABILITY REPOSITORY
+		saveAvailability,
+		getMovieAvailabilityStats,
+		availabilityExists,
+		getPersonalizedAvailability,
 	};
 };
 

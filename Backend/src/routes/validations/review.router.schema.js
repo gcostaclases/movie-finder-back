@@ -18,6 +18,9 @@ export const reviewCreateSchema = Joi.object({
 	comment: Joi.string().max(500).optional().allow("").messages({
 		"string.max": "El comentario no puede tener más de 500 caracteres.",
 	}),
+	providerId: Joi.string().optional().messages({
+		"string.base": "El ID del proveedor debe ser un texto.",
+	}),
 });
 
 export const reviewUpdateSchema = Joi.object({
@@ -31,3 +34,4 @@ export const reviewUpdateSchema = Joi.object({
 		"string.max": "El comentario no puede tener más de 500 caracteres.",
 	}),
 }).min(1);
+

@@ -45,3 +45,19 @@ const reviewSchema = new mongoose.Schema(
 reviewSchema.index({ userId: 1, movieId: 1 }, { unique: true });
 
 export default reviewSchema;
+
+//#region ----------- NOTAS PARA MI -----------
+/**
+ * ÍNDICE COMPUESTO ÚNICO
+ *
+ * Propósito: Garantizar que un usuario solo pueda reseñar una película UNA vez
+ *
+ * Funcionamiento:
+ * - MongoDB crea un índice combinando userId + movieId
+ * - Antes de insertar, MongoDB verifica si ya existe esa combinación
+ * - Si existe: lanza error (duplicate key error)
+ * - Si no existe: permite la inserción
+ *
+ * Beneficio adicional: Acelera búsquedas del tipo "¿este usuario ya reseñó esta peli?"
+ */
+//#endregion ---------- NOTAS PARA MI -----------

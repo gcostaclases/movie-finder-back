@@ -37,6 +37,7 @@ class RepositoryManager {
 	}
 
 	//* Acá a los métodos les añadí debug también
+
 	// ========== USER METHODS ==========
 
 	/**
@@ -230,6 +231,20 @@ class RepositoryManager {
 	// ========== MOVIE METHODS ==========
 
 	/**
+	 * Busca películas con filtros y paginación
+	 * @param {Object} filters - Filtros de búsqueda (opcional)
+	 * @param {number} [page=1] - Número de página para la paginación
+	 * @param {number} [limit=10] - Cantidad de resultados por página
+	 * @returns {Promise<Object>} Objeto con las películas, total, página y límite
+	 */
+	async findMovies(filters = {}, page = 1, limit = 10) {
+		if (this.#debug) {
+			console.log(`[Repository] Finding movies with filters:`, filters, `Page: ${page}, Limit: ${limit}`);
+		}
+		return (await this.adapter).findMovies(filters, page, limit);
+	}
+
+	/**
 	 * Busca una película por filtro
 	 * @param {Object} filter - Filtro de búsqueda (ej: { tmdbId: 123 })
 	 * @returns {Promise<Object|null>} Película encontrada o null
@@ -239,18 +254,6 @@ class RepositoryManager {
 			console.log(`[Repository] Finding movie with filter:`, filter);
 		}
 		return (await this.adapter).findMovie(filter);
-	}
-
-	/**
-	 * Busca todas las películas que coincidan con el filtro
-	 * @param {Object} filter - Filtro de búsqueda (opcional)
-	 * @returns {Promise<Array>} Lista de películas
-	 */
-	async findAllMovies(filter) {
-		if (this.#debug) {
-			console.log(`[Repository] Finding all movies with filter:`, filter);
-		}
-		return (await this.adapter).findAllMovies(filter);
 	}
 
 	/**
@@ -297,13 +300,15 @@ class RepositoryManager {
 	/**
 	 * Busca todas las reseñas de una película
 	 * @param {string} movieId - ID de la película
+	 * @param {number} [page=1] - Número de página para la paginación
+	 * @param {number} [limit=10] - Cantidad de resultados por página
 	 * @returns {Promise<Array>} Lista de reseñas
 	 */
-	async findReviewsByMovie(movieId) {
+	async findReviewsByMovie(movieId, page = 1, limit = 10) {
 		if (this.#debug) {
-			console.log(`[Repository] Finding reviews for movie: ${movieId}`);
+			console.log(`[Repository] Finding reviews for movie: ${movieId}`, `Page: ${page}, Limit: ${limit}`);
 		}
-		return (await this.adapter).findReviewsByMovie(movieId);
+		return (await this.adapter).findReviewsByMovie(movieId, page, limit);
 	}
 
 	/**
@@ -354,6 +359,61 @@ class RepositoryManager {
 			console.log(`[Repository] Getting average rating for movie: ${movieId}`);
 		}
 		return (await this.adapter).getAverageRating(movieId);
+	}
+
+	// ========== AVAILABILITY METHODS ==========
+
+	/**
+	 * Registra disponibilidad de una película en un servicio
+	 * @param {string} userId - ID del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {string} providerId - ID del proveedor
+	 * @returns {Promise<Object>} Registro creado
+	 */
+	async saveAvailability(userId, movieId, providerId) {
+		if (this.#debug) {
+			console.log(`[Repository] Saving availability: user ${userId}, movie ${movieId}, provider ${providerId}`);
+		}
+		return (await this.adapter).saveAvailability(userId, movieId, providerId);
+	}
+
+	/**
+	 * Obtiene estadísticas de disponibilidad de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<Array>} Estadísticas de disponibilidad
+	 */
+	async getMovieAvailabilityStats(movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Getting availability stats for movie: ${movieId}`);
+		}
+		return (await this.adapter).getMovieAvailabilityStats(movieId);
+	}
+
+	/**
+	 * Verifica si existe un reporte de disponibilidad
+	 * @param {string} userId - ID del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {string} providerId - ID del proveedor
+	 * @returns {Promise<boolean>}
+	 */
+	async availabilityExists(userId, movieId, providerId) {
+		if (this.#debug) {
+			console.log(`[Repository] Checking availability: user ${userId}, movie ${movieId}, provider ${providerId}`);
+		}
+		return (await this.adapter).availabilityExists(userId, movieId, providerId);
+	}
+
+	/**
+	 * Obtiene disponibilidad personalizada según los servicios del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {Array} userProviders - Proveedores del usuario
+	 * @returns {Promise<Object>} Disponibilidad separada
+	 */
+	async getPersonalizedAvailability(movieId, userProviders) {
+		if (this.#debug) {
+			console.log(`[Repository] Getting personalized availability for movie: ${movieId}`);
+		}
+		return (await this.adapter).getPersonalizedAvailability(movieId, userProviders);
 	}
 
 	// ========== UTILITY METHODS ==========

@@ -63,6 +63,7 @@ class CacheService {
 		const promises = keys.map((key) => this.delete(key));
 		return await Promise.all(promises);
 	}
+
 	generateKey(prefix, ...parts) {
 		return `${prefix}:${parts.join(":")}`;
 	}
@@ -70,3 +71,4 @@ class CacheService {
 
 const cacheService = new CacheService();
 export default cacheService;
+

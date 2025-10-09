@@ -2,7 +2,7 @@
 	"openapi": "3.0.3",
 	"info": {
 		"title": "Películas y Series API",
-		"description": "API RESTful para la gestión de usuarios, proveedores de streaming, películas, watchlist y reseñas.\n\n**Funcionalidades:**\n- ✅ Registro y autenticación de usuarios (JWT)\n- ✅ Gestión de proveedores de streaming (CRUD - solo admin)\n- ✅ Gestión de lista de proveedores del usuario\n- ✅ Búsqueda de películas (con filtros)\n- ✅ Watchlist personal del usuario\n- ✅ Sistema de reseñas y puntuaciones\n\n**Universidad ORT Uruguay - Proyecto Backend**",
+		"description": "API RESTful para la gestión de proveedores de streaming, películas, watchlist y reseñas.\n\n**Funcionalidades:**\n- ✅ Registro y autenticación de usuarios (JWT)\n- ✅ Gestión de proveedores de streaming (CRUD - solo admin)\n- ✅ Gestión de lista de proveedores del usuario\n- ✅ Búsqueda de películas (con filtros)\n- ✅ Watchlist personal del usuario\n- ✅ Sistema de reseñas y puntuaciones\n\n**Universidad ORT Uruguay - Proyecto Backend**",
 		"version": "1.0.0",
 		"contact": {
 			"name": "Guillermina Costa",
@@ -90,7 +90,7 @@
 									"$ref": "#/components/schemas/LoginResponse"
 								},
 								"example": {
-									"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1OTc5MTYwNCwiZXhwIjoxNzU5Nzk1MjA0fQ.aqeyXHbXGtNGpy6BpQXXhWaxZoEmklCNS7D28E6IlQk",
+									"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
 									"message": "Inicio de sesión exitoso"
 								}
 							}
@@ -862,53 +862,83 @@
 		"/movies": {
 			"get": {
 				"tags": ["Movies"],
-				"summary": "Obtener películas",
-				"description": "Devuelve la lista de películas. Permite filtrar por título (búsqueda case-insensitive)",
-				"security": [
-					{
-						"BearerAuth": []
-					}
-				],
+				"summary": "Obtener todas las películas",
+				"description": "Devuelve todas las películas con soporte para paginación.",
+				"security": [],
 				"parameters": [
 					{
-						"name": "title",
+						"name": "page",
 						"in": "query",
 						"required": false,
-						"description": "Filtro por título de película (búsqueda parcial, case-insensitive)",
+						"description": "Número de página",
 						"schema": {
-							"type": "string"
+							"type": "integer",
+							"default": 1
 						},
-						"example": "Superman"
+						"example": 1
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"description": "Cantidad de resultados por página",
+						"schema": {
+							"type": "integer",
+							"default": 10
+						},
+						"example": 5
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Lista de películas",
+						"description": "Lista de películas paginada",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "#/components/schemas/Movie"
+									"type": "object",
+									"properties": {
+										"movies": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Movie"
+											}
+										},
+										"total": {
+											"type": "integer",
+											"example": 100
+										},
+										"page": {
+											"type": "integer",
+											"example": 1
+										},
+										"limit": {
+											"type": "integer",
+											"example": 5
+										}
 									}
 								},
-								"example": [
-									{
-										"_id": "68d30243f5be4f51a4c4a9d3",
-										"tmdbId": 1924,
-										"title": "Superman",
-										"overview": "Un bebé enviado desde el planeta Krypton es adoptado por una pareja en la Tierra...",
-										"releaseDate": "1978-12-15",
-										"posterPath": "/d7px1FQxW4tngdACVRsCSaZq0Xl.jpg",
-										"genres": ["Acción", "Ciencia ficción", "Aventura"],
-										"providers": [
-											{
-												"_id": "68d055c86aa347d04a2053da",
-												"nombre": "Netflix"
-											}
-										]
-									}
-								]
+								"example": {
+									"movies": [
+										{
+											"_id": "68e5f6c6a07bf5ba51e9f067",
+											"tmdbId": 1038392,
+											"title": "Expediente Warren: El último rito",
+											"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador...",
+											"releaseDate": "2025-09-03",
+											"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg",
+											"genres": ["Terror"],
+											"providers": [
+												{
+													"_id": "68d055c86aa347d04a2053da",
+													"nombre": "Netflix"
+												}
+											]
+										}
+									],
+									"total": 100,
+									"page": 1,
+									"limit": 5
+								}
 							}
 						}
 					},
@@ -934,6 +964,133 @@
 								},
 								"example": {
 									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/movies/search": {
+			"get": {
+				"tags": ["Movies"],
+				"summary": "Buscar películas con filtros combinados",
+				"description": "Permite buscar películas aplicando filtros como título, actor, género, idioma y año.",
+				"parameters": [
+					{
+						"name": "title",
+						"in": "query",
+						"required": false,
+						"description": "Buscar por título",
+						"schema": {
+							"type": "string",
+							"example": "Superman"
+						}
+					},
+					{
+						"name": "actor",
+						"in": "query",
+						"required": false,
+						"description": "Buscar por nombre de actor",
+						"schema": {
+							"type": "string",
+							"example": "David"
+						}
+					},
+					{
+						"name": "genre",
+						"in": "query",
+						"required": false,
+						"description": "Buscar por género",
+						"schema": {
+							"type": "string",
+							"example": "Ciencia ficción"
+						}
+					},
+					{
+						"name": "language",
+						"in": "query",
+						"required": false,
+						"description": "Buscar por idioma original",
+						"schema": {
+							"type": "string",
+							"example": "en"
+						}
+					},
+					{
+						"name": "year",
+						"in": "query",
+						"required": false,
+						"description": "Buscar por año de estreno",
+						"schema": {
+							"type": "integer",
+							"example": 2025
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"description": "Número de página (por defecto: 1)",
+						"schema": {
+							"type": "integer",
+							"example": 1
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"description": "Cantidad de resultados por página (por defecto: 10)",
+						"schema": {
+							"type": "integer",
+							"example": 5
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Lista de películas que coinciden con los filtros",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"movies": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Movie"
+											}
+										},
+										"total": {
+											"type": "integer",
+											"example": 1
+										},
+										"page": {
+											"type": "integer",
+											"example": 1
+										},
+										"limit": {
+											"type": "integer",
+											"example": 5
+										}
+									}
+								},
+								"example": {
+									"movies": [
+										{
+											"_id": "68e5f6c6a07bf5ba51e9f067",
+											"tmdbId": 1038392,
+											"title": "Superman",
+											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana...",
+											"releaseDate": "2025-07-09",
+											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+											"genres": ["Ciencia ficción", "Aventura", "Acción"]
+										}
+									],
+									"total": 1,
+									"page": 1,
+									"limit": 5
 								}
 							}
 						}
@@ -1624,7 +1781,7 @@
 				"type": "http",
 				"scheme": "bearer",
 				"bearerFormat": "JWT",
-				"description": "JWT token obtenido del endpoint `/auth/login`.\n\n**Ejemplo de header:**\n```\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\n\n**Nota:** Incluir el prefijo `Bearer` seguido de un espacio y el token."
+				"description": "Ingresa únicamente el token JWT obtenido del endpoint `/auth/login`.\n\n⚠️ **IMPORTANTE:** NO escribas la palabra 'Bearer', solo pega el token directamente.\n\n**Ejemplo correcto:**\n```\neyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc1OTc5MTYwNCwiZXhwIjoxNzU5Nzk1MjA0fQ.aqeyXHbXGtNGpy6BpQXXhWaxZoEmklCNS7D28E6IlQk\n```\n\n**❌ Incorrecto:**\n```\nBearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n```\n\nSwagger agregará automáticamente el prefijo 'Bearer' al enviar la petición."
 			}
 		},
 		"schemas": {
@@ -1944,3 +2101,4 @@
 		}
 	]
 }
+

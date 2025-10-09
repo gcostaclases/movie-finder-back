@@ -27,7 +27,7 @@ class CacheManager {
 			return null;
 		}
 
-		// ✅ Verificamos el tipo de dato recibido
+		// Verificamos el tipo de dato recibido
 		// Redis devuelve objetos ya deserializados, in-memory devuelve strings
 		if (typeof value === "string") {
 			try {
@@ -49,7 +49,7 @@ class CacheManager {
 			console.log(`[Writing in Cache] key: ${key} - value: ${JSON.stringify(value)}`);
 		}
 
-		// ✅ Redis serializa automáticamente, in-memory necesita strings
+		// Redis serializa automáticamente, in-memory necesita strings
 		if (this.#type === "redis") {
 			// Pasamos el valor directo, Redis maneja la serialización
 			return await this.client.setex(key, ttl, value);
@@ -77,3 +77,4 @@ class CacheManager {
 }
 
 export default CacheManager;
+

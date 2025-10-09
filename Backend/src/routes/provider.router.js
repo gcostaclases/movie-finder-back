@@ -27,14 +27,18 @@ import { providerCreateSchema, providerUpdateSchema } from "./validations/provid
 // Defino el conjunto de rutas dentro del router
 const v1ProviderRouter = express.Router();
 
-// Aplico el middleware de autenticación a todas las rutas definidas en este router
-v1ProviderRouter.use(authMiddleware);
+// ========== RUTAS PÚBLICAS ==========
 
 // Obtener todos los proveedores (todos los usuarios)
 v1ProviderRouter.get("/", getAllProvidersController);
 
 // Obtener proveedor por id (todos los usuarios)
 v1ProviderRouter.get("/:id", getProviderByIdController);
+
+// ========== RUTAS PROTEGIDAS (requieren autenticación) ==========
+
+// Aplico el middleware de autenticación a todas las rutas siguientes definidas en este router
+v1ProviderRouter.use(authMiddleware);
 
 // Crear proveedor (solo admin)
 v1ProviderRouter.post("/", adminMiddleware, payloadMiddleWare(providerCreateSchema), createProviderController);

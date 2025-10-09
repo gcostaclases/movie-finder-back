@@ -170,21 +170,23 @@ class RepositoryFactory {
 	// ========== MOVIE METHODS ==========
 
 	/**
+	 * Busca películas con filtros y paginación
+	 * @param {Object} filters - Filtros de búsqueda (opcional)
+	 * @param {number} [page=1] - Número de página para la paginación
+	 * @param {number} [limit=10] - Cantidad de resultados por página
+	 * @returns {Promise<Object>} Objeto con las películas, total, página y límite
+	 */
+	async findMovies(filters = {}, page = 1, limit = 10) {
+		return await this.getInstance().findMovies(filters, page, limit);
+	}
+
+	/**
 	 * Busca una película por filtro
-	 * @param {Object} filter - Filtro de búsqueda
+	 * @param {Object} filter - Filtro de búsqueda (ej: { tmdbId: 123 })
 	 * @returns {Promise<Object|null>} Película encontrada o null
 	 */
 	async findMovie(filter) {
 		return await this.getInstance().findMovie(filter);
-	}
-
-	/**
-	 * Busca todas las películas que coincidan con el filtro
-	 * @param {Object} filter - Filtro de búsqueda (opcional)
-	 * @returns {Promise<Array>} Lista de películas
-	 */
-	async findAllMovies(filter) {
-		return await this.getInstance().findAllMovies(filter);
 	}
 
 	/**
@@ -220,12 +222,14 @@ class RepositoryFactory {
 	}
 
 	/**
-	 * Busca todas las reseñas de una película
+	 * Busca todas las reseñas de una película con paginación
 	 * @param {string} movieId - ID de la película
+	 * @param {number} [page=1] - Número de página para la paginación
+	 * @param {number} [limit=10] - Cantidad de resultados por página
 	 * @returns {Promise<Array>} Lista de reseñas
 	 */
-	async findReviewsByMovie(movieId) {
-		return await this.getInstance().findReviewsByMovie(movieId);
+	async findReviewsByMovie(movieId, page = 1, limit = 10) {
+		return await this.getInstance().findReviewsByMovie(movieId, page, limit);
 	}
 
 	/**
@@ -265,8 +269,52 @@ class RepositoryFactory {
 	async getAverageRating(movieId) {
 		return await this.getInstance().getAverageRating(movieId);
 	}
+
+	// ========== AVAILABILITY METHODS ==========
+
+	/**
+	 * Registra disponibilidad de una película en un servicio
+	 * @param {string} userId - ID del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {string} providerId - ID del proveedor
+	 * @returns {Promise<Object>} Registro creado
+	 */
+	async saveAvailability(userId, movieId, providerId) {
+		return await this.getInstance().saveAvailability(userId, movieId, providerId);
+	}
+
+	/**
+	 * Obtiene estadísticas de disponibilidad de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<Array>} Estadísticas de disponibilidad
+	 */
+	async getMovieAvailabilityStats(movieId) {
+		return await this.getInstance().getMovieAvailabilityStats(movieId);
+	}
+
+	/**
+	 * Verifica si existe un reporte de availability
+	 * @param {string} userId - ID del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {string} providerId - ID del proveedor
+	 * @returns {Promise<boolean>}
+	 */
+	async availabilityExists(userId, movieId, providerId) {
+		return await this.getInstance().availabilityExists(userId, movieId, providerId);
+	}
+
+	/**
+	 * Obtiene disponibilidad personalizada según los servicios del usuario
+	 * @param {string} movieId - ID de la película
+	 * @param {Array} userProviders - Proveedores del usuario
+	 * @returns {Promise<Object>} Disponibilidad separada
+	 */
+	async getPersonalizedAvailability(movieId, userProviders) {
+		return await this.getInstance().getPersonalizedAvailability(movieId, userProviders);
+	}
 }
 
 // Exportar instancia singleton
 const repoFactory = new RepositoryFactory();
 export default repoFactory;
+

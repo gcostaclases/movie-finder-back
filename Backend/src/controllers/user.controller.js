@@ -2,6 +2,9 @@
 // Importo las funciones del repositorio
 import repoFactory from "../repositories/repositories.service.js";
 
+// Importo el servicio de cache
+//import cacheService from "../services/cache/index.js";
+
 // Importo constantes
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
@@ -124,15 +127,34 @@ export const removeProviderFromUserController = async (req, res) => {
  */
 export const getMyWatchlistController = async (req, res) => {
 	const { userId } = req.user;
+	const { page = 1, limit = 10 } = req.query;
+
+	// Cache key
+	const cacheKey = `watchlist:user:${userId}:page:${page}:limit:${limit}`;
+
 	try {
+		// Consulto el usuario en la base de datos
 		const user = await repoFactory.findUser({ _id: userId });
 		if (!user) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
 			});
 		}
+
+		// Populo la watchlist del usuario
 		const userWithWatchlist = await repoFactory.populateUserWatchlist(user);
-		return res.status(200).json(userWithWatchlist.watchlist);
+
+		// Pagino la watchlist
+		const total = userWithWatchlist.watchlist.length;
+		const paginatedWatchlist = userWithWatchlist.watchlist.slice((page - 1) * limit, page * limit);
+
+		// Respondo con la estructura completa
+		res.status(200).json({
+			movies: paginatedWatchlist,
+			total,
+			page: parseInt(page, 10),
+			limit: parseInt(limit, 10),
+		});
 	} catch (error) {
 		console.error("Error al obtener watchlist:", error);
 		return res.status(500).json({
@@ -155,20 +177,31 @@ export const getMyWatchlistController = async (req, res) => {
 export const addMovieToWatchlistController = async (req, res) => {
 	const { movieId } = req.body;
 	const { userId } = req.user;
+
 	try {
-		const result = await repoFactory.addMovieToWatchlist(userId, movieId);
-		if (result === null) {
+		// Verifico si la película existe
+		const movie = await repoFactory.findMovie({ _id: movieId });
+		if (!movie) {
+			return res.status(404).json({
+				message: "Película no encontrada",
+			});
+		}
+
+		// Agrego la película a la watchlist del usuario
+		const added = await repoFactory.addMovieToWatchlist(userId, movieId);
+		if (added === null) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
 			});
 		}
-		if (result === false) {
+		if (!added) {
 			return res.status(400).json({
 				message: "La película ya está en tu watchlist",
 			});
 		}
+
 		return res.status(201).json({
-			message: "Película agregada a tu watchlist",
+			message: "Película agregada a la watchlist",
 		});
 	} catch (error) {
 		console.error("Error al agregar película a la watchlist:", error);
@@ -191,20 +224,23 @@ export const addMovieToWatchlistController = async (req, res) => {
 export const removeMovieFromWatchlistController = async (req, res) => {
 	const { movieId } = req.params;
 	const { userId } = req.user;
+
 	try {
-		const result = await repoFactory.removeMovieFromWatchlist(userId, movieId);
-		if (result === null) {
+		// Elimino la película de la watchlist del usuario
+		const removed = await repoFactory.removeMovieFromWatchlist(userId, movieId);
+		if (removed === null) {
 			return res.status(404).json({
 				message: "Usuario no encontrado",
 			});
 		}
-		if (result === false) {
-			return res.status(404).json({
-				message: "La película no estaba en tu watchlist",
+		if (!removed) {
+			return res.status(400).json({
+				message: "La película no está en tu watchlist",
 			});
 		}
+
 		return res.status(200).json({
-			message: "Película eliminada de tu watchlist",
+			message: "Película eliminada de la watchlist",
 		});
 	} catch (error) {
 		console.error("Error al quitar película de la watchlist:", error);
