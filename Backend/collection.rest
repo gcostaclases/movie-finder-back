@@ -1,7 +1,7 @@
 # Variables globales
 @host = http://localhost:3000/api/v1
 # @host = https://pelis-y-series-app.vercel.app/api/v1
-@tokenClient = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc2MDA0NDk0NywiZXhwIjoxNzYwMDQ4NTQ3fQ.NedjELvuvxHN5RN0JSReSfSeQGQtJ6T6ZZGYLquopg4
+@tokenClient = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc2MDA1MDI5MywiZXhwIjoxNzYwMDUzODkzfQ.heahg7qNrR6sbWGkkdHQe9AhTh3LOvg0S4UKJl-PobE
 @tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMThjODk4NjU1ZDBhMzczMzI1N2IiLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzYwMDQ0OTU4LCJleHAiOjE3NjAwNDg1NTh9.hKi1KH5IZnrrU4AOsZohHstFZyf-ZxeD2f-ApKZBCus
 
 # IDs de prueba

@@ -40,7 +40,7 @@ export const findReview = async (filter) => {
  */
 export const findReviewsByMovie = async (movieId, page = 1, limit = 10) => {
 	return await Review.find({ movieId })
-		.populate("userId", "username")
+		.populate("userId", "username -_id")
 		.select("-__v")
 		.sort({ createdAt: -1 })
 		.skip((page - 1) * limit) // Salto resultados para paginación

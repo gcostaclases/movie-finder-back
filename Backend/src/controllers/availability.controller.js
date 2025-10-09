@@ -163,4 +163,3 @@ export const getPersonalizedAvailabilityController = async (req, res) => {
 		return res.status(500).json({ message: INTERNAL_SERVER_ERROR });
 	}
 };
-

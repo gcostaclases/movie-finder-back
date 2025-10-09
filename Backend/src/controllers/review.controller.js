@@ -84,11 +84,10 @@ export const createReviewController = async (req, res) => {
 		// Creo la review
 		const newReview = await repoFactory.saveReview(userId, movieId, rating, comment);
 
-		// Invalidar caches relacionados
+		// Invalido caches relacionados
 		await cacheService.delete(`movie:${movieId}:rating`); // Puntaje de la película
 		await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
-		//await cacheService.delete(`movie:${movieId}:reviews`); // !Si cacheas las reviews de la película
 
 		// Si se incluye providerId, también reporto disponibilidad
 		if (providerId) {
@@ -246,7 +245,7 @@ export const updateReviewController = async (req, res) => {
 
 		const updatedReview = await repoFactory.updateReview(reviewId, rating, comment);
 
-		// Invalidar caches relacionados
+		// Invalido caches relacionados
 		await cacheService.delete(`movie:${review.movieId}:rating`); // Puntaje de la película
 		await cacheService.delete(`reviews:movie:${review.movieId}`); // Reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
@@ -315,4 +314,3 @@ export const deleteReviewController = async (req, res) => {
 		});
 	}
 };
-

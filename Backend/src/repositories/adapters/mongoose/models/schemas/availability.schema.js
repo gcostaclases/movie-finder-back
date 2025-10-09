@@ -71,4 +71,3 @@ export default availabilitySchema;
  *    - Con índice: MongoDB va directo a los documentos relevantes (rápido)
  */
 //#endregion ----------- NOTAS PARA MI -----------
-
