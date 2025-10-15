@@ -112,20 +112,17 @@
 							}
 						}
 					},
-					"403": {
-						"description": "Credenciales inválidas, usuario no encontrado o datos inválidos",
+					"400": {
+						"description": "Credenciales inválidas o datos enviados inválidos",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"oneOf": [
+										{ "$ref": "#/components/schemas/ErrorResponse" },
+										{ "$ref": "#/components/schemas/ErrorResponseWithDetails" }
+									]
 								},
 								"examples": {
-									"userNotFound": {
-										"summary": "Usuario no encontrado",
-										"value": {
-											"message": "Usuario no encontrado"
-										}
-									},
 									"invalidPassword": {
 										"summary": "Contraseña incorrecta",
 										"value": {
@@ -135,9 +132,26 @@
 									"invalidData": {
 										"summary": "Datos inválidos",
 										"value": {
-											"message": "Datos enviados inválidos"
+											"message": "Datos enviados inválidos",
+											"details": [
+												"El campo 'password' es obligatorio.",
+												"El campo 'identifier' debe ser un email válido o un nombre de usuario."
+											]
 										}
 									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
 								}
 							}
 						}
@@ -193,12 +207,15 @@
 							}
 						}
 					},
-					"403": {
+					"400": {
 						"description": "El email o username ya está registrado, o datos inválidos",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"oneOf": [
+										{ "$ref": "#/components/schemas/ErrorResponse" },
+										{ "$ref": "#/components/schemas/ErrorResponseWithDetails" }
+									]
 								},
 								"examples": {
 									"emailExists": {
@@ -216,7 +233,8 @@
 									"invalidData": {
 										"summary": "Datos inválidos",
 										"value": {
-											"message": "Datos enviados inválidos"
+											"message": "Datos enviados inválidos",
+											"details": ["El campo 'username' es obligatorio.", "El campo 'email' debe ser un email válido."]
 										}
 									}
 								}
@@ -264,10 +282,6 @@
 									{
 										"_id": "68d055d16aa347d04a2053de",
 										"nombre": "Prime Video"
-									},
-									{
-										"_id": "68d055db6aa347d04a2053e2",
-										"nombre": "Disney+"
 									}
 								]
 							}
@@ -300,7 +314,7 @@
 								"$ref": "#/components/schemas/CreateProviderRequest"
 							},
 							"example": {
-								"nombre": "HBO Max"
+								"nombre": "Apple TV+"
 							}
 						}
 					}
@@ -314,23 +328,39 @@
 									"$ref": "#/components/schemas/Provider"
 								},
 								"example": {
-									"_id": "68d19eeaa4688d7933d4e289",
-									"nombre": "HBO Max",
+									"_id": "68ef2b1012cd56dc05d6be3d",
+									"nombre": "Apple TV+",
 									"createdAt": "2025-09-22T19:09:30.349Z",
-									"updatedAt": "2025-09-22T19:09:30.349Z"
+									"updatedAt": "2025-09-22T19:09:30.349Z",
+									"__v": 0
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "El proveedor ya existe",
+						"description": "Datos enviados inválidos o el proveedor ya existe",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/ErrorResponseWithDetails"
 								},
-								"example": {
-									"message": "El proveedor ya existe"
+								"examples": {
+									"invalidPayload": {
+										"summary": "Payload inválido",
+										"value": {
+											"message": "Datos enviados inválidos",
+											"details": [
+												"El campo 'nombre' es obligatorio.",
+												"El campo 'nombre' debe tener entre 2 y 20 caracteres."
+											]
+										}
+									},
+									"providerExists": {
+										"summary": "El proveedor ya existe",
+										"value": {
+											"message": "El proveedor ya existe"
+										}
+									}
 								}
 							}
 						}
@@ -360,14 +390,14 @@
 						}
 					},
 					"403": {
-						"description": "Datos inválidos",
+						"description": "No autorizado - Solo administradores pueden realizar esta acción",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
 								"example": {
-									"message": "Datos enviados inválidos"
+									"message": "No tienes permisos para realizar esta acción"
 								}
 							}
 						}
@@ -389,6 +419,66 @@
 			}
 		},
 		"/providers/{id}": {
+			"get": {
+				"tags": ["Providers"],
+				"summary": "Obtener detalle de un proveedor (público)",
+				"description": "Devuelve la información completa de un proveedor específico. No requiere autenticación.",
+				"security": [],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "68d055c86aa347d04a2053da"
+						},
+						"description": "ID del proveedor"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Proveedor obtenido exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Provider"
+								},
+								"example": {
+									"_id": "68d055c86aa347d04a2053da",
+									"nombre": "Netflix"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Proveedor no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Proveedor no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
 			"patch": {
 				"tags": ["Providers"],
 				"summary": "Actualizar proveedor (solo admin)",
@@ -399,7 +489,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68d19f2ba4688d7933d4e28d"
 						},
 						"description": "ID del proveedor a actualizar"
 					}
@@ -412,7 +503,7 @@
 								"$ref": "#/components/schemas/UpdateProviderRequest"
 							},
 							"example": {
-								"nombre": "Paramount+"
+								"nombre": "Paramount +"
 							}
 						}
 					}
@@ -427,9 +518,29 @@
 								},
 								"example": {
 									"_id": "68d19f2ba4688d7933d4e28d",
-									"nombre": "Paramount+",
+									"nombre": "Paramount +",
 									"createdAt": "2025-09-22T19:10:35.341Z",
-									"updatedAt": "2025-09-22T19:13:06.914Z"
+									"updatedAt": "2025-09-22T19:13:06.914Z",
+									"__v": 0
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Datos enviados inválidos",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseWithDetails"
+								},
+								"examples": {
+									"invalidPayload": {
+										"summary": "Payload inválido",
+										"value": {
+											"message": "Datos enviados inválidos",
+											"details": ["El campo 'nombre' debe tener entre 2 y 20 caracteres."]
+										}
+									}
 								}
 							}
 						}
@@ -459,14 +570,14 @@
 						}
 					},
 					"403": {
-						"description": "Datos inválidos",
+						"description": "No autorizado - Solo administradores pueden realizar esta acción",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
 								"example": {
-									"message": "Datos enviados inválidos"
+									"message": "No tienes permisos para realizar esta acción"
 								}
 							}
 						}
@@ -509,7 +620,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68ef2e93955f84a790c99021"
 						},
 						"description": "ID del proveedor a eliminar"
 					}
@@ -552,6 +664,19 @@
 							}
 						}
 					},
+					"403": {
+						"description": "No autorizado - Solo administradores pueden realizar esta acción",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "No tienes permisos para realizar esta acción"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Proveedor no encontrado",
 						"content": {
@@ -583,7 +708,7 @@
 		},
 		"/me/providers": {
 			"get": {
-				"tags": ["User"],
+				"tags": ["User - Providers"],
 				"summary": "Obtener proveedores del usuario",
 				"description": "Obtiene la lista de proveedores de streaming que el usuario ha marcado como contratados.",
 				"responses": {
@@ -606,11 +731,17 @@
 									"providers": [
 										{
 											"_id": "68d055c86aa347d04a2053da",
-											"nombre": "Netflix"
+											"nombre": "Netflix",
+											"createdAt": "2025-09-21T19:45:12.864Z",
+											"updatedAt": "2025-09-21T19:45:12.864Z",
+											"__v": 0
 										},
 										{
 											"_id": "68d055db6aa347d04a2053e2",
-											"nombre": "Disney+"
+											"nombre": "Disney+",
+											"createdAt": "2025-09-21T19:45:12.864Z",
+											"updatedAt": "2025-09-21T19:45:12.864Z",
+											"__v": 0
 										}
 									]
 								}
@@ -641,6 +772,19 @@
 							}
 						}
 					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Error interno del servidor",
 						"content": {
@@ -657,7 +801,7 @@
 				}
 			},
 			"post": {
-				"tags": ["User"],
+				"tags": ["User - Providers"],
 				"summary": "Agregar proveedor a la lista del usuario",
 				"description": "Agrega un proveedor de streaming a la lista de proveedores contratados del usuario.",
 				"requestBody": {
@@ -670,18 +814,19 @@
 								"properties": {
 									"providerId": {
 										"type": "string",
-										"description": "ID del proveedor a agregar"
+										"description": "ID del proveedor a agregar",
+										"example": "68d055db6aa347d04a2053e2"
 									}
 								}
 							},
 							"example": {
-								"providerId": "68d055c86aa347d04a2053da"
+								"providerId": "68d055db6aa347d04a2053e2"
 							}
 						}
 					}
 				},
 				"responses": {
-					"200": {
+					"201": {
 						"description": "Proveedor agregado exitosamente",
 						"content": {
 							"application/json": {
@@ -689,7 +834,7 @@
 									"$ref": "#/components/schemas/SuccessResponse"
 								},
 								"example": {
-									"message": "Proveedor agregado exitosamente"
+									"message": "Proveedor agregado a tu lista"
 								}
 							}
 						}
@@ -731,28 +876,15 @@
 							}
 						}
 					},
-					"403": {
-						"description": "Datos inválidos",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Datos enviados inválidos"
-								}
-							}
-						}
-					},
 					"404": {
-						"description": "Proveedor no encontrado",
+						"description": "Usuario no encontrado",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
 								"example": {
-									"message": "Proveedor no encontrado"
+									"message": "Usuario no encontrado"
 								}
 							}
 						}
@@ -775,7 +907,7 @@
 		},
 		"/me/providers/{providerId}": {
 			"delete": {
-				"tags": ["User"],
+				"tags": ["User - Providers"],
 				"summary": "Quitar proveedor de la lista del usuario",
 				"description": "Elimina un proveedor de la lista de proveedores contratados del usuario.",
 				"parameters": [
@@ -784,7 +916,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68d055db6aa347d04a2053e2"
 						},
 						"description": "ID del proveedor a quitar"
 					}
@@ -828,14 +961,25 @@
 						}
 					},
 					"404": {
-						"description": "Proveedor no encontrado en la lista del usuario",
+						"description": "Usuario no encontrado o proveedor no estaba en la lista",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
-								"example": {
-									"message": "Proveedor no encontrado en tu lista"
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"providerNotInList": {
+										"summary": "Proveedor no estaba en la lista",
+										"value": {
+											"message": "Proveedor no estaba en tu lista"
+										}
+									}
 								}
 							}
 						}
@@ -858,7 +1002,7 @@
 		},
 		"/me/watchlist": {
 			"get": {
-				"tags": ["User"],
+				"tags": ["User - Watchlist"],
 				"summary": "Obtener watchlist del usuario",
 				"description": "Obtiene las películas guardadas en la watchlist del usuario con paginación.",
 				"parameters": [
@@ -880,7 +1024,8 @@
 							"default": 10,
 							"minimum": 1
 						},
-						"description": "Cantidad de resultados por página (por defecto: 10)"
+						"description": "Cantidad de resultados por página (por defecto: 10)",
+						"example": 5
 					}
 				],
 				"responses": {
@@ -899,124 +1044,510 @@
 										},
 										"total": {
 											"type": "integer",
-											"description": "Total de películas en la watchlist"
+											"description": "Total de películas en la watchlist",
+											"example": 2
 										},
 										"page": {
 											"type": "integer",
-											"description": "Página actual"
+											"description": "Página actual",
+											"example": 1
 										},
 										"limit": {
 											"type": "integer",
-											"description": "Cantidad de resultados por página"
+											"description": "Cantidad de resultados por página",
+											"example": 5
 										}
 									}
 								},
 								"example": {
 									"movies": [
 										{
-											"genres": [],
-											"_id": "68d30243f5be4f51a4c4a9e2",
-											"tmdbId": 911430,
-											"title": "F1 la película",
-											"overview": "El mítico piloto Sonny Hayes vuelve de su retiro, persuadido para liderar un equipo de Fórmula 1 en apuros y guiar a su joven promesa, en busca de una nueva oportunidad de éxito.",
-											"posterPath": "/6u4APbFBTcu3ieWBzFdyaGMLC9O.jpg",
-											"releaseDate": "2025-06-25T00:00:00.000Z",
-											"providers": [],
-											"createdAt": "2025-09-23T20:25:39.918Z",
-											"updatedAt": "2025-09-23T20:25:39.918Z",
-											"__v": 0,
-											"actors": [],
-											"directors": []
-										},
-										{
-											"genres": [],
-											"_id": "68d30243f5be4f51a4c4a9d3",
+											"_id": "68e706a57c16280b8b499ebf",
 											"tmdbId": 1061474,
 											"title": "Superman",
-											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter.",
+											"originalTitle": "Superman",
+											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter. Criado en la Tierra, representa la verdad, la justicia y el estilo americano, pero debe enfrentarse a un mundo cínico que cuestiona sus ideales. Entre el deber de proteger a la humanidad y la búsqueda de su identidad, Superman demuestra que la esperanza y la bondad nunca pasan de moda, incluso en los tiempos más oscuros, inspirando a otros a creer en un futuro mejor.",
 											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
 											"releaseDate": "2025-07-09T00:00:00.000Z",
-											"providers": [],
-											"createdAt": "2025-09-23T20:25:39.911Z",
-											"updatedAt": "2025-09-23T20:25:39.911Z",
-											"__v": 0,
-											"actors": [],
-											"directors": []
+											"originalLanguage": "en",
+											"duration": 129,
+											"genres": ["Ciencia ficción", "Aventura", "Acción"],
+											"actors": [
+												{
+													"name": "David Corenswet",
+													"role": "Superman",
+													"_id": "68e706a57c16280b8b499ec0"
+												},
+												{
+													"name": "Rachel Brosnahan",
+													"role": "Lois Lane",
+													"_id": "68e706a57c16280b8b499ec1"
+												},
+												{
+													"name": "Nicholas Hoult",
+													"role": "Lex Luthor",
+													"_id": "68e706a57c16280b8b499ec2"
+												},
+												{
+													"name": "Edi Gathegi",
+													"role": "Mr. Terrific",
+													"_id": "68e706a57c16280b8b499ec3"
+												},
+												{
+													"name": "Nathan Fillion",
+													"role": "Guy Gardner",
+													"_id": "68e706a57c16280b8b499ec4"
+												},
+												{
+													"name": "Isabela Merced",
+													"role": "Hawkgirl",
+													"_id": "68e706a57c16280b8b499ec5"
+												},
+												{
+													"name": "María Gabriela de Faría",
+													"role": "The Engineer",
+													"_id": "68e706a57c16280b8b499ec6"
+												},
+												{
+													"name": "Skyler Gisondo",
+													"role": "Jimmy Olsen",
+													"_id": "68e706a57c16280b8b499ec7"
+												},
+												{
+													"name": "Alan Tudyk",
+													"role": "Gary",
+													"_id": "68e706a57c16280b8b499ec8"
+												},
+												{
+													"name": "Grace Chan",
+													"role": "Superman Robot #12 (voice)",
+													"_id": "68e706a57c16280b8b499ec9"
+												},
+												{
+													"name": "Bradley Cooper",
+													"role": "Jor-El",
+													"_id": "68e706a57c16280b8b499eca"
+												},
+												{
+													"name": "Angela Sarafyan",
+													"role": "Lara",
+													"_id": "68e706a57c16280b8b499ecb"
+												},
+												{
+													"name": "Michael Rooker",
+													"role": "Superman Robot #1 (voice)",
+													"_id": "68e706a57c16280b8b499ecc"
+												},
+												{
+													"name": "Pom Klementieff",
+													"role": "Superman Robot #5 (voice)",
+													"_id": "68e706a57c16280b8b499ecd"
+												},
+												{
+													"name": "Sara Sampaio",
+													"role": "Eve Teschmacher",
+													"_id": "68e706a57c16280b8b499ece"
+												},
+												{
+													"name": "Tatiana Piper",
+													"role": "Boravian Tech",
+													"_id": "68e706a57c16280b8b499ecf"
+												},
+												{
+													"name": "Stephen Blackehart",
+													"role": "Sydney Happersen",
+													"_id": "68e706a57c16280b8b499ed0"
+												},
+												{
+													"name": "Giovannie Cruz",
+													"role": "Cheryl Kimble",
+													"_id": "68e706a57c16280b8b499ed1"
+												},
+												{
+													"name": "Bonnie Discepolo",
+													"role": "Ms. Jessop",
+													"_id": "68e706a57c16280b8b499ed2"
+												},
+												{
+													"name": "Terence Rosemore",
+													"role": "Otis Berg",
+													"_id": "68e706a57c16280b8b499ed3"
+												},
+												{
+													"name": "Natasha Halevi",
+													"role": "Amanda Marie McCoy",
+													"_id": "68e706a57c16280b8b499ed4"
+												},
+												{
+													"name": "Adriana Leonard",
+													"role": "Comms Tech",
+													"_id": "68e706a57c16280b8b499ed5"
+												},
+												{
+													"name": "Paul Kim",
+													"role": "Larry Chin",
+													"_id": "68e706a57c16280b8b499ed6"
+												},
+												{
+													"name": "Jonah Lees",
+													"role": "Dean Farr",
+													"_id": "68e706a57c16280b8b499ed7"
+												},
+												{
+													"name": "Christian Lees",
+													"role": "Desmond Farr",
+													"_id": "68e706a57c16280b8b499ed8"
+												},
+												{
+													"name": "Dinesh Thyagarajan",
+													"role": "Malik 'Mali' Ali",
+													"_id": "68e706a57c16280b8b499ed9"
+												},
+												{
+													"name": "Rudy Quintanilla",
+													"role": "Reggie",
+													"_id": "68e706a57c16280b8b499eda"
+												},
+												{
+													"name": "Ryan J. Pezdirc",
+													"role": "Onlooker",
+													"_id": "68e706a57c16280b8b499edb"
+												},
+												{
+													"name": "Michael Ian Black",
+													"role": "Cleavis Thornwaite",
+													"_id": "68e706a57c16280b8b499edc"
+												},
+												{
+													"name": "Wendell Pierce",
+													"role": "Perry White",
+													"_id": "68e706a57c16280b8b499edd"
+												},
+												{
+													"name": "Beck Bennett",
+													"role": "Steve Lombard",
+													"_id": "68e706a57c16280b8b499ede"
+												},
+												{
+													"name": "Neva Howell",
+													"role": "Ma Kent",
+													"_id": "68e706a57c16280b8b499edf"
+												},
+												{
+													"name": "Pruitt Taylor Vince",
+													"role": "Pa Kent",
+													"_id": "68e706a57c16280b8b499ee0"
+												},
+												{
+													"name": "Mikaela Hoover",
+													"role": "Cat Grant",
+													"_id": "68e706a57c16280b8b499ee1"
+												},
+												{
+													"name": "Christopher McDonald",
+													"role": "Ron Troupe",
+													"_id": "68e706a57c16280b8b499ee2"
+												},
+												{
+													"name": "Zlatko Burić",
+													"role": "Vasil Ghurkos",
+													"_id": "68e706a57c16280b8b499ee3"
+												},
+												{
+													"name": "Martin Harris",
+													"role": "Boravian General",
+													"_id": "68e706a57c16280b8b499ee4"
+												},
+												{
+													"name": "Frank Grillo",
+													"role": "Rick Flag Sr.",
+													"_id": "68e706a57c16280b8b499ee5"
+												},
+												{
+													"name": "James Hiroyuki Liao",
+													"role": "General Mori",
+													"_id": "68e706a57c16280b8b499ee6"
+												},
+												{
+													"name": "Tinashe Kajese",
+													"role": "Flo Crawley",
+													"_id": "68e706a57c16280b8b499ee7"
+												},
+												{
+													"name": "Luis R. Hernandez",
+													"role": "Albert Tyler",
+													"_id": "68e706a57c16280b8b499ee8"
+												},
+												{
+													"name": "Mary Chatmon",
+													"role": "Loretto Bell",
+													"_id": "68e706a57c16280b8b499ee9"
+												},
+												{
+													"name": "Savannah Lumar",
+													"role": "Young Girl",
+													"_id": "68e706a57c16280b8b499eea"
+												},
+												{
+													"name": "Xingu Del Rosario",
+													"role": "Yogurt Eater",
+													"_id": "68e706a57c16280b8b499eeb"
+												},
+												{
+													"name": "Lawrence Gilligan",
+													"role": "Sphere News Reporter",
+													"_id": "68e706a57c16280b8b499eec"
+												},
+												{
+													"name": "Suzanne Hobbs",
+													"role": "GBS Reporter",
+													"_id": "68e706a57c16280b8b499eed"
+												},
+												{
+													"name": "Kimmy Suzuki",
+													"role": "Saved Woman",
+													"_id": "68e706a57c16280b8b499eee"
+												},
+												{
+													"name": "Will Reeve",
+													"role": "On the Ground Reporter",
+													"_id": "68e706a57c16280b8b499eef"
+												},
+												{
+													"name": "Jake Tapper",
+													"role": "Jack Tapir",
+													"_id": "68e706a57c16280b8b499ef0"
+												},
+												{
+													"name": "Ira Amyx",
+													"role": "Construction Worker",
+													"_id": "68e706a57c16280b8b499ef1"
+												},
+												{
+													"name": "Abel F. Alvarado",
+													"role": "International Reporter",
+													"_id": "68e706a57c16280b8b499ef2"
+												},
+												{
+													"name": "Karla Suyeon Kim",
+													"role": "International Reporter",
+													"_id": "68e706a57c16280b8b499ef3"
+												},
+												{
+													"name": "Jay Westbrook",
+													"role": "TV Interviewee",
+													"_id": "68e706a57c16280b8b499ef4"
+												},
+												{
+													"name": "Nea Dune",
+													"role": "Makeup Artist",
+													"_id": "68e706a57c16280b8b499ef5"
+												},
+												{
+													"name": "Darla Delgado",
+													"role": "Heather",
+													"_id": "68e706a57c16280b8b499ef6"
+												},
+												{
+													"name": "Ashleigh Morghan",
+													"role": "Luthorcorp Scientist",
+													"_id": "68e706a57c16280b8b499ef7"
+												},
+												{
+													"name": "Anthony Carrigan",
+													"role": "Metamorpho",
+													"_id": "68e706a57c16280b8b499ef8"
+												},
+												{
+													"name": "Trevor Newlin",
+													"role": "Mr. Handsome",
+													"_id": "68e706a57c16280b8b499ef9"
+												},
+												{
+													"name": "Lon Gowan",
+													"role": "Scientist #1",
+													"_id": "68e706a57c16280b8b499efa"
+												},
+												{
+													"name": "Taylor Valentine Lupini",
+													"role": "Scientist #2",
+													"_id": "68e706a57c16280b8b499efb"
+												},
+												{
+													"name": "Paige Mobley",
+													"role": "Fleurette",
+													"_id": "68e706a57c16280b8b499efc"
+												},
+												{
+													"name": "Zach Lane",
+													"role": "Tech Bro",
+													"_id": "68e706a57c16280b8b499efd"
+												},
+												{
+													"name": "Theo Kypri",
+													"role": "Thug",
+													"_id": "68e706a57c16280b8b499efe"
+												},
+												{
+													"name": "Michael Rosenbaum",
+													"role": "Raptor Guard #1",
+													"_id": "68e706a57c16280b8b499eff"
+												},
+												{
+													"name": "Alexis Prewitt",
+													"role": "Raptor Guard #2",
+													"_id": "68e706a57c16280b8b499f00"
+												},
+												{
+													"name": "Bobby Hernandez",
+													"role": "Raptor Guard #3",
+													"_id": "68e706a57c16280b8b499f01"
+												},
+												{
+													"name": "George Howard Adams",
+													"role": "Raptor Guard #4",
+													"_id": "68e706a57c16280b8b499f02"
+												},
+												{
+													"name": "David E. Collier",
+													"role": "Raptor Sergeant #1",
+													"_id": "68e706a57c16280b8b499f03"
+												},
+												{
+													"name": "Jimmy Chhiu",
+													"role": "Raptor Sergeant #2",
+													"_id": "68e706a57c16280b8b499f04"
+												},
+												{
+													"name": "Louisa Krause",
+													"role": "Sapphire Stagg",
+													"_id": "68e706a57c16280b8b499f05"
+												},
+												{
+													"name": "AJ Bernard",
+													"role": "Young Jarhanpurian Boy",
+													"_id": "68e706a57c16280b8b499f06"
+												},
+												{
+													"name": "Alayna Bernard",
+													"role": "Jarhanpurian Kid #1",
+													"_id": "68e706a57c16280b8b499f07"
+												},
+												{
+													"name": "Jai Soundar",
+													"role": "Jarhanpurian Kid #2",
+													"_id": "68e706a57c16280b8b499f08"
+												},
+												{
+													"name": "Annika Mazumdar",
+													"role": "Jarhanpurian Kid #3",
+													"_id": "68e706a57c16280b8b499f09"
+												},
+												{
+													"name": "Fahim Fazli",
+													"role": "Jarhanpurian Villager #1",
+													"_id": "68e706a57c16280b8b499f0a"
+												},
+												{
+													"name": "Chaim Jeraffi",
+													"role": "Jarhanpurian Villager #2",
+													"_id": "68e706a57c16280b8b499f0b"
+												},
+												{
+													"name": "Melissa O. Bowen",
+													"role": "Woman in Car",
+													"_id": "68e706a57c16280b8b499f0c"
+												},
+												{
+													"name": "Torsten Kellar",
+													"role": "Boravian Commander",
+													"_id": "68e706a57c16280b8b499f0d"
+												},
+												{
+													"name": "Johanna Braddy",
+													"role": "Metropolis Citizen #1",
+													"_id": "68e706a57c16280b8b499f0e"
+												},
+												{
+													"name": "Austin Freeman",
+													"role": "Metropolis Citizen #2",
+													"_id": "68e706a57c16280b8b499f0f"
+												},
+												{
+													"name": "Kim Brunhuber",
+													"role": "GBS Reporter #2",
+													"_id": "68e706a57c16280b8b499f10"
+												},
+												{
+													"name": "Sean Gunn",
+													"role": "Maxwell Lord",
+													"_id": "68e706a57c16280b8b499f11"
+												},
+												{
+													"name": "Sharon Carpenter",
+													"role": "Metro News Reporter",
+													"_id": "68e706a57c16280b8b499f12"
+												},
+												{
+													"name": "Greg Clarkson",
+													"role": "Mocking Reporter",
+													"_id": "68e706a57c16280b8b499f13"
+												},
+												{
+													"name": "Milli M.",
+													"role": "TV Show Host",
+													"_id": "68e706a57c16280b8b499f14"
+												},
+												{
+													"name": "Pierce Lackey",
+													"role": "Armed Sergeant",
+													"_id": "68e706a57c16280b8b499f15"
+												},
+												{
+													"name": "Oliver Diego Silva",
+													"role": "Young Clark (2 Years Old)",
+													"_id": "68e706a57c16280b8b499f16"
+												},
+												{
+													"name": "Lloyd Kaufman",
+													"role": "Metropolis Citizen #3 (uncredited)",
+													"_id": "68e706a57c16280b8b499f17"
+												},
+												{
+													"name": "John Cena",
+													"role": "Peacemaker (uncredited)",
+													"_id": "68e706a57c16280b8b499f18"
+												},
+												{
+													"name": "Milly Alcock",
+													"role": "Supergirl (uncredited)",
+													"_id": "68e706a57c16280b8b499f19"
+												},
+												{
+													"name": "Jennifer Holland",
+													"role": "Superman Robot #22 (voice) (uncredited)",
+													"_id": "68e706a57c16280b8b499f1a"
+												},
+												{
+													"name": "James Gunn",
+													"role": "Typewriting Monkeys (uncredited)",
+													"_id": "68e706a57c16280b8b499f1b"
+												}
+											],
+											"directors": [
+												{
+													"name": "James Gunn",
+													"_id": "68e706a57c16280b8b499f1c"
+												}
+											],
+											"createdAt": "2025-10-09T00:49:41.334Z",
+											"updatedAt": "2025-10-09T00:49:41.334Z",
+											"__v": 0
 										}
 									],
-									"total": 2,
+									"total": 1,
 									"page": 1,
-									"limit": 10
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "No autenticado - Token faltante o inválido",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"examples": {
-									"noToken": {
-										"summary": "Token no proporcionado",
-										"value": {
-											"message": "No autorizado"
-										}
-									},
-									"invalidToken": {
-										"summary": "Token inválido",
-										"value": {
-											"message": "No autorizado"
-										}
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"description": "Error interno del servidor",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Error interno del servidor"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/me/watchlist/{movieId}": {
-			"delete": {
-				"tags": ["User"],
-				"summary": "Quitar película de la watchlist",
-				"description": "Elimina una película de la watchlist del usuario.",
-				"parameters": [
-					{
-						"name": "movieId",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						},
-						"description": "ID de la película a quitar"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Película quitada exitosamente de la watchlist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
-								},
-								"example": {
-									"message": "Película quitada de la watchlist exitosamente"
+									"limit": 5
 								}
 							}
 						}
@@ -1046,14 +1577,237 @@
 						}
 					},
 					"404": {
-						"description": "Película no encontrada en la watchlist",
+						"description": "Usuario no encontrado",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
 								"example": {
-									"message": "Película no encontrada en tu watchlist"
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["User - Watchlist"],
+				"summary": "Agregar película a la watchlist",
+				"description": "Agrega una película a la watchlist del usuario.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["movieId"],
+								"properties": {
+									"movieId": {
+										"type": "string",
+										"description": "ID de la película a agregar",
+										"example": "68e7069e7c16280b8b499c26"
+									}
+								}
+							},
+							"example": {
+								"movieId": "68e7069e7c16280b8b499c26"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Película agregada a la watchlist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Película agregada a la watchlist"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "La película ya está en la watchlist del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "La película ya está en tu watchlist"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "No autenticado - Token faltante o inválido",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"noToken": {
+										"summary": "Token no proporcionado",
+										"value": {
+											"message": "No autorizado"
+										}
+									},
+									"invalidToken": {
+										"summary": "Token inválido",
+										"value": {
+											"message": "No autorizado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario o película no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"movieNotFound": {
+										"summary": "Película no encontrada",
+										"value": {
+											"message": "Película no encontrada"
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/me/watchlist/{movieId}": {
+			"delete": {
+				"tags": ["User - Watchlist"],
+				"summary": "Quitar película de la watchlist",
+				"description": "Elimina una película de la watchlist del usuario.",
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "68e7069e7c16280b8b499c26"
+						},
+						"description": "ID de la película a quitar"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Película eliminada de la watchlist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponse"
+								},
+								"example": {
+									"message": "Película eliminada de la watchlist"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "La película no está en la watchlist del usuario",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "La película no está en tu watchlist"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "No autenticado - Token faltante o inválido",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"noToken": {
+										"summary": "Token no proporcionado",
+										"value": {
+											"message": "No autorizado"
+										}
+									},
+									"invalidToken": {
+										"summary": "Token inválido",
+										"value": {
+											"message": "No autorizado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado o película no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"userNotFound": {
+										"summary": "Usuario no encontrado",
+										"value": {
+											"message": "Usuario no encontrado"
+										}
+									},
+									"movieNotFound": {
+										"summary": "Película no encontrada",
+										"value": {
+											"message": "Película no encontrada"
+										}
+									}
 								}
 							}
 						}
@@ -1099,7 +1853,8 @@
 							"default": 10,
 							"minimum": 1
 						},
-						"description": "Cantidad de resultados por página (por defecto: 10)"
+						"description": "Cantidad de resultados por página (por defecto: 10)",
+						"example": 5
 					}
 				],
 				"responses": {
@@ -1113,37 +1868,20 @@
 										"movies": {
 											"type": "array",
 											"items": {
-												"allOf": [
-													{
-														"$ref": "#/components/schemas/Movie"
-													},
-													{
-														"type": "object",
-														"properties": {
-															"averageRating": {
-																"type": "number",
-																"description": "Promedio de puntuaciones (0-10)"
-															},
-															"totalReviews": {
-																"type": "integer",
-																"description": "Total de reseñas"
-															}
-														}
-													}
-												]
+												"$ref": "#/components/schemas/Movie"
 											}
 										},
 										"total": {
 											"type": "integer",
-											"description": "Total de películas"
+											"example": 20
 										},
 										"page": {
 											"type": "integer",
-											"description": "Página actual"
+											"example": 1
 										},
 										"limit": {
 											"type": "integer",
-											"description": "Resultados por página"
+											"example": 5
 										}
 									}
 								},
@@ -1154,34 +1892,294 @@
 											"tmdbId": 1038392,
 											"title": "Expediente Warren: El último rito",
 											"originalTitle": "The Conjuring: Last Rites",
-											"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador.",
+											"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador en el que están implicadas entidades misteriosas a las que deben enfrentarse.",
 											"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg",
-											"releaseDate": "2025-09-03",
+											"releaseDate": "2025-09-03T00:00:00.000Z",
 											"originalLanguage": "en",
 											"duration": 135,
 											"genres": ["Terror", "Suspense", "Misterio"],
 											"actors": [
 												{
 													"name": "Vera Farmiga",
-													"role": "Lorraine Warren"
+													"role": "Lorraine Warren",
+													"_id": "68e7069e7c16280b8b499c27"
 												},
 												{
 													"name": "Patrick Wilson",
-													"role": "Ed Warren"
+													"role": "Ed Warren",
+													"_id": "68e7069e7c16280b8b499c28"
+												},
+												{
+													"name": "Mia Tomlinson",
+													"role": "Judy Warren",
+													"_id": "68e7069e7c16280b8b499c29"
+												},
+												{
+													"name": "Ben Hardy",
+													"role": "Tony Spera",
+													"_id": "68e7069e7c16280b8b499c2a"
+												},
+												{
+													"name": "Rebecca Calder",
+													"role": "Janet Smurl",
+													"_id": "68e7069e7c16280b8b499c2b"
+												},
+												{
+													"name": "Tilly Walker",
+													"role": "Carin Smurl",
+													"_id": "68e7069e7c16280b8b499c2c"
+												},
+												{
+													"name": "Elliot Cowan",
+													"role": "Jack Smurl",
+													"_id": "68e7069e7c16280b8b499c2d"
+												},
+												{
+													"name": "Shannon Kook",
+													"role": "Drew Thomas",
+													"_id": "68e7069e7c16280b8b499c2e"
+												},
+												{
+													"name": "Steve Coulter",
+													"role": "Father Gordon",
+													"_id": "68e7069e7c16280b8b499c2f"
+												},
+												{
+													"name": "Kíla Lord Cassidy",
+													"role": "Heather Smurl",
+													"_id": "68e7069e7c16280b8b499c30"
+												},
+												{
+													"name": "Beau Gadsdon",
+													"role": "Dawn Smurl",
+													"_id": "68e7069e7c16280b8b499c31"
+												},
+												{
+													"name": "Molly Cartwright",
+													"role": "Shannon Smurl",
+													"_id": "68e7069e7c16280b8b499c32"
+												},
+												{
+													"name": "Leigh Jones",
+													"role": "Abner",
+													"_id": "68e7069e7c16280b8b499c33"
+												},
+												{
+													"name": "John Brotherton",
+													"role": "Brad Hamilton",
+													"_id": "68e7069e7c16280b8b499c34"
+												},
+												{
+													"name": "Peter Wight",
+													"role": "Grandpa Smurl",
+													"_id": "68e7069e7c16280b8b499c35"
+												},
+												{
+													"name": "Kate Fahy",
+													"role": "Grandma Smurl",
+													"_id": "68e7069e7c16280b8b499c36"
+												},
+												{
+													"name": "Orion Smith",
+													"role": "Young Ed Warren",
+													"_id": "68e7069e7c16280b8b499c37"
+												},
+												{
+													"name": "Madison Lawlor",
+													"role": "Young Lorraine Warren",
+													"_id": "68e7069e7c16280b8b499c38"
+												},
+												{
+													"name": "Guy Oliver-Watts",
+													"role": "Doctor",
+													"_id": "68e7069e7c16280b8b499c39"
+												},
+												{
+													"name": "Tomas Bennett",
+													"role": "Lecture Attendee #2",
+													"_id": "68e7069e7c16280b8b499c3a"
+												},
+												{
+													"name": "Ingrid Bisu",
+													"role": "Wedding Guest",
+													"_id": "68e7069e7c16280b8b499c3b"
+												},
+												{
+													"name": "Michael Clear",
+													"role": "Wedding Guest",
+													"_id": "68e7069e7c16280b8b499c3c"
+												},
+												{
+													"name": "Natalia Safran",
+													"role": "Wedding Guest",
+													"_id": "68e7069e7c16280b8b499c3d"
+												},
+												{
+													"name": "Lili Taylor",
+													"role": "Caroline Perron",
+													"_id": "68e7069e7c16280b8b499c3e"
+												},
+												{
+													"name": "Mackenzie Foy",
+													"role": "Cindy Perron",
+													"_id": "68e7069e7c16280b8b499c3f"
+												},
+												{
+													"name": "Frances O'Connor",
+													"role": "Peggy Hodgson",
+													"_id": "68e7069e7c16280b8b499c40"
+												},
+												{
+													"name": "Madison Wolfe",
+													"role": "Janet Hodgson",
+													"_id": "68e7069e7c16280b8b499c41"
+												},
+												{
+													"name": "Julian Hilliard",
+													"role": "David Glatzel",
+													"_id": "68e7069e7c16280b8b499c42"
+												},
+												{
+													"name": "James Wan",
+													"role": "Wedding Guest",
+													"_id": "68e7069e7c16280b8b499c43"
+												},
+												{
+													"name": "Tony Spera",
+													"role": "Party Guest",
+													"_id": "68e7069e7c16280b8b499c44"
+												},
+												{
+													"name": "Judy Warren",
+													"role": "Party Guest",
+													"_id": "68e7069e7c16280b8b499c45"
+												},
+												{
+													"name": "Ed Warren",
+													"role": "Self (archive footage)",
+													"_id": "68e7069e7c16280b8b499c46"
+												},
+												{
+													"name": "Lorraine Warren",
+													"role": "Self (archive footage)",
+													"_id": "68e7069e7c16280b8b499c47"
 												}
 											],
 											"directors": [
 												{
-													"name": "Michael Chaves"
+													"name": "Michael Chaves",
+													"_id": "68e7069e7c16280b8b499c48"
 												}
 											],
-											"averageRating": 8.5,
-											"totalReviews": 12
+											"averageRating": 0,
+											"totalReviews": 0
+										},
+										{
+											"_id": "68e7069f7c16280b8b499c4b",
+											"tmdbId": 941109,
+											"title": "Juego sucio",
+											"originalTitle": "Play Dirty",
+											"overview": "Un experto ladrón lleva a cabo el mayor robo de su vida. Parker, junto a Grofield, Zen y un equipo experto, se ven involucrados en un golpe que los enfrenta a la mafia de Nueva York en esta arriesgada misión.",
+											"posterPath": "/70Na5MXfOsFlJvoX6oKYAwOhNN9.jpg",
+											"releaseDate": "2025-09-30T00:00:00.000Z",
+											"originalLanguage": "en",
+											"duration": 127,
+											"genres": ["Crimen"],
+											"actors": [
+												{
+													"name": "Mark Wahlberg",
+													"role": "Parker",
+													"_id": "68e7069f7c16280b8b499c4c"
+												},
+												{
+													"name": "LaKeith Stanfield",
+													"role": "Grofield",
+													"_id": "68e7069f7c16280b8b499c4d"
+												},
+												{
+													"name": "Rosa Salazar",
+													"role": "Zen",
+													"_id": "68e7069f7c16280b8b499c4e"
+												},
+												{
+													"name": "Keegan-Michael Key",
+													"role": "Ed Mackey",
+													"_id": "68e7069f7c16280b8b499c4f"
+												},
+												{
+													"name": "Claire Lovering",
+													"role": "Brenda Mackey",
+													"_id": "68e7069f7c16280b8b499c50"
+												},
+												{
+													"name": "Chai Hansen",
+													"role": "Stan Devers",
+													"_id": "68e7069f7c16280b8b499c51"
+												},
+												{
+													"name": "Chukwudi Iwuji",
+													"role": "Phineas Paul",
+													"_id": "68e7069f7c16280b8b499c52"
+												},
+												{
+													"name": "Tony Shalhoub",
+													"role": "Lozini",
+													"_id": "68e7069f7c16280b8b499c53"
+												},
+												{
+													"name": "Nat Wolff",
+													"role": "Kincaid",
+													"_id": "68e7069f7c16280b8b499c54"
+												},
+												{
+													"name": "Thomas Jane",
+													"role": "Philly Webb",
+													"_id": "68e7069f7c16280b8b499c55"
+												},
+												{
+													"name": "Gretchen Mol",
+													"role": "Grace Webb",
+													"_id": "68e7069f7c16280b8b499c56"
+												},
+												{
+													"name": "Hemky Madera",
+													"role": "Colonel Ortiz",
+													"_id": "68e7069f7c16280b8b499c57"
+												},
+												{
+													"name": "Alejandro Edda",
+													"role": "De La Paz",
+													"_id": "68e7069f7c16280b8b499c58"
+												},
+												{
+													"name": "Yvonne Zima",
+													"role": "Traci",
+													"_id": "68e7069f7c16280b8b499c59"
+												},
+												{
+													"name": "Sebastian Carr",
+													"role": "Hothead (Knox)",
+													"_id": "68e7069f7c16280b8b499c5a"
+												},
+												{
+													"name": "Saskia Archer",
+													"role": "Bank Supervisor's Girlfriend",
+													"_id": "68e7069f7c16280b8b499c5b"
+												}
+											],
+											"directors": [
+												{
+													"name": "Shane Black",
+													"_id": "68e7069f7c16280b8b499c5c"
+												}
+											],
+											"averageRating": 0,
+											"totalReviews": 0
 										}
 									],
 									"total": 20,
 									"page": 1,
-									"limit": 1
+									"limit": 2
 								}
 							}
 						}
@@ -1213,7 +2211,8 @@
 						"name": "title",
 						"in": "query",
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "Superman"
 						},
 						"description": "Título de la película (búsqueda parcial, case-insensitive)"
 					},
@@ -1245,7 +2244,8 @@
 						"name": "year",
 						"in": "query",
 						"schema": {
-							"type": "integer"
+							"type": "integer",
+							"example": 2025
 						},
 						"description": "Año de lanzamiento"
 					},
@@ -1267,7 +2267,8 @@
 							"default": 10,
 							"minimum": 1
 						},
-						"description": "Cantidad de resultados por página (por defecto: 10)"
+						"description": "Cantidad de resultados por página (por defecto: 10)",
+						"example": 5
 					}
 				],
 				"responses": {
@@ -1281,32 +2282,20 @@
 										"movies": {
 											"type": "array",
 											"items": {
-												"allOf": [
-													{
-														"$ref": "#/components/schemas/Movie"
-													},
-													{
-														"type": "object",
-														"properties": {
-															"averageRating": {
-																"type": "number"
-															},
-															"totalReviews": {
-																"type": "integer"
-															}
-														}
-													}
-												]
+												"$ref": "#/components/schemas/Movie"
 											}
 										},
 										"total": {
-											"type": "integer"
+											"type": "integer",
+											"example": 1
 										},
 										"page": {
-											"type": "integer"
+											"type": "integer",
+											"example": 1
 										},
 										"limit": {
-											"type": "integer"
+											"type": "integer",
+											"example": 5
 										}
 									}
 								},
@@ -1314,24 +2303,481 @@
 									"movies": [
 										{
 											"_id": "68e706a57c16280b8b499ebf",
-											"tmdbId": 1285346,
+											"tmdbId": 1061474,
 											"title": "Superman",
 											"originalTitle": "Superman",
-											"overview": "Superman, el último hijo de Krypton, utiliza sus poderes extraordinarios para defender a la humanidad.",
-											"posterPath": "/eD7bvI6TcMNkpJaLhTv4jlHkdIB.jpg",
-											"releaseDate": "2025-07-10",
+											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter. Criado en la Tierra, representa la verdad, la justicia y el estilo americano, pero debe enfrentarse a un mundo cínico que cuestiona sus ideales. Entre el deber de proteger a la humanidad y la búsqueda de su identidad, Superman demuestra que la esperanza y la bondad nunca pasan de moda, incluso en los tiempos más oscuros, inspirando a otros a creer en un futuro mejor.",
+											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+											"releaseDate": "2025-07-09T00:00:00.000Z",
 											"originalLanguage": "en",
-											"duration": 140,
-											"genres": ["Acción", "Aventura", "Ciencia ficción"],
+											"duration": 129,
+											"genres": ["Ciencia ficción", "Aventura", "Acción"],
 											"actors": [
 												{
 													"name": "David Corenswet",
-													"role": "Clark Kent / Superman"
+													"role": "Superman",
+													"_id": "68e706a57c16280b8b499ec0"
+												},
+												{
+													"name": "Rachel Brosnahan",
+													"role": "Lois Lane",
+													"_id": "68e706a57c16280b8b499ec1"
+												},
+												{
+													"name": "Nicholas Hoult",
+													"role": "Lex Luthor",
+													"_id": "68e706a57c16280b8b499ec2"
+												},
+												{
+													"name": "Edi Gathegi",
+													"role": "Mr. Terrific",
+													"_id": "68e706a57c16280b8b499ec3"
+												},
+												{
+													"name": "Nathan Fillion",
+													"role": "Guy Gardner",
+													"_id": "68e706a57c16280b8b499ec4"
+												},
+												{
+													"name": "Isabela Merced",
+													"role": "Hawkgirl",
+													"_id": "68e706a57c16280b8b499ec5"
+												},
+												{
+													"name": "María Gabriela de Faría",
+													"role": "The Engineer",
+													"_id": "68e706a57c16280b8b499ec6"
+												},
+												{
+													"name": "Skyler Gisondo",
+													"role": "Jimmy Olsen",
+													"_id": "68e706a57c16280b8b499ec7"
+												},
+												{
+													"name": "Alan Tudyk",
+													"role": "Gary",
+													"_id": "68e706a57c16280b8b499ec8"
+												},
+												{
+													"name": "Grace Chan",
+													"role": "Superman Robot #12 (voice)",
+													"_id": "68e706a57c16280b8b499ec9"
+												},
+												{
+													"name": "Bradley Cooper",
+													"role": "Jor-El",
+													"_id": "68e706a57c16280b8b499eca"
+												},
+												{
+													"name": "Angela Sarafyan",
+													"role": "Lara",
+													"_id": "68e706a57c16280b8b499ecb"
+												},
+												{
+													"name": "Michael Rooker",
+													"role": "Superman Robot #1 (voice)",
+													"_id": "68e706a57c16280b8b499ecc"
+												},
+												{
+													"name": "Pom Klementieff",
+													"role": "Superman Robot #5 (voice)",
+													"_id": "68e706a57c16280b8b499ecd"
+												},
+												{
+													"name": "Sara Sampaio",
+													"role": "Eve Teschmacher",
+													"_id": "68e706a57c16280b8b499ece"
+												},
+												{
+													"name": "Tatiana Piper",
+													"role": "Boravian Tech",
+													"_id": "68e706a57c16280b8b499ecf"
+												},
+												{
+													"name": "Stephen Blackehart",
+													"role": "Sydney Happersen",
+													"_id": "68e706a57c16280b8b499ed0"
+												},
+												{
+													"name": "Giovannie Cruz",
+													"role": "Cheryl Kimble",
+													"_id": "68e706a57c16280b8b499ed1"
+												},
+												{
+													"name": "Bonnie Discepolo",
+													"role": "Ms. Jessop",
+													"_id": "68e706a57c16280b8b499ed2"
+												},
+												{
+													"name": "Terence Rosemore",
+													"role": "Otis Berg",
+													"_id": "68e706a57c16280b8b499ed3"
+												},
+												{
+													"name": "Natasha Halevi",
+													"role": "Amanda Marie McCoy",
+													"_id": "68e706a57c16280b8b499ed4"
+												},
+												{
+													"name": "Adriana Leonard",
+													"role": "Comms Tech",
+													"_id": "68e706a57c16280b8b499ed5"
+												},
+												{
+													"name": "Paul Kim",
+													"role": "Larry Chin",
+													"_id": "68e706a57c16280b8b499ed6"
+												},
+												{
+													"name": "Jonah Lees",
+													"role": "Dean Farr",
+													"_id": "68e706a57c16280b8b499ed7"
+												},
+												{
+													"name": "Christian Lees",
+													"role": "Desmond Farr",
+													"_id": "68e706a57c16280b8b499ed8"
+												},
+												{
+													"name": "Dinesh Thyagarajan",
+													"role": "Malik 'Mali' Ali",
+													"_id": "68e706a57c16280b8b499ed9"
+												},
+												{
+													"name": "Rudy Quintanilla",
+													"role": "Reggie",
+													"_id": "68e706a57c16280b8b499eda"
+												},
+												{
+													"name": "Ryan J. Pezdirc",
+													"role": "Onlooker",
+													"_id": "68e706a57c16280b8b499edb"
+												},
+												{
+													"name": "Michael Ian Black",
+													"role": "Cleavis Thornwaite",
+													"_id": "68e706a57c16280b8b499edc"
+												},
+												{
+													"name": "Wendell Pierce",
+													"role": "Perry White",
+													"_id": "68e706a57c16280b8b499edd"
+												},
+												{
+													"name": "Beck Bennett",
+													"role": "Steve Lombard",
+													"_id": "68e706a57c16280b8b499ede"
+												},
+												{
+													"name": "Neva Howell",
+													"role": "Ma Kent",
+													"_id": "68e706a57c16280b8b499edf"
+												},
+												{
+													"name": "Pruitt Taylor Vince",
+													"role": "Pa Kent",
+													"_id": "68e706a57c16280b8b499ee0"
+												},
+												{
+													"name": "Mikaela Hoover",
+													"role": "Cat Grant",
+													"_id": "68e706a57c16280b8b499ee1"
+												},
+												{
+													"name": "Christopher McDonald",
+													"role": "Ron Troupe",
+													"_id": "68e706a57c16280b8b499ee2"
+												},
+												{
+													"name": "Zlatko Burić",
+													"role": "Vasil Ghurkos",
+													"_id": "68e706a57c16280b8b499ee3"
+												},
+												{
+													"name": "Martin Harris",
+													"role": "Boravian General",
+													"_id": "68e706a57c16280b8b499ee4"
+												},
+												{
+													"name": "Frank Grillo",
+													"role": "Rick Flag Sr.",
+													"_id": "68e706a57c16280b8b499ee5"
+												},
+												{
+													"name": "James Hiroyuki Liao",
+													"role": "General Mori",
+													"_id": "68e706a57c16280b8b499ee6"
+												},
+												{
+													"name": "Tinashe Kajese",
+													"role": "Flo Crawley",
+													"_id": "68e706a57c16280b8b499ee7"
+												},
+												{
+													"name": "Luis R. Hernandez",
+													"role": "Albert Tyler",
+													"_id": "68e706a57c16280b8b499ee8"
+												},
+												{
+													"name": "Mary Chatmon",
+													"role": "Loretto Bell",
+													"_id": "68e706a57c16280b8b499ee9"
+												},
+												{
+													"name": "Savannah Lumar",
+													"role": "Young Girl",
+													"_id": "68e706a57c16280b8b499eea"
+												},
+												{
+													"name": "Xingu Del Rosario",
+													"role": "Yogurt Eater",
+													"_id": "68e706a57c16280b8b499eeb"
+												},
+												{
+													"name": "Lawrence Gilligan",
+													"role": "Sphere News Reporter",
+													"_id": "68e706a57c16280b8b499eec"
+												},
+												{
+													"name": "Suzanne Hobbs",
+													"role": "GBS Reporter",
+													"_id": "68e706a57c16280b8b499eed"
+												},
+												{
+													"name": "Kimmy Suzuki",
+													"role": "Saved Woman",
+													"_id": "68e706a57c16280b8b499eee"
+												},
+												{
+													"name": "Will Reeve",
+													"role": "On the Ground Reporter",
+													"_id": "68e706a57c16280b8b499eef"
+												},
+												{
+													"name": "Jake Tapper",
+													"role": "Jack Tapir",
+													"_id": "68e706a57c16280b8b499ef0"
+												},
+												{
+													"name": "Ira Amyx",
+													"role": "Construction Worker",
+													"_id": "68e706a57c16280b8b499ef1"
+												},
+												{
+													"name": "Abel F. Alvarado",
+													"role": "International Reporter",
+													"_id": "68e706a57c16280b8b499ef2"
+												},
+												{
+													"name": "Karla Suyeon Kim",
+													"role": "International Reporter",
+													"_id": "68e706a57c16280b8b499ef3"
+												},
+												{
+													"name": "Jay Westbrook",
+													"role": "TV Interviewee",
+													"_id": "68e706a57c16280b8b499ef4"
+												},
+												{
+													"name": "Nea Dune",
+													"role": "Makeup Artist",
+													"_id": "68e706a57c16280b8b499ef5"
+												},
+												{
+													"name": "Darla Delgado",
+													"role": "Heather",
+													"_id": "68e706a57c16280b8b499ef6"
+												},
+												{
+													"name": "Ashleigh Morghan",
+													"role": "Luthorcorp Scientist",
+													"_id": "68e706a57c16280b8b499ef7"
+												},
+												{
+													"name": "Anthony Carrigan",
+													"role": "Metamorpho",
+													"_id": "68e706a57c16280b8b499ef8"
+												},
+												{
+													"name": "Trevor Newlin",
+													"role": "Mr. Handsome",
+													"_id": "68e706a57c16280b8b499ef9"
+												},
+												{
+													"name": "Lon Gowan",
+													"role": "Scientist #1",
+													"_id": "68e706a57c16280b8b499efa"
+												},
+												{
+													"name": "Taylor Valentine Lupini",
+													"role": "Scientist #2",
+													"_id": "68e706a57c16280b8b499efb"
+												},
+												{
+													"name": "Paige Mobley",
+													"role": "Fleurette",
+													"_id": "68e706a57c16280b8b499efc"
+												},
+												{
+													"name": "Zach Lane",
+													"role": "Tech Bro",
+													"_id": "68e706a57c16280b8b499efd"
+												},
+												{
+													"name": "Theo Kypri",
+													"role": "Thug",
+													"_id": "68e706a57c16280b8b499efe"
+												},
+												{
+													"name": "Michael Rosenbaum",
+													"role": "Raptor Guard #1",
+													"_id": "68e706a57c16280b8b499eff"
+												},
+												{
+													"name": "Alexis Prewitt",
+													"role": "Raptor Guard #2",
+													"_id": "68e706a57c16280b8b499f00"
+												},
+												{
+													"name": "Bobby Hernandez",
+													"role": "Raptor Guard #3",
+													"_id": "68e706a57c16280b8b499f01"
+												},
+												{
+													"name": "George Howard Adams",
+													"role": "Raptor Guard #4",
+													"_id": "68e706a57c16280b8b499f02"
+												},
+												{
+													"name": "David E. Collier",
+													"role": "Raptor Sergeant #1",
+													"_id": "68e706a57c16280b8b499f03"
+												},
+												{
+													"name": "Jimmy Chhiu",
+													"role": "Raptor Sergeant #2",
+													"_id": "68e706a57c16280b8b499f04"
+												},
+												{
+													"name": "Louisa Krause",
+													"role": "Sapphire Stagg",
+													"_id": "68e706a57c16280b8b499f05"
+												},
+												{
+													"name": "AJ Bernard",
+													"role": "Young Jarhanpurian Boy",
+													"_id": "68e706a57c16280b8b499f06"
+												},
+												{
+													"name": "Alayna Bernard",
+													"role": "Jarhanpurian Kid #1",
+													"_id": "68e706a57c16280b8b499f07"
+												},
+												{
+													"name": "Jai Soundar",
+													"role": "Jarhanpurian Kid #2",
+													"_id": "68e706a57c16280b8b499f08"
+												},
+												{
+													"name": "Annika Mazumdar",
+													"role": "Jarhanpurian Kid #3",
+													"_id": "68e706a57c16280b8b499f09"
+												},
+												{
+													"name": "Fahim Fazli",
+													"role": "Jarhanpurian Villager #1",
+													"_id": "68e706a57c16280b8b499f0a"
+												},
+												{
+													"name": "Chaim Jeraffi",
+													"role": "Jarhanpurian Villager #2",
+													"_id": "68e706a57c16280b8b499f0b"
+												},
+												{
+													"name": "Melissa O. Bowen",
+													"role": "Woman in Car",
+													"_id": "68e706a57c16280b8b499f0c"
+												},
+												{
+													"name": "Torsten Kellar",
+													"role": "Boravian Commander",
+													"_id": "68e706a57c16280b8b499f0d"
+												},
+												{
+													"name": "Johanna Braddy",
+													"role": "Metropolis Citizen #1",
+													"_id": "68e706a57c16280b8b499f0e"
+												},
+												{
+													"name": "Austin Freeman",
+													"role": "Metropolis Citizen #2",
+													"_id": "68e706a57c16280b8b499f0f"
+												},
+												{
+													"name": "Kim Brunhuber",
+													"role": "GBS Reporter #2",
+													"_id": "68e706a57c16280b8b499f10"
+												},
+												{
+													"name": "Sean Gunn",
+													"role": "Maxwell Lord",
+													"_id": "68e706a57c16280b8b499f11"
+												},
+												{
+													"name": "Sharon Carpenter",
+													"role": "Metro News Reporter",
+													"_id": "68e706a57c16280b8b499f12"
+												},
+												{
+													"name": "Greg Clarkson",
+													"role": "Mocking Reporter",
+													"_id": "68e706a57c16280b8b499f13"
+												},
+												{
+													"name": "Milli M.",
+													"role": "TV Show Host",
+													"_id": "68e706a57c16280b8b499f14"
+												},
+												{
+													"name": "Pierce Lackey",
+													"role": "Armed Sergeant",
+													"_id": "68e706a57c16280b8b499f15"
+												},
+												{
+													"name": "Oliver Diego Silva",
+													"role": "Young Clark (2 Years Old)",
+													"_id": "68e706a57c16280b8b499f16"
+												},
+												{
+													"name": "Lloyd Kaufman",
+													"role": "Metropolis Citizen #3 (uncredited)",
+													"_id": "68e706a57c16280b8b499f17"
+												},
+												{
+													"name": "John Cena",
+													"role": "Peacemaker (uncredited)",
+													"_id": "68e706a57c16280b8b499f18"
+												},
+												{
+													"name": "Milly Alcock",
+													"role": "Supergirl (uncredited)",
+													"_id": "68e706a57c16280b8b499f19"
+												},
+												{
+													"name": "Jennifer Holland",
+													"role": "Superman Robot #22 (voice) (uncredited)",
+													"_id": "68e706a57c16280b8b499f1a"
+												},
+												{
+													"name": "James Gunn",
+													"role": "Typewriting Monkeys (uncredited)",
+													"_id": "68e706a57c16280b8b499f1b"
 												}
 											],
 											"directors": [
 												{
-													"name": "James Gunn"
+													"name": "James Gunn",
+													"_id": "68e706a57c16280b8b499f1c"
 												}
 											],
 											"averageRating": 9,
@@ -1340,7 +2786,7 @@
 									],
 									"total": 1,
 									"page": 1,
-									"limit": 10
+									"limit": 5
 								}
 							}
 						}
@@ -1373,7 +2819,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68e706a57c16280b8b499ebf"
 						},
 						"description": "ID de la película"
 					}
@@ -1384,73 +2831,529 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/Movie"
+									"type": "object",
+									"properties": {
+										"_id": {
+											"type": "string",
+											"example": "68e706a57c16280b8b499ebf"
 										},
-										{
+										"title": {
+											"type": "string",
+											"example": "Superman"
+										},
+										"overview": {
+											"type": "string",
+											"example": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter."
+										},
+										"releaseDate": {
+											"type": "string",
+											"format": "date",
+											"example": "2025-07-09"
+										},
+										"genres": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											},
+											"example": ["Ciencia ficción", "Aventura", "Acción"]
+										},
+										"averageRating": {
+											"type": "number",
+											"example": 8.7
+										},
+										"totalReviews": {
+											"type": "integer",
+											"example": 150
+										},
+										"availability": {
 											"type": "object",
-											"properties": {
-												"availability": {
-													"type": "array",
-													"description": "Estadísticas de disponibilidad por servicio",
-													"items": {
-														"type": "object",
-														"properties": {
-															"providerId": {
-																"type": "string"
-															},
-															"providerName": {
-																"type": "string"
-															},
-															"reportCount": {
-																"type": "integer"
-															},
-															"percentage": {
-																"type": "integer"
-															}
-														}
-													}
-												},
-												"reviewStats": {
-													"type": "object",
-													"properties": {
-														"averageRating": {
-															"type": "number"
-														},
-														"totalReviews": {
-															"type": "integer"
-														}
-													}
-												}
+											"additionalProperties": {
+												"type": "integer"
+											},
+											"example": {
+												"Netflix": 65,
+												"Disney+": 35
 											}
 										}
-									]
+									}
 								},
 								"example": {
 									"_id": "68e706a57c16280b8b499ebf",
-									"tmdbId": 1285346,
+									"tmdbId": 1061474,
 									"title": "Superman",
 									"originalTitle": "Superman",
-									"overview": "Superman, el último hijo de Krypton, utiliza sus poderes extraordinarios para defender a la humanidad.",
-									"posterPath": "/eD7bvI6TcMNkpJaLhTv4jlHkdIB.jpg",
-									"releaseDate": "2025-07-10",
+									"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter. Criado en la Tierra, representa la verdad, la justicia y el estilo americano, pero debe enfrentarse a un mundo cínico que cuestiona sus ideales. Entre el deber de proteger a la humanidad y la búsqueda de su identidad, Superman demuestra que la esperanza y la bondad nunca pasan de moda, incluso en los tiempos más oscuros, inspirando a otros a creer en un futuro mejor.",
+									"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+									"releaseDate": "2025-07-09T00:00:00.000Z",
 									"originalLanguage": "en",
-									"duration": 140,
-									"genres": ["Acción", "Aventura", "Ciencia ficción"],
+									"duration": 129,
+									"genres": ["Ciencia ficción", "Aventura", "Acción"],
 									"actors": [
 										{
 											"name": "David Corenswet",
-											"role": "Clark Kent / Superman"
+											"role": "Superman",
+											"_id": "68e706a57c16280b8b499ec0"
 										},
 										{
 											"name": "Rachel Brosnahan",
-											"role": "Lois Lane"
+											"role": "Lois Lane",
+											"_id": "68e706a57c16280b8b499ec1"
+										},
+										{
+											"name": "Nicholas Hoult",
+											"role": "Lex Luthor",
+											"_id": "68e706a57c16280b8b499ec2"
+										},
+										{
+											"name": "Edi Gathegi",
+											"role": "Mr. Terrific",
+											"_id": "68e706a57c16280b8b499ec3"
+										},
+										{
+											"name": "Nathan Fillion",
+											"role": "Guy Gardner",
+											"_id": "68e706a57c16280b8b499ec4"
+										},
+										{
+											"name": "Isabela Merced",
+											"role": "Hawkgirl",
+											"_id": "68e706a57c16280b8b499ec5"
+										},
+										{
+											"name": "María Gabriela de Faría",
+											"role": "The Engineer",
+											"_id": "68e706a57c16280b8b499ec6"
+										},
+										{
+											"name": "Skyler Gisondo",
+											"role": "Jimmy Olsen",
+											"_id": "68e706a57c16280b8b499ec7"
+										},
+										{
+											"name": "Alan Tudyk",
+											"role": "Gary",
+											"_id": "68e706a57c16280b8b499ec8"
+										},
+										{
+											"name": "Grace Chan",
+											"role": "Superman Robot #12 (voice)",
+											"_id": "68e706a57c16280b8b499ec9"
+										},
+										{
+											"name": "Bradley Cooper",
+											"role": "Jor-El",
+											"_id": "68e706a57c16280b8b499eca"
+										},
+										{
+											"name": "Angela Sarafyan",
+											"role": "Lara",
+											"_id": "68e706a57c16280b8b499ecb"
+										},
+										{
+											"name": "Michael Rooker",
+											"role": "Superman Robot #1 (voice)",
+											"_id": "68e706a57c16280b8b499ecc"
+										},
+										{
+											"name": "Pom Klementieff",
+											"role": "Superman Robot #5 (voice)",
+											"_id": "68e706a57c16280b8b499ecd"
+										},
+										{
+											"name": "Sara Sampaio",
+											"role": "Eve Teschmacher",
+											"_id": "68e706a57c16280b8b499ece"
+										},
+										{
+											"name": "Tatiana Piper",
+											"role": "Boravian Tech",
+											"_id": "68e706a57c16280b8b499ecf"
+										},
+										{
+											"name": "Stephen Blackehart",
+											"role": "Sydney Happersen",
+											"_id": "68e706a57c16280b8b499ed0"
+										},
+										{
+											"name": "Giovannie Cruz",
+											"role": "Cheryl Kimble",
+											"_id": "68e706a57c16280b8b499ed1"
+										},
+										{
+											"name": "Bonnie Discepolo",
+											"role": "Ms. Jessop",
+											"_id": "68e706a57c16280b8b499ed2"
+										},
+										{
+											"name": "Terence Rosemore",
+											"role": "Otis Berg",
+											"_id": "68e706a57c16280b8b499ed3"
+										},
+										{
+											"name": "Natasha Halevi",
+											"role": "Amanda Marie McCoy",
+											"_id": "68e706a57c16280b8b499ed4"
+										},
+										{
+											"name": "Adriana Leonard",
+											"role": "Comms Tech",
+											"_id": "68e706a57c16280b8b499ed5"
+										},
+										{
+											"name": "Paul Kim",
+											"role": "Larry Chin",
+											"_id": "68e706a57c16280b8b499ed6"
+										},
+										{
+											"name": "Jonah Lees",
+											"role": "Dean Farr",
+											"_id": "68e706a57c16280b8b499ed7"
+										},
+										{
+											"name": "Christian Lees",
+											"role": "Desmond Farr",
+											"_id": "68e706a57c16280b8b499ed8"
+										},
+										{
+											"name": "Dinesh Thyagarajan",
+											"role": "Malik 'Mali' Ali",
+											"_id": "68e706a57c16280b8b499ed9"
+										},
+										{
+											"name": "Rudy Quintanilla",
+											"role": "Reggie",
+											"_id": "68e706a57c16280b8b499eda"
+										},
+										{
+											"name": "Ryan J. Pezdirc",
+											"role": "Onlooker",
+											"_id": "68e706a57c16280b8b499edb"
+										},
+										{
+											"name": "Michael Ian Black",
+											"role": "Cleavis Thornwaite",
+											"_id": "68e706a57c16280b8b499edc"
+										},
+										{
+											"name": "Wendell Pierce",
+											"role": "Perry White",
+											"_id": "68e706a57c16280b8b499edd"
+										},
+										{
+											"name": "Beck Bennett",
+											"role": "Steve Lombard",
+											"_id": "68e706a57c16280b8b499ede"
+										},
+										{
+											"name": "Neva Howell",
+											"role": "Ma Kent",
+											"_id": "68e706a57c16280b8b499edf"
+										},
+										{
+											"name": "Pruitt Taylor Vince",
+											"role": "Pa Kent",
+											"_id": "68e706a57c16280b8b499ee0"
+										},
+										{
+											"name": "Mikaela Hoover",
+											"role": "Cat Grant",
+											"_id": "68e706a57c16280b8b499ee1"
+										},
+										{
+											"name": "Christopher McDonald",
+											"role": "Ron Troupe",
+											"_id": "68e706a57c16280b8b499ee2"
+										},
+										{
+											"name": "Zlatko Burić",
+											"role": "Vasil Ghurkos",
+											"_id": "68e706a57c16280b8b499ee3"
+										},
+										{
+											"name": "Martin Harris",
+											"role": "Boravian General",
+											"_id": "68e706a57c16280b8b499ee4"
+										},
+										{
+											"name": "Frank Grillo",
+											"role": "Rick Flag Sr.",
+											"_id": "68e706a57c16280b8b499ee5"
+										},
+										{
+											"name": "James Hiroyuki Liao",
+											"role": "General Mori",
+											"_id": "68e706a57c16280b8b499ee6"
+										},
+										{
+											"name": "Tinashe Kajese",
+											"role": "Flo Crawley",
+											"_id": "68e706a57c16280b8b499ee7"
+										},
+										{
+											"name": "Luis R. Hernandez",
+											"role": "Albert Tyler",
+											"_id": "68e706a57c16280b8b499ee8"
+										},
+										{
+											"name": "Mary Chatmon",
+											"role": "Loretto Bell",
+											"_id": "68e706a57c16280b8b499ee9"
+										},
+										{
+											"name": "Savannah Lumar",
+											"role": "Young Girl",
+											"_id": "68e706a57c16280b8b499eea"
+										},
+										{
+											"name": "Xingu Del Rosario",
+											"role": "Yogurt Eater",
+											"_id": "68e706a57c16280b8b499eeb"
+										},
+										{
+											"name": "Lawrence Gilligan",
+											"role": "Sphere News Reporter",
+											"_id": "68e706a57c16280b8b499eec"
+										},
+										{
+											"name": "Suzanne Hobbs",
+											"role": "GBS Reporter",
+											"_id": "68e706a57c16280b8b499eed"
+										},
+										{
+											"name": "Kimmy Suzuki",
+											"role": "Saved Woman",
+											"_id": "68e706a57c16280b8b499eee"
+										},
+										{
+											"name": "Will Reeve",
+											"role": "On the Ground Reporter",
+											"_id": "68e706a57c16280b8b499eef"
+										},
+										{
+											"name": "Jake Tapper",
+											"role": "Jack Tapir",
+											"_id": "68e706a57c16280b8b499ef0"
+										},
+										{
+											"name": "Ira Amyx",
+											"role": "Construction Worker",
+											"_id": "68e706a57c16280b8b499ef1"
+										},
+										{
+											"name": "Abel F. Alvarado",
+											"role": "International Reporter",
+											"_id": "68e706a57c16280b8b499ef2"
+										},
+										{
+											"name": "Karla Suyeon Kim",
+											"role": "International Reporter",
+											"_id": "68e706a57c16280b8b499ef3"
+										},
+										{
+											"name": "Jay Westbrook",
+											"role": "TV Interviewee",
+											"_id": "68e706a57c16280b8b499ef4"
+										},
+										{
+											"name": "Nea Dune",
+											"role": "Makeup Artist",
+											"_id": "68e706a57c16280b8b499ef5"
+										},
+										{
+											"name": "Darla Delgado",
+											"role": "Heather",
+											"_id": "68e706a57c16280b8b499ef6"
+										},
+										{
+											"name": "Ashleigh Morghan",
+											"role": "Luthorcorp Scientist",
+											"_id": "68e706a57c16280b8b499ef7"
+										},
+										{
+											"name": "Anthony Carrigan",
+											"role": "Metamorpho",
+											"_id": "68e706a57c16280b8b499ef8"
+										},
+										{
+											"name": "Trevor Newlin",
+											"role": "Mr. Handsome",
+											"_id": "68e706a57c16280b8b499ef9"
+										},
+										{
+											"name": "Lon Gowan",
+											"role": "Scientist #1",
+											"_id": "68e706a57c16280b8b499efa"
+										},
+										{
+											"name": "Taylor Valentine Lupini",
+											"role": "Scientist #2",
+											"_id": "68e706a57c16280b8b499efb"
+										},
+										{
+											"name": "Paige Mobley",
+											"role": "Fleurette",
+											"_id": "68e706a57c16280b8b499efc"
+										},
+										{
+											"name": "Zach Lane",
+											"role": "Tech Bro",
+											"_id": "68e706a57c16280b8b499efd"
+										},
+										{
+											"name": "Theo Kypri",
+											"role": "Thug",
+											"_id": "68e706a57c16280b8b499efe"
+										},
+										{
+											"name": "Michael Rosenbaum",
+											"role": "Raptor Guard #1",
+											"_id": "68e706a57c16280b8b499eff"
+										},
+										{
+											"name": "Alexis Prewitt",
+											"role": "Raptor Guard #2",
+											"_id": "68e706a57c16280b8b499f00"
+										},
+										{
+											"name": "Bobby Hernandez",
+											"role": "Raptor Guard #3",
+											"_id": "68e706a57c16280b8b499f01"
+										},
+										{
+											"name": "George Howard Adams",
+											"role": "Raptor Guard #4",
+											"_id": "68e706a57c16280b8b499f02"
+										},
+										{
+											"name": "David E. Collier",
+											"role": "Raptor Sergeant #1",
+											"_id": "68e706a57c16280b8b499f03"
+										},
+										{
+											"name": "Jimmy Chhiu",
+											"role": "Raptor Sergeant #2",
+											"_id": "68e706a57c16280b8b499f04"
+										},
+										{
+											"name": "Louisa Krause",
+											"role": "Sapphire Stagg",
+											"_id": "68e706a57c16280b8b499f05"
+										},
+										{
+											"name": "AJ Bernard",
+											"role": "Young Jarhanpurian Boy",
+											"_id": "68e706a57c16280b8b499f06"
+										},
+										{
+											"name": "Alayna Bernard",
+											"role": "Jarhanpurian Kid #1",
+											"_id": "68e706a57c16280b8b499f07"
+										},
+										{
+											"name": "Jai Soundar",
+											"role": "Jarhanpurian Kid #2",
+											"_id": "68e706a57c16280b8b499f08"
+										},
+										{
+											"name": "Annika Mazumdar",
+											"role": "Jarhanpurian Kid #3",
+											"_id": "68e706a57c16280b8b499f09"
+										},
+										{
+											"name": "Fahim Fazli",
+											"role": "Jarhanpurian Villager #1",
+											"_id": "68e706a57c16280b8b499f0a"
+										},
+										{
+											"name": "Chaim Jeraffi",
+											"role": "Jarhanpurian Villager #2",
+											"_id": "68e706a57c16280b8b499f0b"
+										},
+										{
+											"name": "Melissa O. Bowen",
+											"role": "Woman in Car",
+											"_id": "68e706a57c16280b8b499f0c"
+										},
+										{
+											"name": "Torsten Kellar",
+											"role": "Boravian Commander",
+											"_id": "68e706a57c16280b8b499f0d"
+										},
+										{
+											"name": "Johanna Braddy",
+											"role": "Metropolis Citizen #1",
+											"_id": "68e706a57c16280b8b499f0e"
+										},
+										{
+											"name": "Austin Freeman",
+											"role": "Metropolis Citizen #2",
+											"_id": "68e706a57c16280b8b499f0f"
+										},
+										{
+											"name": "Kim Brunhuber",
+											"role": "GBS Reporter #2",
+											"_id": "68e706a57c16280b8b499f10"
+										},
+										{
+											"name": "Sean Gunn",
+											"role": "Maxwell Lord",
+											"_id": "68e706a57c16280b8b499f11"
+										},
+										{
+											"name": "Sharon Carpenter",
+											"role": "Metro News Reporter",
+											"_id": "68e706a57c16280b8b499f12"
+										},
+										{
+											"name": "Greg Clarkson",
+											"role": "Mocking Reporter",
+											"_id": "68e706a57c16280b8b499f13"
+										},
+										{
+											"name": "Milli M.",
+											"role": "TV Show Host",
+											"_id": "68e706a57c16280b8b499f14"
+										},
+										{
+											"name": "Pierce Lackey",
+											"role": "Armed Sergeant",
+											"_id": "68e706a57c16280b8b499f15"
+										},
+										{
+											"name": "Oliver Diego Silva",
+											"role": "Young Clark (2 Years Old)",
+											"_id": "68e706a57c16280b8b499f16"
+										},
+										{
+											"name": "Lloyd Kaufman",
+											"role": "Metropolis Citizen #3 (uncredited)",
+											"_id": "68e706a57c16280b8b499f17"
+										},
+										{
+											"name": "John Cena",
+											"role": "Peacemaker (uncredited)",
+											"_id": "68e706a57c16280b8b499f18"
+										},
+										{
+											"name": "Milly Alcock",
+											"role": "Supergirl (uncredited)",
+											"_id": "68e706a57c16280b8b499f19"
+										},
+										{
+											"name": "Jennifer Holland",
+											"role": "Superman Robot #22 (voice) (uncredited)",
+											"_id": "68e706a57c16280b8b499f1a"
+										},
+										{
+											"name": "James Gunn",
+											"role": "Typewriting Monkeys (uncredited)",
+											"_id": "68e706a57c16280b8b499f1b"
 										}
 									],
 									"directors": [
 										{
-											"name": "James Gunn"
+											"name": "James Gunn",
+											"_id": "68e706a57c16280b8b499f1c"
 										}
 									],
 									"availability": [
@@ -1504,31 +3407,143 @@
 				}
 			}
 		},
-		"/availability": {
+		"/movies/{movieId}/availability": {
+			"get": {
+				"tags": ["Availability"],
+				"summary": "Obtener disponibilidad de una película (público)",
+				"description": "Devuelve las estadísticas de disponibilidad de una película en diferentes proveedores. No requiere autenticación.",
+				"security": [],
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "68e706a57c16280b8b499ebf"
+						},
+						"description": "ID de la película"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Estadísticas de disponibilidad obtenidas exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"movieId": {
+											"type": "string",
+											"example": "68e706a57c16280b8b499ebf"
+										},
+										"movieTitle": {
+											"type": "string",
+											"example": "Superman"
+										},
+										"availability": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"providerId": {
+														"type": "string",
+														"example": "68d055c86aa347d04a2053da"
+													},
+													"providerName": {
+														"type": "string",
+														"example": "Netflix"
+													},
+													"reports": {
+														"type": "integer",
+														"example": 42
+													}
+												}
+											}
+										}
+									}
+								},
+								"example": {
+									"movieId": "68e706a57c16280b8b499ebf",
+									"movieTitle": "Superman",
+									"availability": [
+										{
+											"providerId": "68d055db6aa347d04a2053e2",
+											"providerName": "Disney+",
+											"reportCount": 1,
+											"percentage": 50
+										},
+										{
+											"providerId": "68d055c86aa347d04a2053da",
+											"providerName": "Netflix",
+											"reportCount": 1,
+											"percentage": 50
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Película no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Película no encontrada"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
 			"post": {
 				"tags": ["Availability"],
 				"summary": "Reportar disponibilidad de película",
 				"description": "Permite a un usuario autenticado reportar en qué proveedor está disponible una película. Si ya existe un reporte del mismo usuario para esa película y proveedor, no se duplica.",
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "68e7069e7c16280b8b499c26"
+						},
+						"description": "ID de la película"
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
 								"type": "object",
-								"required": ["movieId", "providerId"],
+								"required": ["providerId"],
 								"properties": {
-									"movieId": {
-										"type": "string",
-										"description": "ID de la película"
-									},
 									"providerId": {
 										"type": "string",
-										"description": "ID del proveedor donde está disponible"
+										"description": "ID del proveedor donde se reporta la disponibilidad",
+										"example": "68d055c86aa347d04a2053da"
 									}
 								}
 							},
 							"example": {
-								"movieId": "68e706a57c16280b8b499ebf",
 								"providerId": "68d055c86aa347d04a2053da"
 							}
 						}
@@ -1536,27 +3551,45 @@
 				},
 				"responses": {
 					"201": {
-						"description": "Disponibilidad reportada exitosamente",
+						"description": "Disponibilidad reportada correctamente",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/SuccessResponse"
 								},
 								"example": {
-									"message": "Disponibilidad reportada exitosamente"
+									"message": "Disponibilidad reportada correctamente"
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "Ya reportaste esta disponibilidad anteriormente",
+						"description": "Error en la solicitud",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
-								"example": {
-									"message": "Ya reportaste esta disponibilidad anteriormente"
+								"examples": {
+									"alreadyReported": {
+										"summary": "Ya reportaste esta película en este servicio",
+										"value": {
+											"message": "Ya reportaste esta película en este servicio"
+										}
+									},
+									"providerNotContracted": {
+										"summary": "Proveedor no contratado",
+										"value": {
+											"message": "No puedes reportar disponibilidad en un proveedor que no tienes contratado."
+										}
+									},
+									"invalidPayload": {
+										"summary": "Payload inválido",
+										"value": {
+											"message": "Datos enviados inválidos",
+											"details": ["El ID del proveedor es obligatorio."]
+										}
+									}
 								}
 							}
 						}
@@ -1581,19 +3614,6 @@
 											"message": "No autorizado"
 										}
 									}
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Datos inválidos",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Datos enviados inválidos"
 								}
 							}
 						}
@@ -1638,6 +3658,157 @@
 				}
 			}
 		},
+		"/movies/{movieId}/availability/personalized": {
+			"get": {
+				"tags": ["Availability"],
+				"summary": "Obtener disponibilidad personalizada",
+				"description": "Devuelve la disponibilidad de una película separada en servicios contratados y no contratados por el usuario. Requiere autenticación.",
+				"parameters": [
+					{
+						"name": "movieId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "68e706a57c16280b8b499ebf"
+						},
+						"description": "ID de la película"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Disponibilidad personalizada obtenida exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"movieId": {
+											"type": "string",
+											"example": "68e706a57c16280b8b499ebf"
+										},
+										"movieTitle": {
+											"type": "string",
+											"example": "Superman"
+										},
+										"yourServices": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"providerId": {
+														"type": "string",
+														"example": "68d055c86aa347d04a2053da"
+													},
+													"providerName": {
+														"type": "string",
+														"example": "Netflix"
+													},
+													"reports": {
+														"type": "integer",
+														"example": 42
+													}
+												}
+											}
+										},
+										"otherServices": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"providerId": {
+														"type": "string",
+														"example": "68d055db6aa347d04a2053e2"
+													},
+													"providerName": {
+														"type": "string",
+														"example": "Disney+"
+													},
+													"reports": {
+														"type": "integer",
+														"example": 35
+													}
+												}
+											}
+										}
+									}
+								},
+								"example": {
+									"movieId": "68e706a57c16280b8b499ebf",
+									"movieTitle": "Expediente Warren: El último rito",
+									"yourServices": [
+										{
+											"providerId": "68d055c86aa347d04a2053da",
+											"providerName": "Netflix",
+											"reportCount": 1,
+											"percentage": 50
+										}
+									],
+									"otherServices": [
+										{
+											"providerId": "68d19eeaa4688d7933d4e289",
+											"providerName": "HBO Max",
+											"reportCount": 1,
+											"percentage": 50
+										}
+									]
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "No autenticado - Token faltante o inválido",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"noToken": {
+										"summary": "Token no proporcionado",
+										"value": {
+											"message": "No autorizado"
+										}
+									},
+									"invalidToken": {
+										"summary": "Token inválido",
+										"value": {
+											"message": "No autorizado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Película no encontrada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Película no encontrada"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/reviews/movies/{movieId}": {
 			"get": {
 				"tags": ["Reviews"],
@@ -1654,6 +3825,27 @@
 							"example": "68e706a57c16280b8b499ebf"
 						},
 						"description": "ID de la película"
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"schema": {
+							"type": "integer",
+							"default": 1,
+							"minimum": 1
+						},
+						"description": "Número de página (por defecto: 1)"
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"schema": {
+							"type": "integer",
+							"default": 10,
+							"minimum": 1
+						},
+						"description": "Cantidad de resultados por página (por defecto: 10)",
+						"example": 5
 					}
 				],
 				"responses": {
@@ -1669,24 +3861,34 @@
 											"items": {
 												"$ref": "#/components/schemas/Review"
 											}
+										},
+										"total": {
+											"type": "integer",
+											"example": 15
+										},
+										"page": {
+											"type": "integer",
+											"example": 1
+										},
+										"limit": {
+											"type": "integer",
+											"example": 5
 										}
 									}
 								},
-								"example": {
-									"reviews": [
-										{
-											"_id": "68e70d507c16280b8b49a1a5",
-											"userId": {
-												"username": "juanp"
-											},
-											"movieId": "68e706a57c16280b8b499ebf",
-											"rating": 9,
-											"comment": "Excelente película, muy entretenida y con grandes actuaciones.",
-											"createdAt": "2025-10-06T15:30:00.000Z",
-											"updatedAt": "2025-10-06T15:30:00.000Z"
-										}
-									]
-								}
+								"example": [
+									{
+										"_id": "68e81188a0954456370d5076",
+										"userId": {
+											"username": "juanp"
+										},
+										"movieId": "68e706a57c16280b8b499ebf",
+										"rating": 9,
+										"comment": "Excelente película, un clásico imperdible de superhéroes.",
+										"createdAt": "2025-10-09T19:48:24.624Z",
+										"updatedAt": "2025-10-09T19:48:24.624Z"
+									}
+								]
 							}
 						}
 					},
@@ -1734,24 +3936,27 @@
 								"properties": {
 									"movieId": {
 										"type": "string",
-										"description": "ID de la película"
+										"description": "ID de la película a reseñar",
+										"example": "68e7069e7c16280b8b499c26"
 									},
 									"rating": {
 										"type": "integer",
+										"description": "Puntuación de la película (1-10)",
 										"minimum": 1,
 										"maximum": 10,
-										"description": "Puntuación (1-10)"
+										"example": 9
 									},
 									"comment": {
 										"type": "string",
-										"description": "Comentario (opcional)"
+										"description": "Comentario sobre la película (opcional, máximo 500 caracteres)",
+										"example": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes."
 									}
 								}
 							},
 							"example": {
-								"movieId": "68e706a57c16280b8b499ebf",
+								"movieId": "68e7069e7c16280b8b499c26",
 								"rating": 9,
-								"comment": "Excelente película, muy entretenida y con grandes actuaciones."
+								"comment": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes."
 							}
 						}
 					}
@@ -1762,23 +3967,81 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"type": "object",
+									"properties": {
+										"userId": {
+											"type": "string",
+											"example": "68d31ad598655d0a37332581"
+										},
+										"movieId": {
+											"type": "string",
+											"example": "68e7069e7c16280b8b499c26"
+										},
+										"rating": {
+											"type": "integer",
+											"example": 9
+										},
+										"comment": {
+											"type": "string",
+											"example": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes."
+										},
+										"_id": {
+											"type": "string",
+											"example": "68ef58848a8b05df2c8c0ca3"
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time",
+											"example": "2025-10-15T08:17:08.769Z"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time",
+											"example": "2025-10-15T08:17:08.769Z"
+										},
+										"__v": {
+											"type": "integer",
+											"example": 0
+										}
+									}
 								},
 								"example": {
-									"message": "Reseña creada exitosamente"
+									"userId": "68d31ad598655d0a37332581",
+									"movieId": "68e7069e7c16280b8b499c26",
+									"rating": 9,
+									"comment": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes.",
+									"_id": "68ef58848a8b05df2c8c0ca3",
+									"createdAt": "2025-10-15T08:17:08.769Z",
+									"updatedAt": "2025-10-15T08:17:08.769Z",
+									"__v": 0
 								}
 							}
 						}
 					},
 					"400": {
-						"description": "Ya existe una reseña del usuario para esta película",
+						"description": "Error en la solicitud",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
-								"example": {
-									"message": "Ya has reseñado esta película"
+								"examples": {
+									"alreadyReviewed": {
+										"summary": "Ya has reseñado esta película",
+										"value": {
+											"message": "Ya has reseñado esta película. Puedes editar tu reseña existente."
+										}
+									},
+									"invalidPayload": {
+										"summary": "Payload inválido",
+										"value": {
+											"message": "Datos enviados inválidos",
+											"details": [
+												"El campo 'movieId' es obligatorio.",
+												"El campo 'rating' debe ser un número entre 1 y 10."
+											]
+										}
+									}
 								}
 							}
 						}
@@ -1803,19 +4066,6 @@
 											"message": "No autorizado"
 										}
 									}
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Datos inválidos",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								},
-								"example": {
-									"message": "Datos enviados inválidos"
 								}
 							}
 						}
@@ -1876,13 +4126,16 @@
 																"type": "object",
 																"properties": {
 																	"_id": {
-																		"type": "string"
+																		"type": "string",
+																		"example": "68e706a57c16280b8b499ebf"
 																	},
 																	"title": {
-																		"type": "string"
+																		"type": "string",
+																		"example": "Superman"
 																	},
 																	"posterPath": {
-																		"type": "string"
+																		"type": "string",
+																		"example": "/eD7bvI6TcMNkpJaLhTv4jlHkdIB.jpg"
 																	}
 																}
 															}
@@ -1893,23 +4146,34 @@
 										}
 									}
 								},
-								"example": {
-									"reviews": [
-										{
-											"_id": "68e70d507c16280b8b49a1a5",
-											"userId": "68d31ad598655d0a37332581",
-											"movieId": {
-												"_id": "68e706a57c16280b8b499ebf",
-												"title": "Superman",
-												"posterPath": "/eD7bvI6TcMNkpJaLhTv4jlHkdIB.jpg"
-											},
-											"rating": 9,
-											"comment": "Excelente película, muy entretenida y con grandes actuaciones.",
-											"createdAt": "2025-10-06T15:30:00.000Z",
-											"updatedAt": "2025-10-06T15:30:00.000Z"
-										}
-									]
-								}
+								"example": [
+									{
+										"_id": "68ef5a86a47714309114c5e3",
+										"userId": "68d31ad598655d0a37332581",
+										"movieId": {
+											"_id": "68e7069e7c16280b8b499c26",
+											"title": "Expediente Warren: El último rito",
+											"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg"
+										},
+										"rating": 9,
+										"comment": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes.",
+										"createdAt": "2025-10-15T08:25:42.315Z",
+										"updatedAt": "2025-10-15T08:25:42.315Z"
+									},
+									{
+										"_id": "68e81188a0954456370d5076",
+										"userId": "68d31ad598655d0a37332581",
+										"movieId": {
+											"_id": "68e706a57c16280b8b499ebf",
+											"title": "Superman",
+											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg"
+										},
+										"rating": 9,
+										"comment": "Excelente película, un clásico imperdible de superhéroes.",
+										"createdAt": "2025-10-09T19:48:24.624Z",
+										"updatedAt": "2025-10-09T19:48:24.624Z"
+									}
+								]
 							}
 						}
 					},
@@ -1964,7 +4228,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68e81188a0954456370d5076"
 						},
 						"description": "ID de la reseña a actualizar"
 					}
@@ -1980,11 +4245,13 @@
 										"type": "integer",
 										"minimum": 1,
 										"maximum": 10,
-										"description": "Nueva puntuación (1-10)"
+										"description": "Nueva puntuación (1-10)",
+										"example": 10
 									},
 									"comment": {
 										"type": "string",
-										"description": "Nuevo comentario"
+										"description": "Nuevo comentario",
+										"example": "La mejor película de superhéroes que he visto."
 									}
 								}
 							},
@@ -2001,10 +4268,63 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"type": "object",
+									"properties": {
+										"_id": {
+											"type": "string",
+											"example": "68e81188a0954456370d5076"
+										},
+										"userId": {
+											"type": "string",
+											"example": "68d31ad598655d0a37332581"
+										},
+										"movieId": {
+											"type": "string",
+											"example": "68e706a57c16280b8b499ebf"
+										},
+										"rating": {
+											"type": "integer",
+											"example": 10
+										},
+										"comment": {
+											"type": "string",
+											"example": "La mejor película de superhéroes que he visto."
+										},
+										"createdAt": {
+											"type": "string",
+											"format": "date-time",
+											"example": "2025-10-09T19:48:24.624Z"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time",
+											"example": "2025-10-15T10:00:00.000Z"
+										}
+									}
 								},
 								"example": {
-									"message": "Reseña actualizada exitosamente"
+									"_id": "68e81188a0954456370d5076",
+									"userId": "68d31ad598655d0a37332581",
+									"movieId": "68e706a57c16280b8b499ebf",
+									"rating": 10,
+									"comment": "La mejor película de superhéroes que he visto.",
+									"createdAt": "2025-10-09T19:48:24.624Z",
+									"updatedAt": "2025-10-09T20:37:01.370Z",
+									"__v": 0
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error en la solicitud",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Datos enviados inválidos",
+									"details": ["El campo 'rating' debe ser un número entre 1 y 10."]
 								}
 							}
 						}
@@ -2034,25 +4354,14 @@
 						}
 					},
 					"403": {
-						"description": "No autorizado para modificar esta reseña o datos inválidos",
+						"description": "No tienes permiso para editar esta reseña",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
-								"examples": {
-									"notOwner": {
-										"summary": "No es tu reseña",
-										"value": {
-											"message": "No puedes modificar esta reseña"
-										}
-									},
-									"invalidData": {
-										"summary": "Datos inválidos",
-										"value": {
-											"message": "Datos enviados inválidos"
-										}
-									}
+								"example": {
+									"message": "No tienes permiso para editar esta reseña"
 								}
 							}
 						}
@@ -2095,7 +4404,8 @@
 						"in": "path",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"example": "68ef5a86a47714309114c5e3"
 						},
 						"description": "ID de la reseña a eliminar"
 					}
@@ -2106,7 +4416,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string",
+											"example": "Reseña eliminada correctamente"
+										}
+									}
 								},
 								"example": {
 									"message": "Reseña eliminada correctamente"
@@ -2139,14 +4455,14 @@
 						}
 					},
 					"403": {
-						"description": "No autorizado para eliminar esta reseña",
+						"description": "No tienes permiso para eliminar esta reseña",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ErrorResponse"
 								},
 								"example": {
-									"message": "No puedes eliminar esta reseña"
+									"message": "No tienes permiso para eliminar esta reseña"
 								}
 							}
 						}
@@ -2443,6 +4759,25 @@
 						"example": "Error interno del servidor"
 					}
 				}
+			},
+			"ErrorResponseWithDetails": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Datos enviados inválidos"
+					},
+					"details": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"example": [
+							"El campo 'password' es obligatorio.",
+							"El campo 'identifier' debe ser un email válido o un nombre de usuario."
+						]
+					}
+				}
 			}
 		}
 	},
@@ -2460,8 +4795,12 @@
 			"description": "Gestión de proveedores de streaming (CRUD - solo admin)"
 		},
 		{
-			"name": "User",
-			"description": "Gestión de proveedores y watchlist del usuario"
+			"name": "User - Providers",
+			"description": "Gestión de proveedores del usuario"
+		},
+		{
+			"name": "User - Watchlist",
+			"description": "Gestión de la watchlist del usuario"
 		},
 		{
 			"name": "Movies",
@@ -2477,4 +4816,3 @@
 		}
 	]
 }
-

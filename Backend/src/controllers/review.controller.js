@@ -155,6 +155,7 @@ export const getMovieReviewsController = async (req, res) => {
 		}
 
 		// Respondo con las reviews
+		// TODO: Agregar paginación en la respuesta ("total": 15, "page": 1, "limit": 5 como en los demás)
 		return res.status(200).json(reviews);
 	} catch (error) {
 		console.error("Error al obtener reseñas:", error);
@@ -164,6 +165,7 @@ export const getMovieReviewsController = async (req, res) => {
 	}
 };
 
+// TODO: Agregar paginado a mis reseñas también
 /**
  * Obtiene todas las reseñas del usuario autenticado
  *

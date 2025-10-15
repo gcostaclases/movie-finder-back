@@ -10,10 +10,10 @@ const payloadMiddleWare = (schema) => {
 
 		if (error) {
 			console.log("Error en la validación del payload:", error.message);
-			res.status(403).json({
+			res.status(400).json({
 				message: INVALID_PAYLOAD_MESSAGE,
 				// TODO: Chequear mejor como levantar los errores de Joi customizados para poner aca
-				//details: error.details,
+				details: error.details.map((detail) => detail.message),
 			});
 			return;
 		}

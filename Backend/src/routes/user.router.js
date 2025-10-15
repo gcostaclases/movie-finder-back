@@ -27,7 +27,7 @@ v1UserRouter.use(authMiddleware);
 v1UserRouter.get("/providers", getMyProvidersController);
 
 // Agregar un proveedor a la lista del usuario autenticado
-v1UserRouter.post("/providers", addProviderToUserController);
+v1UserRouter.post("/providers", addProviderToUserController); //TODO: Validar body con JOI
 
 // Quitar un proveedor de la lista del usuario autenticado
 v1UserRouter.delete("/providers/:providerId", removeProviderFromUserController);
@@ -38,7 +38,7 @@ v1UserRouter.delete("/providers/:providerId", removeProviderFromUserController);
 v1UserRouter.get("/watchlist", getMyWatchlistController);
 
 // Agregar una película a la watchlist del usuario autenticado
-v1UserRouter.post("/watchlist", addMovieToWatchlistController);
+v1UserRouter.post("/watchlist", addMovieToWatchlistController); //TODO: Validar body con JOI
 
 // Quitar una película de la watchlist del usuario autenticado
 v1UserRouter.delete("/watchlist/:movieId", removeMovieFromWatchlistController);

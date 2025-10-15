@@ -34,7 +34,7 @@ export const getAllProvidersController = async (req, res) => {
 			}
 		}
 
-		return res.json(providers);
+		return res.status(200).json(providers);
 	} catch (error) {
 		console.error("Error al obtener proveedores:", error);
 		return res.status(500).json({
@@ -74,7 +74,7 @@ export const getProviderByIdController = async (req, res) => {
 			await cacheService.set(cacheKey, provider, 600);
 		}
 
-		return res.json(provider);
+		return res.status(200).json(provider);
 	} catch (error) {
 		console.error("Error al obtener proveedor:", error);
 		return res.status(500).json({
@@ -183,7 +183,7 @@ export const deleteProviderController = async (req, res) => {
 		const keysToInvalidate = [`provider:id:${id}`, `provider:nombre:${deletedProvider.nombre}`, "providers:all"];
 		await cacheService.invalidateMultiple(keysToInvalidate);
 
-		return res.json({
+		return res.status(200).json({
 			message: "Proveedor eliminado correctamente",
 		});
 	} catch (error) {

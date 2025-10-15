@@ -29,9 +29,9 @@ export const postLogin = async (req, res) => {
 			$or: [{ email: identifier }, { username: identifier }],
 		});
 
-		// Si no lo encuentro, retorno error 403
+		// Si no lo encuentro, retorno error 404
 		if (!user) {
-			return res.status(403).json({
+			return res.status(404).json({
 				message: "Usuario no encontrado",
 			});
 		}
@@ -41,22 +41,21 @@ export const postLogin = async (req, res) => {
 		// Verifico que la contraseña sea correcta usando el método definido en el esquema
 		const isPassOK = await user.isValidPassword(password);
 
-		// Si la contraseña no es correcta, retorno error 403
+		// Si la contraseña no es correcta, retorno error 400
 		if (!isPassOK) {
-			return res.status(403).json({
+			return res.status(400).json({
 				message: "Credenciales inválidas",
 			});
 		}
 
 		// Si está todo bien genero el token y mando mensaje exitoso
+		//console.log("Usuario ID:", user.id, " - Rol:", user.role);
 
 		// Genero el token
-		console.log("Usuario ID:", user.id, " - Rol:", user.role);
-
 		const token = signToken(user.id, user.role);
 
 		// Retorno el token y un mensaje de éxito
-		return res.json({
+		return res.status(200).json({
 			token,
 			message: "Inicio de sesión exitoso",
 		});
@@ -85,7 +84,7 @@ export const postSignup = async (req, res) => {
 	// Verifico si el email ya existe
 	const emailCount = await repoFactory.countUsers({ email });
 	if (emailCount > 0) {
-		return res.status(403).json({
+		return res.status(400).json({
 			message: "El email ya está registrado",
 		});
 	}
@@ -93,7 +92,7 @@ export const postSignup = async (req, res) => {
 	// Verifico si el username ya existe
 	const usernameCount = await repoFactory.countUsers({ username });
 	if (usernameCount > 0) {
-		return res.status(403).json({
+		return res.status(400).json({
 			message: "El nombre de usuario ya está registrado",
 		});
 	}

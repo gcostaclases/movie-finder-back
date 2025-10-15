@@ -1,6 +1,6 @@
 //#region  ----------- IMPORTS -----------
 // Importo constantes
-import { UNAUTHORIZED_MESSAGE } from "../utils/constants.js";
+import { FORBIDDEN_MESSAGE } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
 
 const adminMiddleware = (req, res, next) => {
@@ -9,8 +9,8 @@ const adminMiddleware = (req, res, next) => {
 
 	// Verifico que el rol sea "admin"
 	if (userRole !== "admin") {
-		return res.status(401).json({
-			message: UNAUTHORIZED_MESSAGE,
+		return res.status(403).json({
+			message: FORBIDDEN_MESSAGE,
 		});
 	}
 	next();

@@ -129,9 +129,6 @@ export const getMyWatchlistController = async (req, res) => {
 	const { userId } = req.user;
 	const { page = 1, limit = 10 } = req.query;
 
-	// Cache key
-	const cacheKey = `watchlist:user:${userId}:page:${page}:limit:${limit}`;
-
 	try {
 		// Consulto el usuario en la base de datos
 		const user = await repoFactory.findUser({ _id: userId });

@@ -109,7 +109,7 @@ export const getMovieAvailabilityController = async (req, res) => {
 			await cacheService.set(availabilityCacheKey, availability, 600);
 		}
 
-		return res.json({
+		return res.status(200).json({
 			movieId,
 			movieTitle: movie.title,
 			availability,
@@ -153,7 +153,7 @@ export const getPersonalizedAvailabilityController = async (req, res) => {
 		// Obtengo availability personalizada
 		const availability = await repoFactory.getPersonalizedAvailability(movieId, userWithProviders.providers);
 
-		return res.json({
+		return res.status(200).json({
 			movieId,
 			movieTitle: movie.title,
 			...availability,
