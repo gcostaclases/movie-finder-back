@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { Redis } from "@upstash/redis";
+import cloudinary from "./services/cloudinary.js"; // Importa el servicio de Cloudinary
+import path from "path";
 
 // ------------ Prueba de Joi ------------
 console.log("---------************  PRUEBAS DE JOI  ************---------");
@@ -227,6 +229,7 @@ async function test() {
 	}
 		*/
 
+	/*
 	// ------------ Prueba de Redis ------------
 	console.log("---------************  PRUEBAS DE REDIS  ************---------");
 
@@ -249,6 +252,24 @@ async function test() {
 
 	//PARA ELIMINAR UNA KEY
 	// await redisClient.del("test");
+	*/
+
+	// ------------ Prueba de Cloudinary ------------
+	console.log("---------************  PRUEBAS DE CLOUDINARY  ************---------");
+
+	try {
+		// Ruta de una imagen de prueba en tu computadora
+		const imagePath = path.resolve("E:/Pictures/Para edits/hola.png");
+
+		// Subir la imagen a Cloudinary
+		const result = await cloudinary.uploader.upload(imagePath, {
+			folder: "test-folder", // Carpeta en Cloudinary
+		});
+
+		console.log("Imagen subida con éxito:", result.secure_url);
+	} catch (error) {
+		console.error("Error al subir la imagen a Cloudinary:", error.message);
+	}
 }
 
 test();

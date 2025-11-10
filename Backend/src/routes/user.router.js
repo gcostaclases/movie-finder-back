@@ -10,10 +10,15 @@ import {
 	getMyWatchlistController,
 	addMovieToWatchlistController,
 	removeMovieFromWatchlistController,
+	getMyProfileController,
+	uploadProfileImageController,
 } from "../controllers/user.controller.js";
 
 // Importo el middleware de autenticación
 import authMiddleware from "../middlewares/auth.middleware.js";
+
+// Importo el middleware de uploads multer para la subida de archivos
+import uploadMiddleware from "../middlewares/upload.middleware.js";
 //#endregion ----------- IMPORTS -----------
 
 // Defino el conjunto de rutas dentro del router
@@ -43,5 +48,13 @@ v1UserRouter.post("/watchlist", addMovieToWatchlistController); //TODO: Validar 
 // Quitar una película de la watchlist del usuario autenticado
 v1UserRouter.delete("/watchlist/:movieId", removeMovieFromWatchlistController);
 //#endregion ----------- WATCHLIST -----------
+
+//#region ----------- PROFILE -----------
+// Obtener el perfil del usuario autenticado
+v1UserRouter.get("/profile", getMyProfileController);
+
+// Subir la imagen de perfil del usuario autenticado
+v1UserRouter.post("/profile-image", uploadMiddleware("image"), uploadProfileImageController);
+//#endregion ----------- PROFILE -----------
 
 export default v1UserRouter;

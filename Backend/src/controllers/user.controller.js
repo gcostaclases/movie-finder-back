@@ -1,4 +1,7 @@
 //#region  ----------- IMPORTS -----------
+// Importo el servicio de Cloudinary
+import cloudinary from "../services/cloudinary.js";
+
 // Importo las funciones del repositorio
 import repoFactory from "../repositories/repositories.service.js";
 
@@ -6,7 +9,7 @@ import repoFactory from "../repositories/repositories.service.js";
 //import cacheService from "../services/cache/index.js";
 
 // Importo constantes
-import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
+import { INTERNAL_SERVER_ERROR, INVALID_PAYLOAD_MESSAGE } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
 
 //#region ----------- PROVIDERS -----------
@@ -248,3 +251,113 @@ export const removeMovieFromWatchlistController = async (req, res) => {
 };
 
 //#endregion ----------- WATCHLIST -----------
+
+//#region ----------- PROFILE -----------
+
+export const getMyProfileController = async (req, res) => {
+	const { userId } = req.user;
+
+	try {
+		// Busco al usuario en la base de datos
+		const user = await repoFactory.findUser({ _id: userId });
+		if (!user) {
+			return res.status(404).json({
+				message: "Usuario no encontrado.",
+			});
+		}
+
+		// Devuelvo los datos del usuario
+		res.status(200).json({
+			username: user.username,
+			email: user.email,
+			profileImage: user.profileImage || null, // Devuelvo null si no tiene imagen
+		});
+	} catch (error) {
+		console.error("Error al obtener el perfil del usuario:", error);
+		res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
+	}
+};
+
+/**
+ * Actualiza la imagen de perfil del usuario autenticado
+ * POST /me/profile-image
+ * @param {Object} req - Request de Express
+ * @param {Object} req.user - Usuario autenticado (desde middleware)
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} req.file - Archivo subido (procesado por multer)
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con la URL de la imagen subida o mensaje de error
+ */
+export const uploadProfileImageController = async (req, res) => {
+	const { userId } = req.user;
+
+	// Verifico que se haya subido un archivo
+	if (!req.file) {
+		return res.status(400).json({
+			message: INVALID_PAYLOAD_MESSAGE,
+			details: ["No se subió ninguna imagen."],
+		});
+	}
+
+	try {
+		// Busco al usuario en la base de datos
+		const user = await repoFactory.findUser({ _id: userId });
+		if (!user) {
+			return res.status(404).json({
+				message: "Usuario no encontrado.",
+			});
+		}
+
+		// Si el usuario ya tiene una imagen de perfil, la elimino de Cloudinary
+		if (user.profileImage) {
+			try {
+				// Extraigo el public_id de la URL de Cloudinary
+				const publicId = user.profileImage.split("/").slice(-2).join("/").split(".")[0]; // Ejemplo: "profile-images/imagen"
+				await cloudinary.uploader.destroy(publicId);
+				console.log(`Imagen anterior eliminada: ${publicId}`);
+			} catch (error) {
+				console.error("Error al eliminar la imagen anterior de Cloudinary:", error);
+			}
+		}
+
+		// Subo la nueva imagen a Cloudinary
+		const result = await new Promise((resolve, reject) => {
+			cloudinary.uploader
+				.upload_stream(
+					{
+						folder: "profile-images", // Carpeta en Cloudinary
+					},
+					(error, result) => {
+						if (error) {
+							reject(new Error("Error al subir la imagen a Cloudinary."));
+						} else {
+							resolve(result);
+						}
+					}
+				)
+				.end(req.file.buffer);
+		});
+
+		console.log("Imagen subida a Cloudinary:", result.secure_url);
+
+		// Actualizo la URL de la nueva imagen en la base de datos
+		user.profileImage = result.secure_url;
+		await user.save();
+
+		console.log("Usuario actualizado en la base de datos:", user);
+
+		res.status(200).json({
+			message: "Imagen de perfil actualizada con éxito.",
+			profileImage: result.secure_url,
+		});
+	} catch (error) {
+		console.error("Error al subir la imagen de perfil:", error);
+		res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
+	}
+};
+
+//#endregion ----------- PROFILE -----------

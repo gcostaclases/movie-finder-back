@@ -706,6 +706,207 @@
 				}
 			}
 		},
+		"/me/profile": {
+			"get": {
+				"tags": ["User - Profile"],
+				"summary": "Obtener perfil del usuario",
+				"description": "Devuelve la información del perfil del usuario autenticado, incluyendo su nombre de usuario, email y la URL de su imagen de perfil.",
+				"responses": {
+					"200": {
+						"description": "Perfil del usuario obtenido exitosamente",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Profile"
+								},
+								"example": {
+									"username": "juanp",
+									"email": "juanperez@gmail.com",
+									"profileImage": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "No autenticado - Token faltante o inválido",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"noToken": {
+										"summary": "Token no proporcionado",
+										"value": {
+											"message": "No autorizado"
+										}
+									},
+									"invalidToken": {
+										"summary": "Token inválido",
+										"value": {
+											"message": "No autorizado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/me/profile-image": {
+			"post": {
+				"tags": ["User - Profile"],
+				"summary": "Subir o actualizar imagen de perfil",
+				"description": "Permite al usuario autenticado subir o actualizar su imagen de perfil. Si ya tenía una imagen, la anterior será eliminada de Cloudinary.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "string",
+										"format": "binary",
+										"description": "Archivo de imagen a subir (max 2 MB, solo image/*)"
+									}
+								},
+								"required": ["image"]
+							},
+							"encoding": {
+								"image": {
+									"contentType": "image/*"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Imagen de perfil actualizada con éxito",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"message": { "type": "string" },
+										"profileImage": { "type": "string" }
+									}
+								},
+								"example": {
+									"message": "Imagen de perfil actualizada con éxito.",
+									"profileImage": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error en la solicitud (archivo inválido / demasiado grande / no enviado)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"oneOf": [
+										{ "$ref": "#/components/schemas/ErrorResponse" },
+										{ "$ref": "#/components/schemas/ErrorResponseWithDetails" }
+									]
+								},
+								"examples": {
+									"fileTooLarge": {
+										"summary": "Archivo demasiado grande",
+										"value": { "message": "El archivo es demasiado grande. El tamaño máximo permitido es de 2 MB." }
+									},
+									"invalidFileType": {
+										"summary": "Tipo de archivo no permitido",
+										"value": { "message": "Solo se permiten archivos de imagen." }
+									},
+									"noFileUploaded": {
+										"summary": "No se subió ningún archivo",
+										"value": { "message": "No se subió ninguna imagen." }
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "No autenticado - Token faltante o inválido",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"examples": {
+									"noToken": {
+										"summary": "Token no proporcionado",
+										"value": {
+											"message": "No autorizado"
+										}
+									},
+									"invalidToken": {
+										"summary": "Token inválido",
+										"value": {
+											"message": "No autorizado"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Usuario no encontrado"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								},
+								"example": {
+									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/me/providers": {
 			"get": {
 				"tags": ["User - Providers"],
@@ -4600,6 +4801,18 @@
 					}
 				}
 			},
+			"Profile": {
+				"type": "object",
+				"properties": {
+					"username": { "type": "string", "example": "juanp" },
+					"email": { "type": "string", "example": "juanperez@gmail.com" },
+					"profileImage": {
+						"type": "string",
+						"nullable": true,
+						"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
+					}
+				}
+			},
 			"Movie": {
 				"type": "object",
 				"properties": {
@@ -4793,6 +5006,10 @@
 		{
 			"name": "Providers",
 			"description": "Gestión de proveedores de streaming (CRUD - solo admin)"
+		},
+		{
+			"name": "User - Profile",
+			"description": "Gestión del perfil del usuario"
 		},
 		{
 			"name": "User - Providers",

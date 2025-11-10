@@ -10,6 +10,12 @@ import v1ReviewRouter from "./review.router.js";
 //#endregion ----------- IMPORTS -----------
 
 const setupRoutes = (app) => {
+	// Redirigir el endpoint raíz a la documentación de Swagger
+	/* El guion bajo (_) es una convención para indicar que el parámetro no se usa (req), pero se mantiene para respetar la firma de la función. */
+	app.get("/", (_, res) => {
+		res.redirect("/api/v1/documentation/swagger/");
+	});
+
 	// Public Routes (NO requieren autenticación)
 	app.use("/api/v1/health", healthRouter);
 	app.use("/api/v1/documentation", documentationRouter);
@@ -23,4 +29,3 @@ const setupRoutes = (app) => {
 };
 
 export default setupRoutes;
-

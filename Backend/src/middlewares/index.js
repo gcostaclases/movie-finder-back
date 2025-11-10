@@ -42,4 +42,3 @@ const setupMiddlewares = (app) => {
 };
 
 export default setupMiddlewares;
-
