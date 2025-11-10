@@ -31,6 +31,17 @@ const providerSchema = new mongoose.Schema(
 				},
 			],
 		},
+		logo: {
+			type: String,
+			default: null, // Por defecto, el proveedor no tiene logo
+			validate: {
+				validator: (value) => {
+					// Validar que sea una URL válida
+					return value === null || /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(value);
+				},
+				message: "La URL del logotipo no es válida.",
+			},
+		},
 	},
 	{
 		timestamps: true,

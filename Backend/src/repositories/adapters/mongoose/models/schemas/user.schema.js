@@ -78,6 +78,17 @@ const userSchema = new mongoose.Schema(
 			ref: "Provider",
 			default: [],
 		},
+		profileImage: {
+			type: String,
+			default: null, // Por defecto, el usuario no tiene imagen
+			validate: {
+				validator: (value) => {
+					// Validar que sea una URL válida
+					return value === null || /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(value);
+				},
+				message: "La URL de la imagen de perfil no es válida.",
+			},
+		},
 		watchlist: {
 			type: [mongoose.Schema.Types.ObjectId],
 			ref: "Movie",
@@ -111,4 +122,3 @@ userSchema.methods.isValidPassword = async function (password) {
 };
 
 export default userSchema;
-
