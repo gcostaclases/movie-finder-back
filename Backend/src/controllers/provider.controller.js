@@ -5,6 +5,9 @@ import repoFactory from "../repositories/repositories.service.js";
 // Importo el servicio de cache
 import cacheService from "../services/cache/index.js";
 
+// Importo Cloudinary para subir/eliminar logos
+import cloudinary from "../services/cloudinary.js";
+
 // Importo constantes
 import { INTERNAL_SERVER_ERROR } from "../utils/constants.js";
 //#endregion ----------- IMPORTS -----------
@@ -98,7 +101,7 @@ export const createProviderController = async (req, res) => {
 	const { nombre } = req.body;
 
 	try {
-		// Valido que no exista
+		// Valido que no exista un proveedor con el mismo nombre
 		const count = await repoFactory.countProviders({ nombre });
 		if (count > 0) {
 			return res.status(400).json({
@@ -106,10 +109,33 @@ export const createProviderController = async (req, res) => {
 			});
 		}
 
-		// Creo el proveedor
-		const newProvider = await repoFactory.saveProvider(nombre);
+		let logoUrl = null;
 
-		// Invalido cache después de crear
+		// Si se subió un archivo, subo el logo a Cloudinary
+		if (req.file) {
+			const result = await new Promise((resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream({ folder: "provider-logos" }, (error, result) => {
+						if (error) {
+							reject(new Error("Error al subir el logo a Cloudinary."));
+						} else {
+							resolve(result);
+						}
+					})
+					.end(req.file.buffer);
+			});
+
+			console.log("Logo subido a Cloudinary:", result.secure_url);
+			logoUrl = result.secure_url;
+		}
+
+		// Creo el proveedor usando el repositorio
+		const newProvider = await repoFactory.saveProvider({
+			nombre,
+			logo: logoUrl,
+		});
+
+		// Invalido el cache después de crear el proveedor
 		await cacheService.delete("providers:all");
 
 		return res.status(201).json(newProvider);
@@ -136,20 +162,56 @@ export const updateProviderController = async (req, res) => {
 	const { nombre } = req.body;
 
 	try {
-		// Actualizo en BD
-		const updatedProvider = await repoFactory.updateProvider(id, nombre);
-
-		if (!updatedProvider) {
-			return res.status(404).json({
-				message: "Proveedor no encontrado",
-			});
+		// Busco el proveedor en la base de datos
+		const provider = await repoFactory.findProvider({ _id: id });
+		if (!provider) {
+			return res.status(404).json({ message: "Proveedor no encontrado" });
 		}
 
-		// Invalido caches relacionados después de actualizar
-		const keysToInvalidate = [`provider:id:${id}`, "providers:all"];
-		await cacheService.invalidateMultiple(keysToInvalidate);
+		// Si se subió un archivo, subo el nuevo logo a Cloudinary
+		let logoUrl = provider.logo;
+		if (req.file) {
+			// Elimino el logo anterior si existe
+			if (provider.logo) {
+				try {
+					const publicId = provider.logo.split("/").slice(-2).join("/").split(".")[0]; // Ejemplo: "provider-logos/imagen"
+					await cloudinary.uploader.destroy(publicId);
+					console.log(`Logo anterior eliminado: ${publicId}`);
+				} catch (error) {
+					console.error("Error al eliminar logo anterior en Cloudinary:", error);
+				}
+			}
 
-		return res.json(updatedProvider);
+			// Subo el nuevo logo
+			const result = await new Promise((resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream({ folder: "provider-logos" }, (error, result) => {
+						if (error) {
+							reject(new Error("Error al subir el logo a Cloudinary."));
+						} else {
+							resolve(result);
+						}
+					})
+					.end(req.file.buffer);
+			});
+
+			console.log("Nuevo logo subido a Cloudinary:", result.secure_url);
+			logoUrl = result.secure_url;
+		}
+
+		// Preparo los datos a actualizar
+		let updateData = {};
+		if (nombre) updateData.nombre = nombre;
+		if (req.file) updateData.logo = logoUrl;
+
+		// Actualizo el proveedor usando el repositorio
+		const updatedProvider = await repoFactory.updateProvider(id, updateData);
+
+		// Invalido el cache después de actualizar el proveedor
+		await cacheService.delete(`provider:id:${id}`);
+		await cacheService.delete("providers:all");
+
+		return res.status(200).json(updatedProvider);
 	} catch (error) {
 		console.error("Error al actualizar proveedor:", error);
 		return res.status(500).json({

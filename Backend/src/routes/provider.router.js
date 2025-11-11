@@ -20,6 +20,9 @@ import {
 // Importo el middleware para validar el payload
 import payloadMiddleWare from "../middlewares/payload.middleware.js";
 
+// Importo el middleware de uploads para logos
+import uploadMiddleware from "../middlewares/upload.middleware.js";
+
 // Importo los schemas de validación de Joi
 import { providerCreateSchema, providerUpdateSchema } from "./validations/provider.router.schema.js";
 //#endregion ----------- IMPORTS -----------
@@ -41,10 +44,22 @@ v1ProviderRouter.get("/:id", getProviderByIdController);
 v1ProviderRouter.use(authMiddleware);
 
 // Crear proveedor (solo admin)
-v1ProviderRouter.post("/", adminMiddleware, payloadMiddleWare(providerCreateSchema), createProviderController);
+v1ProviderRouter.post(
+	"/",
+	adminMiddleware,
+	uploadMiddleware("logo"), // Middleware para subir el logo (opcional)
+	payloadMiddleWare(providerCreateSchema),
+	createProviderController
+);
 
 // Editar proveedor (solo admin)
-v1ProviderRouter.patch("/:id", adminMiddleware, payloadMiddleWare(providerUpdateSchema), updateProviderController);
+v1ProviderRouter.patch(
+	"/:id",
+	adminMiddleware,
+	uploadMiddleware("logo"), // Middleware para subir el logo (opcional)
+	payloadMiddleWare(providerUpdateSchema),
+	updateProviderController
+);
 
 // Eliminar proveedor (solo admin)
 v1ProviderRouter.delete("/:id", adminMiddleware, deleteProviderController);

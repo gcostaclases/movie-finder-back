@@ -302,7 +302,7 @@ export const uploadProfileImageController = async (req, res) => {
 	}
 
 	try {
-		// Busco al usuario en la base de datos
+		// Busco al usuario usando el repositorio
 		const user = await repoFactory.findUser({ _id: userId });
 		if (!user) {
 			return res.status(404).json({
@@ -313,8 +313,7 @@ export const uploadProfileImageController = async (req, res) => {
 		// Si el usuario ya tiene una imagen de perfil, la elimino de Cloudinary
 		if (user.profileImage) {
 			try {
-				// Extraigo el public_id de la URL de Cloudinary
-				const publicId = user.profileImage.split("/").slice(-2).join("/").split(".")[0]; // Ejemplo: "profile-images/imagen"
+				const publicId = user.profileImage.split("/").slice(-2).join("/").split(".")[0];
 				await cloudinary.uploader.destroy(publicId);
 				console.log(`Imagen anterior eliminada: ${publicId}`);
 			} catch (error) {
@@ -327,7 +326,7 @@ export const uploadProfileImageController = async (req, res) => {
 			cloudinary.uploader
 				.upload_stream(
 					{
-						folder: "profile-images", // Carpeta en Cloudinary
+						folder: "profile-images",
 					},
 					(error, result) => {
 						if (error) {
@@ -342,15 +341,14 @@ export const uploadProfileImageController = async (req, res) => {
 
 		console.log("Imagen subida a Cloudinary:", result.secure_url);
 
-		// Actualizo la URL de la nueva imagen en la base de datos
-		user.profileImage = result.secure_url;
-		await user.save();
+		// Actualizo la URL de la nueva imagen usando el repositorio
+		const updatedUser = await repoFactory.updateUserProfileImage(userId, result.secure_url);
 
-		console.log("Usuario actualizado en la base de datos:", user);
+		console.log("Usuario actualizado en la base de datos:", updatedUser);
 
 		res.status(200).json({
 			message: "Imagen de perfil actualizada con éxito.",
-			profileImage: result.secure_url,
+			profileImage: updatedUser.profileImage,
 		});
 	} catch (error) {
 		console.error("Error al subir la imagen de perfil:", error);

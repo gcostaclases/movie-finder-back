@@ -43,6 +43,12 @@ const uploadMiddleware = (fieldName) => {
 					message: "Error al subir el archivo.",
 				});
 			}
+			// Verifico si el archivo está vacío (campo enviado pero sin imagen)
+			if (req.file && (!req.file.buffer || req.file.size === 0)) {
+				return res.status(400).json({
+					message: "No se subió ninguna imagen.",
+				});
+			}
 			// Si no hay errores, pasa al siguiente middleware o controlador
 			next();
 		});

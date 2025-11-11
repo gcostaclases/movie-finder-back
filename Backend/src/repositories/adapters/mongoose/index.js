@@ -14,6 +14,7 @@ import {
 	populateUserWatchlist,
 	addMovieToWatchlist,
 	removeMovieFromWatchlist,
+	updateUserProfileImage,
 } from "./user.repository.js";
 
 // Importo las funciones del repositorio de proveedor
@@ -92,6 +93,7 @@ const createMongooseAdapter = async () => {
 		populateUserWatchlist,
 		addMovieToWatchlist,
 		removeMovieFromWatchlist,
+		updateUserProfileImage,
 
 		// PROVIDER REPOSITORY
 		findProvider,
@@ -124,4 +126,3 @@ const createMongooseAdapter = async () => {
 };
 
 export default createMongooseAdapter;
-

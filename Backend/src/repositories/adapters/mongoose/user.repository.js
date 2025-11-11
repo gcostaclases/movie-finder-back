@@ -81,3 +81,11 @@ export const removeMovieFromWatchlist = async (userId, movieId) => {
 	return true;
 };
 
+// PERFIL
+export const updateUserProfileImage = async (userId, imageUrl) => {
+	const user = await User.findById(userId);
+	if (!user) return null;
+	user.profileImage = imageUrl;
+	await user.save();
+	return user;
+};

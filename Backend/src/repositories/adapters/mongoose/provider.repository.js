@@ -19,14 +19,14 @@ export const countProviders = async (filter) => {
 };
 
 // Crear proveedor
-export const saveProvider = async (nombre) => {
-	const newProvider = new Provider({ nombre });
+export const saveProvider = async (data) => {
+	const newProvider = new Provider(data);
 	return await newProvider.save();
 };
 
 // Actualizar proveedor
-export const updateProvider = async (id, nombre) => {
-	return await Provider.findByIdAndUpdate(id, { nombre }, { new: true, runValidators: true });
+export const updateProvider = async (id, data) => {
+	return await Provider.findByIdAndUpdate(id, data, { new: true, runValidators: true });
 };
 
 // Eliminar proveedor

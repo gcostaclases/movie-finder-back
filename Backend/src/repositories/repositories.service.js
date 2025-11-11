@@ -111,6 +111,16 @@ class RepositoryFactory {
 		return await this.getInstance().removeMovieFromWatchlist(userId, movieId);
 	}
 
+	/**
+	 * Actualiza la imagen de perfil del usuario
+	 * @param {string} userId - ID del usuario
+	 * @param {string} imageUrl - URL de la nueva imagen de perfil
+	 * @returns {Promise<Object|null>} Usuario actualizado o null si no existe
+	 */
+	async updateUserProfileImage(userId, imageUrl) {
+		return await this.getInstance().updateUserProfileImage(userId, imageUrl);
+	}
+
 	// ========== PROVIDER METHODS ==========
 
 	/**
@@ -141,21 +151,21 @@ class RepositoryFactory {
 
 	/**
 	 * Guarda un nuevo proveedor
-	 * @param {string} nombre - Nombre del proveedor
+	 * @param {Object} data - Datos del proveedor (nombre, logo, etc.)
 	 * @returns {Promise<Object>} Proveedor creado
 	 */
-	async saveProvider(nombre) {
-		return await this.getInstance().saveProvider(nombre);
+	async saveProvider(data) {
+		return await this.getInstance().saveProvider(data);
 	}
 
 	/**
 	 * Actualiza un proveedor
 	 * @param {string} id - ID del proveedor
-	 * @param {string} nombre - Nuevo nombre del proveedor
+	 * @param {Object} data - Datos a actualizar (nombre, logo, etc.)
 	 * @returns {Promise<Object|null>} Proveedor actualizado o null
 	 */
-	async updateProvider(id, nombre) {
-		return await this.getInstance().updateProvider(id, nombre);
+	async updateProvider(id, data) {
+		return await this.getInstance().updateProvider(id, data);
 	}
 
 	/**
@@ -317,4 +327,3 @@ class RepositoryFactory {
 // Exportar instancia singleton
 const repoFactory = new RepositoryFactory();
 export default repoFactory;
-

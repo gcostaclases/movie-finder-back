@@ -154,6 +154,19 @@ class RepositoryManager {
 		return (await this.adapter).removeMovieFromWatchlist(userId, movieId);
 	}
 
+	/**
+	 * Actualiza la imagen de perfil del usuario
+	 * @param {string} userId - ID del usuario
+	 * @param {string} imageUrl - URL de la nueva imagen de perfil
+	 * @returns {Promise<Object|null>} Usuario actualizado o null si no existe
+	 */
+	async updateUserProfileImage(userId, imageUrl) {
+		if (this.#debug) {
+			console.log(`[Repository] Updating profile image for user ${userId}: ${imageUrl}`);
+		}
+		return (await this.adapter).updateUserProfileImage(userId, imageUrl);
+	}
+
 	// ========== PROVIDER METHODS ==========
 
 	/**
@@ -193,27 +206,27 @@ class RepositoryManager {
 
 	/**
 	 * Guarda un nuevo proveedor
-	 * @param {string} nombre - Nombre del proveedor
+	 * @param {Object} data - Datos del proveedor (nombre, logo, etc.)
 	 * @returns {Promise<Object>} Proveedor creado
 	 */
-	async saveProvider(nombre) {
+	async saveProvider(data) {
 		if (this.#debug) {
-			console.log(`[Repository] Saving new provider: ${nombre}`);
+			console.log(`[Repository] Saving new provider:`, data);
 		}
-		return (await this.adapter).saveProvider(nombre);
+		return (await this.adapter).saveProvider(data);
 	}
 
 	/**
 	 * Actualiza un proveedor
 	 * @param {string} id - ID del proveedor
-	 * @param {string} nombre - Nuevo nombre del proveedor
+	 * @param {Object} data - Datos a actualizar (nombre, logo, etc.)
 	 * @returns {Promise<Object|null>} Proveedor actualizado o null
 	 */
-	async updateProvider(id, nombre) {
+	async updateProvider(id, data) {
 		if (this.#debug) {
-			console.log(`[Repository] Updating provider ${id} with name: ${nombre}`);
+			console.log(`[Repository] Updating provider ${id} with data:`, data);
 		}
-		return (await this.adapter).updateProvider(id, nombre);
+		return (await this.adapter).updateProvider(id, data);
 	}
 
 	/**
@@ -428,4 +441,3 @@ class RepositoryManager {
 }
 
 export default RepositoryManager;
-

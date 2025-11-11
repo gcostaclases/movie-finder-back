@@ -277,11 +277,13 @@
 								"example": [
 									{
 										"_id": "68d055c86aa347d04a2053da",
-										"nombre": "Netflix"
+										"nombre": "Netflix",
+										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 									},
 									{
 										"_id": "68d055d16aa347d04a2053de",
-										"nombre": "Prime Video"
+										"nombre": "Prime Video",
+										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/primevideo.jpg"
 									}
 								]
 							}
@@ -305,16 +307,36 @@
 			"post": {
 				"tags": ["Providers"],
 				"summary": "Crear nuevo proveedor (solo admin)",
-				"description": "Crea un nuevo proveedor de streaming. **Requiere rol de administrador.**",
+				"description": "Crea un nuevo proveedor de streaming. **Requiere rol de administrador.** Si se incluye un archivo en el campo `logo`, se subirá como el logo del proveedor.",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProviderRequest"
+								"type": "object",
+								"properties": {
+									"nombre": {
+										"type": "string",
+										"description": "Nombre del proveedor",
+										"example": "Netflix"
+									},
+									"logo": {
+										"type": "string",
+										"format": "binary",
+										"description": "Archivo de imagen para el logo del proveedor (opcional)"
+									}
+								},
+								"required": ["nombre"]
 							},
-							"example": {
-								"nombre": "Apple TV+"
+							"encoding": {
+								"logo": {
+									"contentType": "image/*"
+								}
 							}
 						}
 					}
@@ -329,7 +351,8 @@
 								},
 								"example": {
 									"_id": "68ef2b1012cd56dc05d6be3d",
-									"nombre": "Apple TV+",
+									"nombre": "Netflix",
+									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 									"createdAt": "2025-09-22T19:09:30.349Z",
 									"updatedAt": "2025-09-22T19:09:30.349Z",
 									"__v": 0
@@ -338,27 +361,33 @@
 						}
 					},
 					"400": {
-						"description": "Datos enviados inválidos o el proveedor ya existe",
+						"description": "Error en la solicitud (archivo inválido / demasiado grande / datos inválidos)",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponseWithDetails"
+									"oneOf": [
+										{ "$ref": "#/components/schemas/ErrorResponse" },
+										{ "$ref": "#/components/schemas/ErrorResponseWithDetails" }
+									]
 								},
 								"examples": {
+									"fileTooLarge": {
+										"summary": "Archivo demasiado grande",
+										"value": {
+											"message": "El archivo es demasiado grande. El tamaño máximo permitido es de 2 MB."
+										}
+									},
+									"invalidFileType": {
+										"summary": "Tipo de archivo no permitido",
+										"value": {
+											"message": "Solo se permiten archivos de imagen."
+										}
+									},
 									"invalidPayload": {
 										"summary": "Payload inválido",
 										"value": {
 											"message": "Datos enviados inválidos",
-											"details": [
-												"El campo 'nombre' es obligatorio.",
-												"El campo 'nombre' debe tener entre 2 y 20 caracteres."
-											]
-										}
-									},
-									"providerExists": {
-										"summary": "El proveedor ya existe",
-										"value": {
-											"message": "El proveedor ya existe"
+											"details": ["El campo 'nombre' es obligatorio."]
 										}
 									}
 								}
@@ -446,7 +475,8 @@
 								},
 								"example": {
 									"_id": "68d055c86aa347d04a2053da",
-									"nombre": "Netflix"
+									"nombre": "Netflix",
+									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 								}
 							}
 						}
@@ -482,7 +512,12 @@
 			"patch": {
 				"tags": ["Providers"],
 				"summary": "Actualizar proveedor (solo admin)",
-				"description": "Actualiza el nombre de un proveedor existente. **Requiere rol de administrador.**",
+				"description": "Actualiza el nombre o el logo de un proveedor existente. **Requiere rol de administrador.** Si se incluye un archivo en el campo `logo`, se subirá como el nuevo logo del proveedor.",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -496,14 +531,28 @@
 					}
 				],
 				"requestBody": {
-					"required": true,
+					"required": false,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/UpdateProviderRequest"
+								"type": "object",
+								"properties": {
+									"nombre": {
+										"type": "string",
+										"description": "Nuevo nombre del proveedor",
+										"example": "Paramount+"
+									},
+									"logo": {
+										"type": "string",
+										"format": "binary",
+										"description": "Archivo de imagen para el nuevo logo del proveedor (opcional)"
+									}
+								}
 							},
-							"example": {
-								"nombre": "Paramount +"
+							"encoding": {
+								"logo": {
+									"contentType": "image/*"
+								}
 							}
 						}
 					}
@@ -518,7 +567,8 @@
 								},
 								"example": {
 									"_id": "68d19f2ba4688d7933d4e28d",
-									"nombre": "Paramount +",
+									"nombre": "Paramount+",
+									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/paramount.jpg",
 									"createdAt": "2025-09-22T19:10:35.341Z",
 									"updatedAt": "2025-09-22T19:13:06.914Z",
 									"__v": 0
@@ -527,13 +577,28 @@
 						}
 					},
 					"400": {
-						"description": "Datos enviados inválidos",
+						"description": "Error en la solicitud (archivo inválido / demasiado grande / datos inválidos)",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponseWithDetails"
+									"oneOf": [
+										{ "$ref": "#/components/schemas/ErrorResponse" },
+										{ "$ref": "#/components/schemas/ErrorResponseWithDetails" }
+									]
 								},
 								"examples": {
+									"fileTooLarge": {
+										"summary": "Archivo demasiado grande",
+										"value": {
+											"message": "El archivo es demasiado grande. El tamaño máximo permitido es de 2 MB."
+										}
+									},
+									"invalidFileType": {
+										"summary": "Tipo de archivo no permitido",
+										"value": {
+											"message": "Solo se permiten archivos de imagen."
+										}
+									},
 									"invalidPayload": {
 										"summary": "Payload inválido",
 										"value": {
@@ -933,6 +998,7 @@
 										{
 											"_id": "68d055c86aa347d04a2053da",
 											"nombre": "Netflix",
+											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 											"createdAt": "2025-09-21T19:45:12.864Z",
 											"updatedAt": "2025-09-21T19:45:12.864Z",
 											"__v": 0
@@ -940,6 +1006,7 @@
 										{
 											"_id": "68d055db6aa347d04a2053e2",
 											"nombre": "Disney+",
+											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
 											"createdAt": "2025-09-21T19:45:12.864Z",
 											"updatedAt": "2025-09-21T19:45:12.864Z",
 											"__v": 0
@@ -4775,6 +4842,25 @@
 					"nombre": {
 						"type": "string",
 						"example": "Netflix"
+					},
+					"logo": {
+						"type": "string",
+						"nullable": true,
+						"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2025-09-22T19:09:30.349Z"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2025-09-22T19:09:30.349Z"
+					},
+					"__v": {
+						"type": "integer",
+						"example": 0
 					}
 				}
 			},
