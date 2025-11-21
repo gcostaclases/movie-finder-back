@@ -1,53 +1,28 @@
-import { StyleSheet, TextInput, View, Image, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { StyleSheet, TextInput, View, Image, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/ButtonPrimary";
 import TextInputLoginSignUp from "../components/TextInputLoginSignUp";
 import ButtonGoBack from "../components/ButtonGoBack";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../store/slices/userSlice";
-import * as SecureStore from "expo-secure-store";
-
-const APIURL = "https://pelis-y-series-app.vercel.app/api/v1";
+import useLogin from "../hooks/useLogin";
 
 const PantallaLogin = ({ navigation }) => {
+	const { handleLogin, loading, error } = useLogin();
+
+	// Nombre de usuario o correo electrónico
 	const [identifier, setIdentifier] = useState("");
+	// Contraseña
 	const [password, setPassword] = useState("");
-	const dispatch = useDispatch();
 
-	const handleLogin = () => {
-		const objUserLogin = {
-			identifier,
-			password,
-		};
-
-		fetch(`${APIURL}/auth/login`, {
-			method: "POST",
-			body: JSON.stringify(objUserLogin),
-			headers: {
-				"Content-Type": "application/json; charset=UTF-8",
-			},
-		})
-			.then((r) => r.json())
-			.then(async (datos) => {
-				if (datos.token) {
-					await SecureStore.setItemAsync("userToken", datos.token);
-					dispatch(loginUser({ token: datos.token }));
-					navigation.navigate("Peliculas");
-				} else {
-					alert(datos.message || "Usuario o contraseña incorrectos");
-				}
-			})
-			.catch(() => {
-				alert("Error de conexión");
-			});
+	const handleLoginAndNavigate = async () => {
+		const ok = await handleLogin(identifier, password);
+		if (ok) {
+			navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
+		}
 	};
 
 	return (
-		<KeyboardAvoidingView
-			style={styles.container}
-			behavior={Platform.OS === "ios" ? "padding" : "undefined"} // Ajusta el comportamiento según el sistema operativo
-		>
+		<KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "undefined"}>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				{/* Botón para ir atrás */}
 				<ButtonGoBack navigation={navigation} hasBackground={true} sobreImg={true} />
@@ -77,8 +52,12 @@ const PantallaLogin = ({ navigation }) => {
 						onChangeText={setPassword}
 					/>
 				</View>
+
+				{loading && <Text>Cargando...</Text>}
+				{error && <Text style={{ color: "red" }}>{error}</Text>}
+
 				{/* Botón primario sin ícono de iniciar sesión */}
-				<ButtonPrimary title="Iniciar sesión" onPress={handleLogin} style={{ width: "85%" }} />
+				<ButtonPrimary title="Iniciar sesión" onPress={handleLoginAndNavigate} style={{ width: "85%" }} />
 			</ScrollView>
 		</KeyboardAvoidingView>
 	);

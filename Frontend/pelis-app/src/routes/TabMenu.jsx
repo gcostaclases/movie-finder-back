@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
-import PantallaLoginORegistro from "../screens/PantallaLoginORegistro";
 import PantallaPeliculas from "../screens/PantallaPeliculas";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform } from "react-native";
@@ -9,6 +8,9 @@ import MovieFinderLogoWhite from "../assets/logo/MovieFinderLogoWhite";
 import AuthStack from "./AuthStack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import MovieStack from "./MovieStack";
+import UserStack from "./UserStack";
+import { useSelector } from "react-redux";
+import SearchStack from "./SearchStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +18,8 @@ const Menu = () => {
 	// const insets = useSafeAreaInsets();
 	// const tabBarHeight = 70 + insets.bottom;
 	const tabBarHeight = Platform.OS === "ios" ? 95 : 85;
+
+	const isLogged = useSelector((state) => state.user.isLogged);
 
 	return (
 		<Tab.Navigator
@@ -27,7 +31,7 @@ const Menu = () => {
 						iconName = "user";
 					} else if (route.name === "MovieStack") {
 						iconName = "film";
-					} else if (route.name === "Buscar") {
+					} else if (route.name === "SearchStack") {
 						iconName = "search";
 					}
 					return <FontAwesome5 name={iconName} size={40} color={color} solid />;
@@ -75,7 +79,7 @@ const Menu = () => {
 			})}>
 			<Tab.Screen
 				name="AuthStack"
-				component={AuthStack}
+				component={isLogged ? UserStack : AuthStack}
 				options={({ route }) => {
 					// Con esto detecto la pantalla activa y si es Login o Registro oculto el tab bar
 					const routeName = getFocusedRouteNameFromRoute(route);
@@ -98,14 +102,33 @@ const Menu = () => {
 				options={({ route }) => {
 					// Con esto detecto la pantalla activa y si es Login o Registro oculto el tab bar
 					const routeName = getFocusedRouteNameFromRoute(route);
-					const hideTabHeader = routeName === "PantallaDetallePelicula";
+					const hideTabHeader =
+						routeName === "PantallaDetallePelicula" ||
+						routeName === "PantallaReseniasPelicula" ||
+						routeName === "PantallaActoresPelicula";
 					return {
 						tabBarLabel: "Películas",
 						headerShown: !hideTabHeader,
 					};
 				}}
 			/>
-			<Tab.Screen name="Buscar" component={PantallaPeliculas} />
+			<Tab.Screen
+				name="SearchStack"
+				component={SearchStack}
+				options={({ route }) => {
+					// Con esto detecto la pantalla activa y si es Login o Registro oculto el tab bar
+					const routeName = getFocusedRouteNameFromRoute(route);
+					// const hideTabHeader =
+					// 	routeName === "PantallaDetallePelicula" ||
+					// 	routeName === "PantallaReseniasPelicula" ||
+					// 	routeName === "PantallaActoresPelicula";
+					const hideTabHeader = false;
+					return {
+						tabBarLabel: "Buscar",
+						headerShown: !hideTabHeader,
+					};
+				}}
+			/>
 		</Tab.Navigator>
 	);
 };

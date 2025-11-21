@@ -99,8 +99,8 @@ const itemSize = (width - 40) / numColumns; // 40 = paddingHorizontal + margen
 
 const PantallaPeliculas = ({ navigation }) => {
 	// Navegar al Detalle de la película
-	const irADetalle = (item) => {
-		navigation.push("PantallaDetallePelicula", { titulo: item.titulo });
+	const irADetalle = (movie) => {
+		navigation.push("PantallaDetallePelicula", { titulo: movie.titulo });
 	};
 
 	return (
@@ -108,7 +108,7 @@ const PantallaPeliculas = ({ navigation }) => {
 			{/* Lista de películas */}
 			<FlatList
 				data={movies}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(movie) => movie.id}
 				numColumns={numColumns}
 				renderItem={({ item }) => (
 					<View style={[styles.movieContainer, { width: itemSize }]}>

@@ -1,30 +1,39 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "./src/store/store";
 import { NavigationContainer } from "@react-navigation/native";
-import PantallaLoginORegistro from "./src/screens/PantallaLoginORegistro";
-import PantallaLogin from "./src/screens/PantallaLogin";
-import PantallaRegistro from "./src/screens/PantallaRegistro";
-import PantallaPeliculas from "./src/screens/PantallaPeliculas";
+import { useSelector } from "react-redux";
 import TabMenu from "./src/routes/TabMenu";
-import * as SecureStore from "expo-secure-store";
+import useVerificarSesion from "./src/hooks/useVerificarSesion";
+
+// Hago esto para usar el store acá porque preciso el Provider
+function MainApp() {
+	const isLoading = useVerificarSesion();
+
+	if (isLoading) {
+		//TODO: Acá iría un splash screen o similar mientras se verifica la sesión
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text>Cargando...</Text>
+			</View>
+		);
+	}
+
+	return (
+		<NavigationContainer>
+			<View style={styles.container}>
+				<TabMenu />
+				<StatusBar style="auto" />
+			</View>
+		</NavigationContainer>
+	);
+}
 
 export default function App() {
 	return (
 		<Provider store={store}>
-			<NavigationContainer>
-				<View style={styles.container}>
-					<TabMenu />
-
-					{/* <PantallaLoginORegistro /> */}
-					{/* <PantallaLogin /> */}
-					{/* <PantallaRegistro /> */}
-					{/* <PantallaPeliculas /> */}
-
-					<StatusBar style="auto" />
-				</View>
-			</NavigationContainer>
+			<MainApp />
 		</Provider>
 	);
 }

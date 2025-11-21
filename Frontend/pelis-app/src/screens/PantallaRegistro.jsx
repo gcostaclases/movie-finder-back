@@ -1,10 +1,35 @@
-import { StyleSheet, View, Image, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { StyleSheet, View, Image, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/ButtonPrimary";
 import TextInputLoginSignUp from "../components/TextInputLoginSignUp";
 import ButtonGoBack from "../components/ButtonGoBack";
+import { useState } from "react";
+import useRegister from "../hooks/useRegister";
 
 const PantallaRegistro = ({ navigation }) => {
+	const { handleRegister, loading, error, success } = useRegister();
+
+	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [password2, setPassword2] = useState("");
+
+	const handleRegisterAndNavigate = async () => {
+		if (password !== password2) {
+			setError("Las contraseñas no coinciden");
+			return;
+		}
+		const ok = await handleRegister({
+			email,
+			username,
+			password,
+			password2,
+		});
+		if (ok) {
+			navigation.navigate("PantallaLogin");
+		}
+	};
+
 	return (
 		<KeyboardAvoidingView
 			style={styles.container}
@@ -24,18 +49,43 @@ const PantallaRegistro = ({ navigation }) => {
 				{/* Inputs */}
 				<View style={styles.containerInputs}>
 					{/*//! A varios les saco el borde de abajo para que no se superpongan con el otro */}
-					<TextInputLoginSignUp placeholder="Correo electrónico..." showBorderBottom={false} autoCapitalize="none" />
-					<TextInputLoginSignUp placeholder="Nombre de usuario..." showBorderBottom={false} autoCapitalize="none" />
+					<TextInputLoginSignUp
+						placeholder="Correo electrónico..."
+						showBorderBottom={false}
+						autoCapitalize="none"
+						value={email}
+						onChangeText={setEmail}
+					/>
+					<TextInputLoginSignUp
+						placeholder="Nombre de usuario..."
+						showBorderBottom={false}
+						autoCapitalize="none"
+						value={username}
+						onChangeText={setUsername}
+					/>
 					<TextInputLoginSignUp
 						placeholder="Contraseña..."
 						showBorderBottom={false}
 						secureTextEntry
 						autoCapitalize="none"
+						value={password}
+						onChangeText={setPassword}
 					/>
-					<TextInputLoginSignUp placeholder="Verificar contraseña..." secureTextEntry autoCapitalize="none" />
+					<TextInputLoginSignUp
+						placeholder="Verificar contraseña..."
+						secureTextEntry
+						autoCapitalize="none"
+						value={password2}
+						onChangeText={setPassword2}
+					/>
 				</View>
+
+				{loading && <Text>Cargando...</Text>}
+				{success && <Text style={{ color: "green" }}>{success}</Text>}
+				{error && <Text style={{ color: "red" }}>{error}</Text>}
+
 				{/* Botón primario sin ícono de registrarse */}
-				<ButtonPrimary title="Registrarme" onPress={() => alert("Se registra")} style={{ width: "85%" }} />
+				<ButtonPrimary title="Registrarme" onPress={handleRegisterAndNavigate} style={{ width: "85%" }} />
 			</ScrollView>
 		</KeyboardAvoidingView>
 	);
