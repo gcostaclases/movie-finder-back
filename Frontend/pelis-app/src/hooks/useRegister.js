@@ -4,11 +4,13 @@ import { register } from "../services/authService";
 export default function useRegister() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [errorDetails, setErrorDetails] = useState([]);
 	const [success, setSuccess] = useState(null);
 
 	const handleRegister = async (userData) => {
 		setLoading(true);
 		setError(null);
+		setErrorDetails([]);
 		setSuccess(null);
 		try {
 			const datos = await register(userData);
@@ -21,12 +23,12 @@ export default function useRegister() {
 			}
 		} catch (e) {
 			if (e.response?.data?.message) {
-				const msg = e.response.data.message;
-				const details = e.response.data.details;
-				const detailsText = Array.isArray(details) ? details.join(" ") : "";
-				setError(`${msg}${detailsText ? ": " + detailsText : ""}`);
+				setError(e.response.data.message);
+				const details = Array.isArray(e.response.data.details) ? e.response.data.details : [];
+				setErrorDetails(details);
 			} else {
 				setError("ERROR: Error de conexión");
+				setErrorDetails([]);
 			}
 			return false;
 		} finally {
@@ -34,6 +36,5 @@ export default function useRegister() {
 		}
 	};
 
-	return { handleRegister, loading, error, success };
+	return { handleRegister, loading, error, errorDetails, success };
 }
-

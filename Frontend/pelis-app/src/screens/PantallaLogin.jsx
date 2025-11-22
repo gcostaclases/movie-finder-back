@@ -3,16 +3,35 @@ import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/ButtonPrimary";
 import TextInputLoginSignUp from "../components/TextInputLoginSignUp";
 import ButtonGoBack from "../components/ButtonGoBack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useLogin from "../hooks/useLogin";
+import Toast from "react-native-toast-message";
 
 const PantallaLogin = ({ navigation }) => {
-	const { handleLogin, loading, error } = useLogin();
+	const { handleLogin, loading, error, errorDetails, success } = useLogin();
 
 	// Nombre de usuario o correo electrónico
 	const [identifier, setIdentifier] = useState("");
 	// Contraseña
 	const [password, setPassword] = useState("");
+
+	// Mostrar cuando hay error o success
+	useEffect(() => {
+		if (success) {
+			Toast.show({
+				type: "success",
+				text1: "Login exitoso",
+				text2: success,
+			});
+		}
+		if (error) {
+			Toast.show({
+				type: "error",
+				text1: "Error de inicio de sesión",
+				text2: error,
+			});
+		}
+	}, [success, error]);
 
 	const handleLoginAndNavigate = async () => {
 		const ok = await handleLogin(identifier, password);
@@ -54,7 +73,17 @@ const PantallaLogin = ({ navigation }) => {
 				</View>
 
 				{loading && <Text>Cargando...</Text>}
-				{error && <Text style={{ color: "red" }}>{error}</Text>}
+				{/* {error && <Text style={{ color: "red" }}>{error}</Text>} */}
+				{errorDetails.length > 0 && (
+					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "85%" }}>
+						{errorDetails.map((detalle, idx) => (
+							<View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
+								<Text style={{ color: "red", fontSize: 16 }}>• </Text>
+								<Text style={{ color: "red", fontSize: 14 }}>{detalle}</Text>
+							</View>
+						))}
+					</View>
+				)}
 
 				{/* Botón primario sin ícono de iniciar sesión */}
 				<ButtonPrimary title="Iniciar sesión" onPress={handleLoginAndNavigate} style={{ width: "85%" }} />

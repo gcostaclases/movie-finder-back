@@ -9,15 +9,20 @@ export default function useLogin() {
 
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [errorDetails, setErrorDetails] = useState([]);
+	const [success, setSuccess] = useState(null);
 
 	const handleLogin = async (identifier, password) => {
 		setLoading(true);
 		setError(null);
+		setErrorDetails([]);
+		setSuccess(null);
 		try {
 			const datos = await login(identifier, password);
 			//console.log(datos);
 			//Si 200 entro acá
 			if (datos.token) {
+				setSuccess(datos.message);
 				// Guardo el token en la SecureStore
 				await SecureStore.setItemAsync("userToken", datos.token);
 				// Cambio el estado global a logged in true
@@ -34,8 +39,11 @@ export default function useLogin() {
 			// Muestro el error del backend
 			if (e.response?.data?.message) {
 				setError(e.response.data.message);
+				const details = Array.isArray(e.response.data.details) ? e.response.data.details : [];
+				setErrorDetails(details);
 			} else {
 				setError("ERROR: Error de conexión");
+				setErrorDetails([]);
 			}
 			return false;
 		} finally {
@@ -43,6 +51,6 @@ export default function useLogin() {
 		}
 	};
 
-	return { handleLogin, loading, error };
+	return { handleLogin, loading, error, errorDetails, success };
 }
 

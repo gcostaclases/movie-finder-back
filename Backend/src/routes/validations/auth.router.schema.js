@@ -46,6 +46,7 @@ export const userLoginSchema = Joi.object({
 		.required()
 		.messages({
 			"any.required": "El identificador (email o nombre de usuario) es obligatorio.",
+			"alternatives.match": "El identificador debe ser un email válido o un nombre de usuario válido.",
 		}),
 	password: Joi.string().min(8).max(30).required().messages({
 		"string.empty": "La contraseña es obligatoria.",
@@ -54,3 +55,4 @@ export const userLoginSchema = Joi.object({
 		"any.required": "La contraseña es obligatoria.",
 	}),
 });
+

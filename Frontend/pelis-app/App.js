@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import TabMenu from "./src/routes/TabMenu";
 import useVerificarSesion from "./src/hooks/useVerificarSesion";
+import Toast from "react-native-toast-message";
 
 // Hago esto para usar el store acá porque preciso el Provider
 function MainApp() {
@@ -34,6 +35,7 @@ export default function App() {
 	return (
 		<Provider store={store}>
 			<MainApp />
+			<Toast />
 		</Provider>
 	);
 }
