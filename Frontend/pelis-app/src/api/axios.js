@@ -10,7 +10,8 @@ const api = axios.create({
 		Accept: "application/json", // Esperamos JSON
 		// No seteamos Content-Type aquí
 	},
-	timeout: 7000,
+	// timeout: 7000,
+	timeout: 10000,
 });
 
 // Función para obtener el token desde SecureStore

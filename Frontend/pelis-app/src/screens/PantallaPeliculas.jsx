@@ -1,106 +1,21 @@
-import { StyleSheet, View, FlatList, Image, TouchableOpacity, Dimensions } from "react-native";
-
-const movies = [
-	{
-		id: "1",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 1",
-	},
-	{
-		id: "2",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 2",
-	},
-	{
-		id: "3",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 3",
-	},
-	{
-		id: "4",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 4",
-	},
-	{
-		id: "5",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 5",
-	},
-	{
-		id: "6",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 6",
-	},
-	{
-		id: "7",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 7",
-	},
-	{
-		id: "8",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 8",
-	},
-	{
-		id: "9",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 9",
-	},
-	{
-		id: "10",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 10",
-	},
-	{
-		id: "11",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 11",
-	},
-	{
-		id: "12",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 12",
-	},
-	{
-		id: "13",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 13",
-	},
-	{
-		id: "14",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 14",
-	},
-	{
-		id: "15",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 15",
-	},
-	{
-		id: "16",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 16",
-	},
-	{
-		id: "17",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 17",
-	},
-	{
-		id: "18",
-		image: require("../assets/img/prueba/movie1.jpg"),
-		titulo: "Movie 18",
-	},
-];
+import { StyleSheet, View, FlatList, Image, TouchableOpacity, Dimensions, Text } from "react-native";
+import useMovies from "../hooks/useMovies";
+import { useEffect, useState } from "react";
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
 const itemSize = (width - 40) / numColumns; // 40 = paddingHorizontal + margen
 
+const posterWidth = itemSize; // o un valor fijo, ej: 100
+const posterHeight = Math.round(posterWidth * 1.5); // proporción típica de poster
+
 const PantallaPeliculas = ({ navigation }) => {
+	const { movies, loading, error } = useMovies(1, 12);
+
 	// Navegar al Detalle de la película
 	const irADetalle = (movie) => {
-		navigation.push("PantallaDetallePelicula", { titulo: movie.titulo });
+		// console.log("Movie:", movie);
+		navigation.push("PantallaDetallePelicula", { titulo: movie.title });
 	};
 
 	return (
@@ -108,17 +23,31 @@ const PantallaPeliculas = ({ navigation }) => {
 			{/* Lista de películas */}
 			<FlatList
 				data={movies}
-				keyExtractor={(movie) => movie.id}
+				keyExtractor={(movie) => movie._id}
 				numColumns={numColumns}
 				renderItem={({ item }) => (
 					<View style={[styles.movieContainer, { width: itemSize }]}>
 						<TouchableOpacity onPress={() => irADetalle(item)} style={{ width: "100%" }}>
-							<Image source={item.image} style={styles.movieImage} />
+							{item.posterPath ? (
+								<Image
+									source={{ uri: "https://image.tmdb.org/t/p/w500" + item.posterPath }}
+									style={styles.movieImage}
+								/>
+							) : (
+								<View style={styles.noImage}>
+									<Text style={styles.noImageText}>Sin imagen</Text>
+								</View>
+							)}
 						</TouchableOpacity>
 					</View>
 				)}
 				contentContainerStyle={styles.listContainer}
+				// onEndReached={hasMore ? loadMore : null}
+				onEndReachedThreshold={0.5}
+				// ListFooterComponent={loading ? <Text style={{ textAlign: "center" }}>Cargando...</Text> : null}
 			/>
+			{loading && <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text>}
+			{error && <Text style={{ color: "red", textAlign: "center" }}>{error}</Text>}
 		</View>
 	);
 };
@@ -144,10 +73,23 @@ const styles = StyleSheet.create({
 		margin: 5,
 	},
 	movieImage: {
-		width: "100%",
-		height: 140,
+		width: itemSize,
+		height: posterHeight,
 		borderRadius: 5,
 		resizeMode: "cover",
+	},
+	noImage: {
+		width: itemSize,
+		height: posterHeight,
+		borderRadius: 5,
+		backgroundColor: "#ccc",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	noImageText: {
+		color: "#888",
+		fontSize: 12,
+		textAlign: "center",
 	},
 });
 

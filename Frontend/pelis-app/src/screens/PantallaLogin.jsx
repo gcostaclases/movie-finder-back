@@ -5,7 +5,10 @@ import TextInputLoginSignUp from "../components/TextInputLoginSignUp";
 import ButtonGoBack from "../components/ButtonGoBack";
 import { useEffect, useState } from "react";
 import useLogin from "../hooks/useLogin";
+import { Dimensions } from "react-native";
 import Toast from "react-native-toast-message";
+
+const windowHeight = Dimensions.get("window").height;
 
 const PantallaLogin = ({ navigation }) => {
 	const { handleLogin, loading, error, errorDetails, success } = useLogin();
@@ -40,9 +43,13 @@ const PantallaLogin = ({ navigation }) => {
 		}
 	};
 
+	const dynamicPaddingBottom = errorDetails.length > 0 ? 60 + errorDetails.length * 60 : 0;
+
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "undefined"}>
-			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+			<ScrollView
+				contentContainerStyle={[styles.scrollContainer, { paddingBottom: dynamicPaddingBottom }]}
+				keyboardShouldPersistTaps="handled">
 				{/* Botón para ir atrás */}
 				<ButtonGoBack navigation={navigation} hasBackground={true} sobreImg={true} />
 
@@ -75,7 +82,7 @@ const PantallaLogin = ({ navigation }) => {
 				{loading && <Text>Cargando...</Text>}
 				{/* {error && <Text style={{ color: "red" }}>{error}</Text>} */}
 				{errorDetails.length > 0 && (
-					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "85%" }}>
+					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "80%" }}>
 						{errorDetails.map((detalle, idx) => (
 							<View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
 								<Text style={{ color: "red", fontSize: 16 }}>• </Text>
@@ -86,7 +93,11 @@ const PantallaLogin = ({ navigation }) => {
 				)}
 
 				{/* Botón primario sin ícono de iniciar sesión */}
-				<ButtonPrimary title="Iniciar sesión" onPress={handleLoginAndNavigate} style={{ width: "85%" }} />
+				<ButtonPrimary
+					title="Iniciar sesión"
+					onPress={handleLoginAndNavigate}
+					style={{ width: "85%", marginTop: 20 }}
+				/>
 			</ScrollView>
 		</KeyboardAvoidingView>
 	);
@@ -102,8 +113,10 @@ const styles = StyleSheet.create({
 		// gap: 15,
 	},
 	scrollContainer: {
+		// backgroundColor: "#2bc151ff",
 		flexGrow: 1,
 		alignItems: "center",
+		minHeight: windowHeight,
 	},
 	imageContainer: {
 		width: "100%",
