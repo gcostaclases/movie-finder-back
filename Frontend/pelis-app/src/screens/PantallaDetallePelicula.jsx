@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import ButtonPrimary from "../components/ButtonPrimary";
 import ButtonSecondary from "../components/ButtonSecondary";
 import ButtonGoBack from "../components/ButtonGoBack";
 import { FontAwesome5 } from "@expo/vector-icons";
 import PantallaReportarDisponibilidadPelicula from "./PantallaReportarDisponibilidadPelicula";
 import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
+import useMovieDetail from "../hooks/useMovieDetail";
+import { Dimensions } from "react-native";
 
 const proveedores = [
 	{ id: "netflix", nombre: "Netflix", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "100%" },
@@ -21,26 +23,66 @@ const proveedores = [
 	{ id: "paramount", nombre: "Paramount+", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "10%" },
 ];
 
+const { width } = Dimensions.get("window");
+const numColumns = 3;
+const itemSize = (width - 40) / numColumns;
+const smallPosterWidth = itemSize;
+const smallPosterHeight = Math.round(smallPosterWidth * 1.5);
+const mainPosterHeight = 150;
+const mainPosterWidth = "100%";
+// const smallPosterWidth = 100;
+// const smallPosterHeight = 150;
+
 const PantallaDetallePelicula = ({ navigation, route }) => {
+	const movieId = route.params?.movieId;
+	console.log("Movie ID recibido en PantallaDetallePelicula:", movieId);
+	const { movie, loading, error } = useMovieDetail(movieId);
+
 	const [modalReportarDisponibilidadVisible, setModalReportarDisponibilidadVisible] = useState(false);
 	const [modalAgregarReseniaVisible, setModalAgregarReseniaVisible] = useState(false);
 
 	// Navegar a las Reseñas de la película
 	const irAResenias = () => {
-		const titulo = route.params?.titulo || "Sin título";
+		const titulo = movie?.title || "Sin título";
 		navigation.push("PantallaReseniasPelicula", { titulo });
 	};
 	// Navegar a los Actores de la película
 	const irAActores = () => {
-		const titulo = route.params?.titulo || "Sin título";
+		const titulo = movie?.title || "Sin título";
 		navigation.push("PantallaActoresPelicula", { titulo });
 	};
+
+	if (loading) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<ActivityIndicator size="large" color="#27AAE1" />
+				<Text>Cargando...</Text>
+			</View>
+		);
+	}
+
+	if (error) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
+				<Text style={{ color: "red", fontSize: 16, textAlign: "center" }}>{error}</Text>
+				<ButtonGoBack onPress={() => navigation.goBack()} />
+			</View>
+		);
+	}
+
+	if (!movie) return null;
 
 	return (
 		<>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
 				{/* Imagen principal */}
-				<Image source={require("../assets/img/prueba/movie1.jpg")} style={styles.mainImage} />
+				{movie.backdropPath ? (
+					<Image source={{ uri: "https://image.tmdb.org/t/p/w780" + movie.backdropPath }} style={styles.mainImage} />
+				) : (
+					<View style={[styles.mainImage, styles.noImage]}>
+						<Text style={styles.noImageText}>Sin imagen</Text>
+					</View>
+				)}
 
 				{/* Contenedor principal */}
 				<View style={styles.container}>
@@ -48,45 +90,52 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 					<View style={styles.infoAndPosterContainer}>
 						{/* Datos principales */}
 						<View style={styles.infoContainer}>
-							<Text style={styles.title}>Chainsaw Man – The Movie: Reze Arc</Text>
-							<Text style={styles.originalTitle}>チェンソーマン レゼ篇</Text>
+							<Text style={styles.title}>{movie.title}</Text>
+							<Text style={styles.originalTitle}>{movie.originalTitle}</Text>
 							<View style={styles.row}>
 								<FontAwesome5 name="calendar" size={14} color="#555" style={{ marginRight: 6 }} />
-								<Text style={styles.year}>2025</Text>
+								<Text style={styles.year}>{movie.releaseDate?.slice(0, 4) || "?"}</Text>
 								<FontAwesome5 name="clock" size={14} color="#555" style={{ marginHorizontal: 6 }} />
-								<Text style={styles.duration}>100min</Text>
+								<Text style={styles.duration}>{movie.duration ? `${movie.duration}min` : "?"}</Text>
 							</View>
 							<Text style={styles.director}>
-								DIRECTOR: <Text style={{ fontWeight: "bold" }}>Tatsuya Yoshihara</Text>
+								DIRECTOR:{" "}
+								<Text style={{ fontWeight: "bold" }}>
+									{movie.directors && movie.directors.length > 0 ? movie.directors[0].name : "Desconocido"}
+								</Text>
 							</Text>
 						</View>
 
 						{/* Poster */}
-						<Image source={require("../assets/img/prueba/movie1.jpg")} style={styles.posterImage} />
+						{movie.posterPath ? (
+							<Image
+								source={{ uri: "https://image.tmdb.org/t/p/w500" + movie.posterPath }}
+								style={styles.posterImage}
+							/>
+						) : (
+							<View style={[styles.posterImage, styles.noImage]}>
+								<Text style={styles.noImageText}>Sin imagen</Text>
+							</View>
+						)}
 					</View>
 
 					{/* Géneros */}
 					<Text style={styles.genreTitle}>Géneros:</Text>
 					<View style={styles.genres}>
-						<Text style={styles.genre}>Fantasía</Text>
-						<Text style={styles.genre}>Romance</Text>
-						<Text style={styles.genre}>Acción</Text>
-						<Text style={styles.genre}>Animación</Text>
-						<Text style={styles.genre}>Animación</Text>
-						<Text style={styles.genre}>Animación</Text>
-						<Text style={styles.genre}>Animación</Text>
-						<Text style={styles.genre}>Animación</Text>
-						<Text style={styles.genre}>Animación</Text>
+						{console.log("Pelicula:", movie)}
+						{movie.genres && movie.genres.length > 0 ? (
+							movie.genres.map((g) => (
+								<Text key={g.tmdbId} style={styles.genre}>
+									{g.name}
+								</Text>
+							))
+						) : (
+							<Text style={styles.genre}>Sin géneros</Text>
+						)}
 					</View>
 
 					{/* Descripción */}
-					<Text style={styles.description}>
-						EVERYONE’S AFTER MY CHAINSAW HEART! WHAT ABOUT DENJI’S HEART?!?
-						{"\n\n"}
-						In a brutal war between devils, humans, and secret enemies, a mysterious girl named Reze has stepped into
-						Denji’s world, and he faces his deadliest battle yet, fueled by love in a world where survival knows no
-						rules.
-					</Text>
+					<Text style={styles.description}>{movie.overview || "Sin descripción disponible."}</Text>
 
 					{/* Botones principales */}
 					<View style={styles.buttonsContainer}>
@@ -115,7 +164,7 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 						{[...Array(5)].map((_, i) => (
 							<FontAwesome5 key={i} name="star" size={28} color="#FFD600" />
 						))}
-						<Text style={styles.ratingText}>0/5</Text>
+						<Text style={styles.ratingText}>{movie.averageRating ? movie.averageRating : 0}/5</Text>
 					</View>
 				</View>
 
@@ -135,11 +184,11 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 				{/* Actores y Reseñas */}
 				<View style={[styles.container, { borderBottomWidth: 0 }]}>
 					<View style={styles.cardButtonContainer}>
-						<TouchableOpacity style={styles.cardButton} onPress={() => irAActores()}>
+						<TouchableOpacity style={styles.cardButton} onPress={irAActores}>
 							<FontAwesome5 name="users" size={32} color="#27AAE1" style={styles.cardIcon} solid />
 							<Text style={styles.cardButtonText}>Actores</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.cardButton} onPress={() => irAResenias()}>
+						<TouchableOpacity style={styles.cardButton} onPress={irAResenias}>
 							<FontAwesome5 name="newspaper" size={32} color="#27AAE1" style={styles.cardIcon} solid />
 							<Text style={styles.cardButtonText}>Reseñas</Text>
 						</TouchableOpacity>
@@ -176,13 +225,13 @@ const styles = StyleSheet.create({
 	},
 	mainImage: {
 		// flex: 1,
-		width: "100%",
-		height: 150,
+		width: mainPosterWidth,
+		height: mainPosterHeight,
 		resizeMode: "cover",
 	},
 	posterImage: {
-		width: 100, // ancho fijo
-		height: "100%",
+		width: smallPosterWidth,
+		height: smallPosterHeight,
 		borderRadius: 8,
 		resizeMode: "cover",
 	},
@@ -192,6 +241,16 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "flex-start",
 		marginBottom: 7,
+	},
+	noImage: {
+		backgroundColor: "#ccc",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	noImageText: {
+		color: "#888",
+		fontSize: 12,
+		textAlign: "center",
 	},
 	infoContainer: {
 		// backgroundColor: "#c1cc44cc",

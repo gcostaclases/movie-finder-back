@@ -37,7 +37,7 @@ const MovieStack = () => {
 				name="PantallaDetallePelicula"
 				component={PantallaDetallePelicula}
 				options={({ route, navigation }) => ({
-					headerTitle: route.params?.titulo || "Detalle",
+					headerTitle: route.params?.movieTitle || "Detalle",
 					headerLeft: () => <ButtonGoBack navigation={navigation} size={28} />,
 				})}
 			/>

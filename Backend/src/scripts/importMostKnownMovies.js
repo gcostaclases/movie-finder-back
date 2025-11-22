@@ -1,41 +1,38 @@
 //#region  ----------- IMPORTS -----------
-// Importo y cargo las variables de entorno PRIMERO antes que nada
 import "../config/env.js";
-
-// Importo el adaptador de repositorio
 import { createRepositoryAdapter } from "../repositories/adapters/index.js";
-
-// Importo las funciones para interactuar con TMDB
-import { fetchPopularMovies, fetchMovieDetails, fetchMovieCredits } from "../services/tmdb.js";
+import { fetchMostKnownMovies, fetchMovieDetails, fetchMovieCredits } from "../services/tmdb.js";
 //#endregion ----------- IMPORTS -----------
 
-const importPopularMovies = async () => {
+const TOTAL_DESEADO = 54;
+
+const importMostKnownMovies = async () => {
 	let repository;
 
 	try {
-		// Crear el adaptador de repositorio (conexión a la base de datos)
 		repository = await createRepositoryAdapter("mongoose");
 
-		// Obtener las películas populares (20 películas de la página 1)
-		const movies = await fetchPopularMovies(1);
+		let page = 1;
 		let count = 0;
 
-		// Recorro las películas y las guardo en la base de datos si no existen
-		for (const tmdbMovie of movies) {
-			const exists = await repository.findMovie({ tmdbId: tmdbMovie.id });
+		while (count < TOTAL_DESEADO) {
+			const movies = await fetchMostKnownMovies(page);
+			if (!movies.length) break;
 
-			if (!exists) {
-				// Obtener detalles de la película
+			for (const tmdbMovie of movies) {
+				if (count >= TOTAL_DESEADO) break;
+
+				const exists = await repository.findMovie({ tmdbId: tmdbMovie.id });
+				if (exists) continue;
+
 				const details = await fetchMovieDetails(tmdbMovie.id);
 				const credits = await fetchMovieCredits(tmdbMovie.id);
 
-				// Géneros como objetos
 				const genres = details.genres.map((genre) => ({
 					tmdbId: genre.id,
 					name: genre.name,
 				}));
 
-				// Filtrar actores y directores
 				const actors = credits.cast.map((actor) => ({
 					tmdbId: actor.id,
 					name: actor.name,
@@ -51,19 +48,16 @@ const importPopularMovies = async () => {
 						image: director.profile_path,
 					}));
 
-				// Si no hay backdrop, salteá la película
+				// Salteá si no hay backdrop o poster
 				if (!details.backdrop_path) {
 					console.log(`Película sin backdrop: ${tmdbMovie.title} (${tmdbMovie.id}), se omite.`);
 					continue;
 				}
-
-				// Si no hay poster, salteá la película
 				if (!tmdbMovie.poster_path) {
 					console.log(`Película sin poster: ${tmdbMovie.title} (${tmdbMovie.id}), se omite.`);
 					continue;
 				}
 
-				// Guardar la película en la base de datos
 				await repository.saveMovie({
 					tmdbId: tmdbMovie.id,
 					title: tmdbMovie.title,
@@ -80,12 +74,12 @@ const importPopularMovies = async () => {
 				});
 				count++;
 			}
+			page++;
 		}
 		console.log(`Películas importadas correctamente: ${count}`);
 	} catch (error) {
 		console.error("Error importando películas:", error);
 	} finally {
-		// Desconectar la base de datos al finalizar
 		if (repository && repository.disconnect) {
 			await repository.disconnect();
 			console.log("[MongoDB] Desconectado correctamente.");
@@ -94,6 +88,5 @@ const importPopularMovies = async () => {
 	}
 };
 
-// Ejecuto la función de importación
-importPopularMovies();
+importMostKnownMovies();
 

@@ -10,12 +10,13 @@ const posterWidth = itemSize; // o un valor fijo, ej: 100
 const posterHeight = Math.round(posterWidth * 1.5); // proporción típica de poster
 
 const PantallaPeliculas = ({ navigation }) => {
-	const { movies, loading, error } = useMovies(1, 12);
+	const { movies, loading, error, loadMore, hasMore } = useMovies(12);
+	// const { movies, loading, error } = useMovies(1, 12);
 
 	// Navegar al Detalle de la película
 	const irADetalle = (movie) => {
 		// console.log("Movie:", movie);
-		navigation.push("PantallaDetallePelicula", { titulo: movie.title });
+		navigation.push("PantallaDetallePelicula", { movieId: movie._id, movieTitle: movie.title });
 	};
 
 	return (
@@ -42,11 +43,13 @@ const PantallaPeliculas = ({ navigation }) => {
 					</View>
 				)}
 				contentContainerStyle={styles.listContainer}
-				// onEndReached={hasMore ? loadMore : null}
+				onEndReached={hasMore ? loadMore : null}
 				onEndReachedThreshold={0.5}
-				// ListFooterComponent={loading ? <Text style={{ textAlign: "center" }}>Cargando...</Text> : null}
+				ListFooterComponent={
+					loading ? <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text> : null
+				}
 			/>
-			{loading && <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text>}
+			{/* {loading && <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text>} */}
 			{error && <Text style={{ color: "red", textAlign: "center" }}>{error}</Text>}
 		</View>
 	);
