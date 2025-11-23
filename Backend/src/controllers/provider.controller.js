@@ -93,25 +93,25 @@ export const getProviderByIdController = async (req, res) => {
  * POST /providers
  * @param {Object} req - Request de Express
  * @param {Object} req.body - Cuerpo de la petición
- * @param {string} req.body.nombre - Nombre del proveedor
+ * @param {string} req.body.name - Nombre del proveedor
  * @param {Object} res - Response de Express
  * @returns {Promise<void>} JSON con el proveedor creado o error
  */
 export const createProviderController = async (req, res) => {
-	const { nombre } = req.body;
+	const { name, logo } = req.body;
 
 	try {
 		// Valido que no exista un proveedor con el mismo nombre
-		const count = await repoFactory.countProviders({ nombre });
+		const count = await repoFactory.countProviders({ name });
 		if (count > 0) {
 			return res.status(400).json({
 				message: "El proveedor ya existe",
 			});
 		}
 
-		let logoUrl = null;
+		let logoUrl = logo || null;
 
-		// Si se subió un archivo, subo el logo a Cloudinary
+		// Si se subió un archivo, subo el logo a Cloudinary (tiene prioridad sobre el logo del body)
 		if (req.file) {
 			const result = await new Promise((resolve, reject) => {
 				cloudinary.uploader
@@ -124,14 +124,13 @@ export const createProviderController = async (req, res) => {
 					})
 					.end(req.file.buffer);
 			});
-
 			console.log("Logo subido a Cloudinary:", result.secure_url);
 			logoUrl = result.secure_url;
 		}
 
 		// Creo el proveedor usando el repositorio
 		const newProvider = await repoFactory.saveProvider({
-			nombre,
+			name,
 			logo: logoUrl,
 		});
 
@@ -159,7 +158,7 @@ export const createProviderController = async (req, res) => {
  */
 export const updateProviderController = async (req, res) => {
 	const { id } = req.params;
-	const { nombre } = req.body;
+	const { name, logo } = req.body;
 
 	try {
 		// Busco el proveedor en la base de datos
@@ -168,8 +167,9 @@ export const updateProviderController = async (req, res) => {
 			return res.status(404).json({ message: "Proveedor no encontrado" });
 		}
 
-		// Si se subió un archivo, subo el nuevo logo a Cloudinary
-		let logoUrl = provider.logo;
+		let logoUrl = logo !== undefined ? logo : provider.logo;
+
+		// Si se subió un archivo, subo el nuevo logo a Cloudinary (tiene prioridad)
 		if (req.file) {
 			// Elimino el logo anterior si existe
 			if (provider.logo) {
@@ -201,8 +201,8 @@ export const updateProviderController = async (req, res) => {
 
 		// Preparo los datos a actualizar
 		let updateData = {};
-		if (nombre) updateData.nombre = nombre;
-		if (req.file) updateData.logo = logoUrl;
+		if (name !== undefined) updateData.name = name;
+		if (logoUrl !== undefined) updateData.logo = logoUrl;
 
 		// Actualizo el proveedor usando el repositorio
 		const updatedProvider = await repoFactory.updateProvider(id, updateData);
@@ -242,7 +242,7 @@ export const deleteProviderController = async (req, res) => {
 		}
 
 		// Invalido caches relacionados después de eliminar
-		const keysToInvalidate = [`provider:id:${id}`, `provider:nombre:${deletedProvider.nombre}`, "providers:all"];
+		const keysToInvalidate = [`provider:id:${id}`, `provider:name:${deletedProvider.name}`, "providers:all"];
 		await cacheService.invalidateMultiple(keysToInvalidate);
 
 		return res.status(200).json({
@@ -257,3 +257,4 @@ export const deleteProviderController = async (req, res) => {
 };
 
 //#endregion ----------- ADMIN CONTROLLERS -----------
+
