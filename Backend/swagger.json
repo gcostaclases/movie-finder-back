@@ -4835,14 +4835,8 @@
 			"Provider": {
 				"type": "object",
 				"properties": {
-					"_id": {
-						"type": "string",
-						"example": "68d055c86aa347d04a2053da"
-					},
-					"nombre": {
-						"type": "string",
-						"example": "Netflix"
-					},
+					"_id": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+					"name": { "type": "string", "example": "Netflix" },
 					"logo": {
 						"type": "string",
 						"nullable": true,
@@ -4866,24 +4860,24 @@
 			},
 			"CreateProviderRequest": {
 				"type": "object",
-				"required": ["nombre"],
+				"required": ["name"],
 				"properties": {
-					"nombre": {
+					"name": { "type": "string", "minLength": 2, "maxLength": 20, "example": "HBO Max" },
+					"logo": {
 						"type": "string",
-						"minLength": 2,
-						"maxLength": 20,
-						"example": "HBO Max"
+						"nullable": true,
+						"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/hbo.jpg"
 					}
 				}
 			},
 			"UpdateProviderRequest": {
 				"type": "object",
 				"properties": {
-					"nombre": {
+					"name": { "type": "string", "minLength": 2, "maxLength": 20, "example": "Paramount+" },
+					"logo": {
 						"type": "string",
-						"minLength": 2,
-						"maxLength": 20,
-						"example": "Paramount+"
+						"nullable": true,
+						"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/paramount.jpg"
 					}
 				}
 			},
@@ -4902,61 +4896,39 @@
 			"Movie": {
 				"type": "object",
 				"properties": {
-					"_id": {
-						"type": "string",
-						"example": "68e7069e7c16280b8b499c26"
-					},
-					"tmdbId": {
-						"type": "integer",
-						"example": 1038392
-					},
-					"title": {
-						"type": "string",
-						"example": "Expediente Warren: El último rito"
-					},
-					"originalTitle": {
-						"type": "string",
-						"example": "The Conjuring: Last Rites"
-					},
-					"overview": {
-						"type": "string",
-						"example": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador."
-					},
-					"posterPath": {
-						"type": "string",
-						"example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg"
-					},
-					"releaseDate": {
-						"type": "string",
-						"format": "date",
-						"example": "2025-09-03"
-					},
-					"originalLanguage": {
-						"type": "string",
-						"example": "en"
-					},
-					"duration": {
-						"type": "integer",
-						"example": 135
-					},
+					"_id": { "type": "string", "example": "68e7069e7c16280b8b499c26" },
+					"tmdbId": { "type": "integer", "example": 1038392 },
+					"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+					"originalTitle": { "type": "string", "example": "The Conjuring: Last Rites" },
+					"overview": { "type": "string", "example": "Sinopsis de la película..." },
+					"backdropPath": { "type": "string", "example": "/abc123.jpg" },
+					"posterPath": { "type": "string", "example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg" },
+					"releaseDate": { "type": "string", "format": "date", "example": "2025-09-03" },
+					"originalLanguage": { "type": "string", "example": "en" },
+					"duration": { "type": "integer", "example": 135 },
 					"genres": {
 						"type": "array",
 						"items": {
-							"type": "string"
+							"type": "object",
+							"properties": {
+								"tmdbId": { "type": "integer", "example": 27 },
+								"name": { "type": "string", "example": "Terror" }
+							}
 						},
-						"example": ["Terror", "Suspense", "Misterio"]
+						"example": [
+							{ "tmdbId": 27, "name": "Terror" },
+							{ "tmdbId": 53, "name": "Suspense" }
+						]
 					},
 					"actors": {
 						"type": "array",
 						"items": {
 							"type": "object",
 							"properties": {
-								"name": {
-									"type": "string"
-								},
-								"role": {
-									"type": "string"
-								}
+								"tmdbId": { "type": "integer", "example": 12345 },
+								"name": { "type": "string", "example": "Actor Ejemplo" },
+								"role": { "type": "string", "example": "Protagonista" },
+								"image": { "type": "string", "example": "/actorimg.jpg" }
 							}
 						}
 					},
@@ -4965,9 +4937,9 @@
 						"items": {
 							"type": "object",
 							"properties": {
-								"name": {
-									"type": "string"
-								}
+								"tmdbId": { "type": "integer", "example": 54321 },
+								"name": { "type": "string", "example": "Director Ejemplo" },
+								"image": { "type": "string", "example": "/directorimg.jpg" }
 							}
 						}
 					}
@@ -5119,3 +5091,4 @@
 		}
 	]
 }
+
