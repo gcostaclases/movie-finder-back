@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 const providerSchema = new mongoose.Schema(
 	{
-		nombre: {
+		name: {
 			type: String,
 			required: true,
 			unique: true,
@@ -22,7 +22,7 @@ const providerSchema = new mongoose.Schema(
 					validator: async function (value) {
 						// Excluyo el propio documento en updates con $ne: this._id
 						const count = await mongoose.models.Provider.countDocuments({
-							nombre: value,
+							name: value,
 							_id: { $ne: this._id },
 						});
 						return count === 0;
