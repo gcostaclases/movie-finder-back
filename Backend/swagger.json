@@ -277,12 +277,12 @@
 								"example": [
 									{
 										"_id": "68d055c86aa347d04a2053da",
-										"nombre": "Netflix",
+										"name": "Netflix",
 										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 									},
 									{
 										"_id": "68d055d16aa347d04a2053de",
-										"nombre": "Prime Video",
+										"name": "Prime Video",
 										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/primevideo.jpg"
 									}
 								]
@@ -320,7 +320,7 @@
 							"schema": {
 								"type": "object",
 								"properties": {
-									"nombre": {
+									"name": {
 										"type": "string",
 										"description": "Nombre del proveedor",
 										"example": "Netflix"
@@ -331,7 +331,7 @@
 										"description": "Archivo de imagen para el logo del proveedor (opcional)"
 									}
 								},
-								"required": ["nombre"]
+								"required": ["name"]
 							},
 							"encoding": {
 								"logo": {
@@ -475,7 +475,7 @@
 								},
 								"example": {
 									"_id": "68d055c86aa347d04a2053da",
-									"nombre": "Netflix",
+									"name": "Netflix",
 									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 								}
 							}
@@ -537,7 +537,7 @@
 							"schema": {
 								"type": "object",
 								"properties": {
-									"nombre": {
+									"name": {
 										"type": "string",
 										"description": "Nuevo nombre del proveedor",
 										"example": "Paramount+"
@@ -567,7 +567,7 @@
 								},
 								"example": {
 									"_id": "68d19f2ba4688d7933d4e28d",
-									"nombre": "Paramount+",
+									"name": "Paramount+",
 									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/paramount.jpg",
 									"createdAt": "2025-09-22T19:10:35.341Z",
 									"updatedAt": "2025-09-22T19:13:06.914Z",
