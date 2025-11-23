@@ -351,7 +351,7 @@
 								},
 								"example": {
 									"_id": "68ef2b1012cd56dc05d6be3d",
-									"nombre": "Netflix",
+									"name": "Netflix",
 									"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 									"createdAt": "2025-09-22T19:09:30.349Z",
 									"updatedAt": "2025-09-22T19:09:30.349Z",
@@ -997,7 +997,7 @@
 									"providers": [
 										{
 											"_id": "68d055c86aa347d04a2053da",
-											"nombre": "Netflix",
+											"name": "Netflix",
 											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 											"createdAt": "2025-09-21T19:45:12.864Z",
 											"updatedAt": "2025-09-21T19:45:12.864Z",
@@ -1005,7 +1005,7 @@
 										},
 										{
 											"_id": "68d055db6aa347d04a2053e2",
-											"nombre": "Disney+",
+											"name": "Disney+",
 											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
 											"createdAt": "2025-09-21T19:45:12.864Z",
 											"updatedAt": "2025-09-21T19:45:12.864Z",
