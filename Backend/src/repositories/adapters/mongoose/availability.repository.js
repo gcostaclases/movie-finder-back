@@ -61,7 +61,8 @@ export const getMovieAvailabilityStats = async (movieId) => {
 			$project: {
 				_id: 0,
 				providerId: "$_id",
-				providerName: "$provider.nombre",
+				providerName: "$provider.name",
+				providerLogo: "$provider.logo",
 				reportCount: "$count",
 			},
 		},

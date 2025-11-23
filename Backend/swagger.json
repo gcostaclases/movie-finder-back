@@ -3714,18 +3714,14 @@
 											"items": {
 												"type": "object",
 												"properties": {
-													"providerId": {
+													"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+													"providerName": { "type": "string", "example": "Netflix" },
+													"providerLogo": {
 														"type": "string",
-														"example": "68d055c86aa347d04a2053da"
+														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 													},
-													"providerName": {
-														"type": "string",
-														"example": "Netflix"
-													},
-													"reports": {
-														"type": "integer",
-														"example": 42
-													}
+													"reportCount": { "type": "integer", "example": 1 },
+													"percentage": { "type": "integer", "example": 50 }
 												}
 											}
 										}
@@ -3738,12 +3734,14 @@
 										{
 											"providerId": "68d055db6aa347d04a2053e2",
 											"providerName": "Disney+",
+											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
 											"reportCount": 1,
 											"percentage": 50
 										},
 										{
 											"providerId": "68d055c86aa347d04a2053da",
 											"providerName": "Netflix",
+											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 											"reportCount": 1,
 											"percentage": 50
 										}
@@ -3964,18 +3962,14 @@
 											"items": {
 												"type": "object",
 												"properties": {
-													"providerId": {
+													"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+													"providerName": { "type": "string", "example": "Netflix" },
+													"providerLogo": {
 														"type": "string",
-														"example": "68d055c86aa347d04a2053da"
+														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
 													},
-													"providerName": {
-														"type": "string",
-														"example": "Netflix"
-													},
-													"reports": {
-														"type": "integer",
-														"example": 42
-													}
+													"reportCount": { "type": "integer", "example": 1 },
+													"percentage": { "type": "integer", "example": 50 }
 												}
 											}
 										},
@@ -3984,18 +3978,14 @@
 											"items": {
 												"type": "object",
 												"properties": {
-													"providerId": {
+													"providerId": { "type": "string", "example": "68d055db6aa347d04a2053e2" },
+													"providerName": { "type": "string", "example": "Disney+" },
+													"providerLogo": {
 														"type": "string",
-														"example": "68d055db6aa347d04a2053e2"
+														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg"
 													},
-													"providerName": {
-														"type": "string",
-														"example": "Disney+"
-													},
-													"reports": {
-														"type": "integer",
-														"example": 35
-													}
+													"reportCount": { "type": "integer", "example": 1 },
+													"percentage": { "type": "integer", "example": 50 }
 												}
 											}
 										}
@@ -4008,6 +3998,7 @@
 										{
 											"providerId": "68d055c86aa347d04a2053da",
 											"providerName": "Netflix",
+											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
 											"reportCount": 1,
 											"percentage": 50
 										}
@@ -4016,6 +4007,7 @@
 										{
 											"providerId": "68d19eeaa4688d7933d4e289",
 											"providerName": "HBO Max",
+											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/hbo.jpg",
 											"reportCount": 1,
 											"percentage": 50
 										}
