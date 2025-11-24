@@ -1,3 +1,4 @@
+//#region ------------ IMPORTS ------------
 import { StyleSheet, View, Image, KeyboardAvoidingView, Platform, ScrollView, Text, Button } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/ButtonPrimary";
@@ -7,20 +8,43 @@ import { useEffect, useState } from "react";
 import useRegister from "../hooks/useRegister";
 import { Dimensions } from "react-native";
 import Toast from "react-native-toast-message";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signUpSchema } from "../forms/auth.schema";
+//#endregion ------------ IMPORTS ------------
 
 const windowHeight = Dimensions.get("window").height;
 
 const PantallaRegistro = ({ navigation }) => {
+	// Custom hook de registro
 	const { handleRegister, loading, error, errorDetails, success } = useRegister();
 
-	const [email, setEmail] = useState("");
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [password2, setPassword2] = useState("");
+	// React Hook Form + Yup
+	const {
+		control, // Propiedad que usa cada uno de los elementos del form para conectarse con el elemento Controller
+		handleSubmit,
+		watch,
+		reset,
+		formState: { errors, isValid },
+	} = useForm({
+		resolver: yupResolver(signUpSchema),
+		mode: "onChange", // onBlur: valida al salir del input; onChange: valida al escribir; onSubmit: valida al enviar el formulario
+		defaultValues: {
+			email: "",
+			username: "",
+			password: "",
+			verifyPassword: "",
+		},
+	});
 
-	const [localError, setLocalError] = useState(null);
+	// Obtengo los mensajes de error de Yup
+	const yupErrors = Object.values(errors).map((err) => err.message);
 
-	// Mostrar toast cuando hay error o success
+	// Calculo paddingBottom dinámico según la cantidad de errores para que el botón quede dentro del ScrollView (sino no se podía scrollear hasta el)
+	const totalErrors = yupErrors.length + errorDetails.length;
+	const dynamicPaddingBottom = totalErrors > 0 ? 10 + totalErrors * 50 : 0;
+
+	// Muestro Toasts cuando hay error o success
 	useEffect(() => {
 		if (success) {
 			Toast.show({
@@ -36,32 +60,22 @@ const PantallaRegistro = ({ navigation }) => {
 				text2: error,
 			});
 		}
-		if (localError) {
-			Toast.show({
-				type: "error",
-				text1: "Error de registro",
-				text2: localError,
-			});
-		}
-	}, [success, error, localError]);
+	}, [success, error]);
 
-	const handleRegisterAndNavigate = async () => {
-		if (password !== password2) {
-			setLocalError("Las contraseñas no coinciden");
-			return;
-		}
-		setLocalError(null);
+	// Handler de submit del formulario
+	const onSubmit = async (data) => {
+		// console.log("SUBMIT!", data);
 		const ok = await handleRegister({
-			email,
-			username,
-			password,
+			email: data.email,
+			username: data.username,
+			password: data.password,
 		});
 		if (ok) {
+			reset();
+			// Navego a PantallaLogin si el registro fue exitoso
 			navigation.replace("PantallaLogin");
 		}
 	};
-
-	const dynamicPaddingBottom = errorDetails.length > 0 ? 40 + errorDetails.length * 50 : 0;
 
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "undefined"}>
@@ -81,45 +95,79 @@ const PantallaRegistro = ({ navigation }) => {
 
 				{/* Inputs */}
 				<View style={styles.containerInputs}>
-					{/*//! A varios les saco el borde de abajo para que no se superpongan con el otro */}
-					<TextInputLoginSignUp
-						placeholder="Correo electrónico..."
-						showBorderBottom={false}
-						autoCapitalize="none"
-						value={email}
-						onChangeText={setEmail}
+					{/* Correo electrónico */}
+					<Controller
+						control={control}
+						name="email"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Correo electrónico..."
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.email}
+								/>
+							</View>
+						)}
 					/>
-					<TextInputLoginSignUp
-						placeholder="Nombre de usuario..."
-						showBorderBottom={false}
-						autoCapitalize="none"
-						value={username}
-						onChangeText={setUsername}
+					{/* Nombre de usuario */}
+					<Controller
+						control={control}
+						name="username"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Nombre de usuario..."
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.username}
+								/>
+							</View>
+						)}
 					/>
-					<TextInputLoginSignUp
-						placeholder="Contraseña..."
-						showBorderBottom={false}
-						secureTextEntry
-						autoCapitalize="none"
-						value={password}
-						onChangeText={setPassword}
+					{/* Contraseña */}
+					<Controller
+						control={control}
+						name="password"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Contraseña..."
+									secureTextEntry
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.password}
+								/>
+							</View>
+						)}
 					/>
-					<TextInputLoginSignUp
-						placeholder="Verificar contraseña..."
-						secureTextEntry
-						autoCapitalize="none"
-						value={password2}
-						onChangeText={setPassword2}
+					{/* Verificar contraseña */}
+					<Controller
+						control={control}
+						name="verifyPassword"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Verificar contraseña..."
+									secureTextEntry
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.verifyPassword}
+								/>
+							</View>
+						)}
 					/>
 				</View>
 
 				{loading && <Text>Cargando...</Text>}
-				{/* {success && <Text style={{ color: "green" }}>{success}</Text>} */}
-				{/* {error && <Text style={{ color: "red" }}>{error}</Text>} */}
-				{/* {localError && <Text style={{ color: "red" }}>{localError}</Text>} */}
-				{errorDetails.length > 0 && (
+
+				{(yupErrors.length > 0 || errorDetails.length > 0) && (
 					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "85%" }}>
-						{errorDetails.map((detalle, idx) => (
+						{[...yupErrors, ...errorDetails].map((detalle, idx) => (
 							<View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
 								<Text style={{ color: "red", fontSize: 16 }}>• </Text>
 								<Text style={{ color: "red", fontSize: 14 }}>{detalle}</Text>
@@ -131,8 +179,9 @@ const PantallaRegistro = ({ navigation }) => {
 				{/* Botón primario sin ícono de registrarse */}
 				<ButtonPrimary
 					title="Registrarme"
-					onPress={handleRegisterAndNavigate}
+					onPress={handleSubmit(onSubmit)}
 					style={{ width: "85%", marginTop: 20 }}
+					disabled={!isValid}
 				/>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -182,6 +231,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 15,
 		fontSize: 16,
 		// marginBottom: 10,
+	},
+	inputWrapper: {
+		marginTop: -1, // Pongo valor negativo igual al borderWidth para que no se duplique el borde
 	},
 });
 

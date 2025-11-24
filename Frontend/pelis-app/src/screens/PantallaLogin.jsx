@@ -1,3 +1,4 @@
+//#region ------------ IMPORTS ------------
 import { StyleSheet, TextInput, View, Image, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/ButtonPrimary";
@@ -7,18 +8,41 @@ import { useEffect, useState } from "react";
 import useLogin from "../hooks/useLogin";
 import { Dimensions } from "react-native";
 import Toast from "react-native-toast-message";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { loginSchema } from "../forms/auth.schema";
+//#endregion ------------ IMPORTS ------------
 
 const windowHeight = Dimensions.get("window").height;
 
 const PantallaLogin = ({ navigation }) => {
+	// Custom hook de login
 	const { handleLogin, loading, error, errorDetails, success } = useLogin();
 
-	// Nombre de usuario o correo electrónico
-	const [identifier, setIdentifier] = useState("");
-	// Contraseña
-	const [password, setPassword] = useState("");
+	// React Hook Form + Yup
+	const {
+		control, // Propiedad que usa cada uno de los elementos del form para conectarse con el elemento Controller
+		handleSubmit,
+		watch,
+		reset,
+		formState: { errors, isValid },
+	} = useForm({
+		resolver: yupResolver(loginSchema),
+		mode: "onChange", // onBlur: valida al salir del input; onChange: valida al escribir; onSubmit: valida al enviar el formulario
+		defaultValues: {
+			identifier: "",
+			password: "",
+		},
+	});
 
-	// Mostrar cuando hay error o success
+	// Obtengo los mensajes de error de Yup
+	const yupErrors = Object.values(errors).map((err) => err.message);
+
+	// Calculo paddingBottom dinámico según la cantidad de errores para que el botón quede dentro del ScrollView (sino no se podía scrollear hasta el)
+	const totalErrors = yupErrors.length + errorDetails.length;
+	const dynamicPaddingBottom = totalErrors > 0 ? 10 + totalErrors * 30 : 0;
+
+	// Muestro Toasts cuando hay error o success
 	useEffect(() => {
 		if (success) {
 			Toast.show({
@@ -36,14 +60,16 @@ const PantallaLogin = ({ navigation }) => {
 		}
 	}, [success, error]);
 
-	const handleLoginAndNavigate = async () => {
-		const ok = await handleLogin(identifier, password);
+	// Handler de submit del formulario
+	const onSubmit = async (data) => {
+		// console.log("SUBMIT!", data);
+		const ok = await handleLogin(data.identifier, data.password);
+		// Navego a PantallaPeliculas si el login fue exitoso
 		if (ok) {
+			reset();
 			navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
 		}
 	};
-
-	const dynamicPaddingBottom = errorDetails.length > 0 ? 60 + errorDetails.length * 60 : 0;
 
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "undefined"}>
@@ -60,30 +86,51 @@ const PantallaLogin = ({ navigation }) => {
 
 				{/* Logo */}
 				<MovieFinderLogoBlack />
+
 				{/* Inputs */}
 				<View style={styles.containerInputs}>
-					{/*//! A este le saque el borde de abajo para que no se superponga con el otro */}
-					<TextInputLoginSignUp
-						placeholder="Correo o nombre de usuario..."
-						showBorderBottom={false}
-						autoCapitalize="none"
-						value={identifier}
-						onChangeText={setIdentifier}
+					{/* Identificador (nombre de usuario o correo) */}
+					<Controller
+						control={control}
+						name="identifier"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Correo o nombre de usuario..."
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.identifier}
+								/>
+							</View>
+						)}
 					/>
-					<TextInputLoginSignUp
-						placeholder="Contraseña..."
-						secureTextEntry
-						autoCapitalize="none"
-						value={password}
-						onChangeText={setPassword}
+					{/* Contraseña */}
+					<Controller
+						control={control}
+						name="password"
+						render={({ field: { onChange, value } }) => (
+							<View style={styles.inputWrapper}>
+								<TextInputLoginSignUp
+									placeholder="Contraseña..."
+									secureTextEntry
+									autoCapitalize="none"
+									value={value}
+									onChangeText={onChange}
+									error={!!errors.password}
+								/>
+							</View>
+						)}
 					/>
 				</View>
 
 				{loading && <Text>Cargando...</Text>}
+
 				{/* {error && <Text style={{ color: "red" }}>{error}</Text>} */}
-				{errorDetails.length > 0 && (
+
+				{(yupErrors.length > 0 || errorDetails.length > 0) && (
 					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "80%" }}>
-						{errorDetails.map((detalle, idx) => (
+						{[...yupErrors, ...errorDetails].map((detalle, idx) => (
 							<View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
 								<Text style={{ color: "red", fontSize: 16 }}>• </Text>
 								<Text style={{ color: "red", fontSize: 14 }}>{detalle}</Text>
@@ -95,8 +142,9 @@ const PantallaLogin = ({ navigation }) => {
 				{/* Botón primario sin ícono de iniciar sesión */}
 				<ButtonPrimary
 					title="Iniciar sesión"
-					onPress={handleLoginAndNavigate}
+					onPress={handleSubmit(onSubmit)}
 					style={{ width: "85%", marginTop: 20 }}
+					disabled={!isValid}
 				/>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -133,7 +181,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		marginTop: 25,
-		marginBottom: 50,
+		marginBottom: 30,
+	},
+	inputWrapper: {
+		marginTop: -1, // Pongo valor negativo igual al borderWidth para que no se duplique el borde
 	},
 	input: {
 		width: "100%",

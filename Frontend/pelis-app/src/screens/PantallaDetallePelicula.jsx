@@ -8,20 +8,7 @@ import PantallaReportarDisponibilidadPelicula from "./PantallaReportarDisponibil
 import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
 import useMovieDetail from "../hooks/useMovieDetail";
 import { Dimensions } from "react-native";
-
-const proveedores = [
-	{ id: "netflix", nombre: "Netflix", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "100%" },
-	{ id: "prime", nombre: "Prime Video", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "80%" },
-	{ id: "disney", nombre: "Disney+", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "60%" },
-	{ id: "hbomax", nombre: "HBO Max", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "50%" },
-	{
-		id: "crunchyroll",
-		nombre: "Crunchyroll",
-		imagen: require("../assets/img/prueba/provider1.png"),
-		porcentaje: "30%",
-	},
-	{ id: "paramount", nombre: "Paramount+", imagen: require("../assets/img/prueba/provider1.png"), porcentaje: "10%" },
-];
+import useMovieAvailability from "../hooks/useMovieAvailability";
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
@@ -35,8 +22,9 @@ const mainPosterWidth = "100%";
 
 const PantallaDetallePelicula = ({ navigation, route }) => {
 	const movieId = route.params?.movieId;
-	console.log("Movie ID recibido en PantallaDetallePelicula:", movieId);
+	// console.log("Movie ID recibido en PantallaDetallePelicula:", movieId);
 	const { movie, loading, error } = useMovieDetail(movieId);
+	const { availability, loading: loadingAvailability } = useMovieAvailability(movieId);
 
 	const [modalReportarDisponibilidadVisible, setModalReportarDisponibilidadVisible] = useState(false);
 	const [modalAgregarReseniaVisible, setModalAgregarReseniaVisible] = useState(false);
@@ -122,7 +110,6 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 					{/* Géneros */}
 					<Text style={styles.genreTitle}>Géneros:</Text>
 					<View style={styles.genres}>
-						{console.log("Pelicula:", movie)}
 						{movie.genres && movie.genres.length > 0 ? (
 							movie.genres.map((g) => (
 								<Text key={g.tmdbId} style={styles.genre}>
@@ -171,14 +158,22 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 				{/* Proveedores */}
 				<View style={styles.container}>
 					<Text style={styles.sectionTitle}>PROVEEDORES</Text>
-					<View style={styles.providersRow}>
-						{proveedores.map((prov) => (
-							<View key={prov.id} style={styles.providerBox}>
-								<Image source={prov.imagen} style={styles.providerImg} />
-								<Text style={styles.providerText}>{prov.porcentaje}</Text>
-							</View>
-						))}
-					</View>
+					{loadingAvailability ? (
+						<ActivityIndicator size="small" color="#27AAE1" />
+					) : (
+						<View style={styles.providersRow}>
+							{availability.length === 0 ? (
+								<Text style={styles.providerText}>Sin reportes de disponibilidad</Text>
+							) : (
+								availability.map((prov) => (
+									<View key={prov.providerId} style={styles.providerBox}>
+										<Image source={{ uri: prov.providerLogo }} style={styles.providerImg} />
+										<Text style={styles.providerText}>{prov.percentage}%</Text>
+									</View>
+								))
+							)}
+						</View>
+					)}
 				</View>
 
 				{/* Actores y Reseñas */}

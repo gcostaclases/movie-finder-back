@@ -14,3 +14,8 @@ export async function getMovieById(id) {
 	return response.data; // Devuelve el objeto película
 }
 
+// Traer availability de una película
+export async function getMovieAvailability(movieId) {
+	const response = await api.get(`/movies/${movieId}/availability`);
+	return response.data.availability; // Devuelve el array de availability
+}

@@ -9,7 +9,7 @@ export default function useMovies(initialLimit = 12) {
 	const [hasMore, setHasMore] = useState(true);
 
 	const fetchMovies = async (nextPage = 1) => {
-		console.log("render fetchMovies");
+		// console.log("render fetchMovies");
 		// Si ya está cargando o no hay más, no hace nada
 		if (loading || !hasMore) return;
 		setLoading(true);
@@ -43,3 +43,4 @@ export default function useMovies(initialLimit = 12) {
 
 	return { movies, loading, error, loadMore, hasMore };
 }
+
