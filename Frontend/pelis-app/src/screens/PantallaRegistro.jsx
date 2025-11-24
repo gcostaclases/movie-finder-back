@@ -42,7 +42,7 @@ const PantallaRegistro = ({ navigation }) => {
 
 	// Calculo paddingBottom dinámico según la cantidad de errores para que el botón quede dentro del ScrollView (sino no se podía scrollear hasta el)
 	const totalErrors = yupErrors.length + errorDetails.length;
-	const dynamicPaddingBottom = totalErrors > 0 ? 10 + totalErrors * 50 : 0;
+	const dynamicPaddingBottom = totalErrors > 0 ? 60 + totalErrors * 50 : 0;
 
 	// Muestro Toasts cuando hay error o success
 	useEffect(() => {
