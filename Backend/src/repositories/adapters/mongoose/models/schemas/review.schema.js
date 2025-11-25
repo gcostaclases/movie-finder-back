@@ -19,15 +19,21 @@ const reviewSchema = new mongoose.Schema(
 			ref: "Movie",
 			required: true,
 		},
+		// rating: {
+		// 	type: Number,
+		// 	required: true,
+		// 	min: 1,
+		// 	max: 10,
+		// 	validate: {
+		// 		validator: Number.isInteger,
+		// 		message: "La puntuación debe ser un número entero entre 1 y 10.",
+		// 	},
+		// },
 		rating: {
 			type: Number,
 			required: true,
-			min: 1,
-			max: 10,
-			validate: {
-				validator: Number.isInteger,
-				message: "La puntuación debe ser un número entero entre 1 y 10.",
-			},
+			min: 0,
+			max: 5,
 		},
 		comment: {
 			type: String,
@@ -61,3 +67,4 @@ export default reviewSchema;
  * Beneficio adicional: Acelera búsquedas del tipo "¿este usuario ya reseñó esta peli?"
  */
 //#endregion ---------- NOTAS PARA MI -----------
+

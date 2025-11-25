@@ -325,6 +325,18 @@ class RepositoryManager {
 	}
 
 	/**
+	 * Cuenta la cantidad total de reseñas de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<number>} Cantidad total de reseñas
+	 */
+	async countReviewsByMovie(movieId) {
+		if (this.#debug) {
+			console.log(`[Repository] Counting reviews for movie: ${movieId}`);
+		}
+		return (await this.adapter).countReviewsByMovie(movieId);
+	}
+
+	/**
 	 * Busca todas las reseñas de un usuario
 	 * @param {string} userId - ID del usuario
 	 * @returns {Promise<Array>} Lista de reseñas
@@ -441,3 +453,4 @@ class RepositoryManager {
 }
 
 export default RepositoryManager;
+

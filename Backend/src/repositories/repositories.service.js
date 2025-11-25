@@ -243,6 +243,15 @@ class RepositoryFactory {
 	}
 
 	/**
+	 * Cuenta la cantidad total de reseñas de una película
+	 * @param {string} movieId - ID de la película
+	 * @returns {Promise<number>} Cantidad total de reseñas
+	 */
+	async countReviewsByMovie(movieId) {
+		return await this.getInstance().countReviewsByMovie(movieId);
+	}
+
+	/**
 	 * Busca todas las reseñas de un usuario
 	 * @param {string} userId - ID del usuario
 	 * @returns {Promise<Array>} Lista de reseñas
@@ -327,3 +336,4 @@ class RepositoryFactory {
 // Exportar instancia singleton
 const repoFactory = new RepositoryFactory();
 export default repoFactory;
+

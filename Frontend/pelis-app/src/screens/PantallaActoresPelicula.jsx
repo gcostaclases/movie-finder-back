@@ -1,66 +1,43 @@
 import { StyleSheet, View, Text, FlatList, Image, Dimensions } from "react-native";
 
-const actores = [
-	{
-		id: "1",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-	{
-		id: "2",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-	{
-		id: "3",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-	{
-		id: "4",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-	{
-		id: "5",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-	{
-		id: "6",
-		nombre: "Kikunosuke Toya",
-		rol: "DENJI (VOICE)",
-		imagen: require("../assets/img/prueba/actor1.jpg"),
-	},
-];
-
 const { width } = Dimensions.get("window");
 const numColumns = 3;
-const itemSize = (width - 48) / numColumns; // 48 = paddingHorizontal + margen total
+// const itemSize = (width - 48) / numColumns; // 48 = paddingHorizontal + margen total
+const itemSize = (width - 40) / numColumns; // 40 = paddingHorizontal + margen
+const posterWidth = itemSize;
+const posterHeight = Math.round(posterWidth * 1.5); // Proporción de poster
 
-const ActorItem = ({ nombre, rol, imagen }) => (
-	<View style={styles.actorBox}>
-		<Image source={imagen} style={styles.actorImage} />
-		<Text style={styles.actorName}>{nombre}</Text>
-		<Text style={styles.actorRole}>{rol}</Text>
-	</View>
-);
+const ActorItem = ({ nombre, rol, imagen }) => {
+	const uri = imagen ? `https://image.tmdb.org/t/p/w500${imagen}` : null;
 
-const PantallaActoresPelicula = () => {
+	return (
+		<View style={styles.actorBox}>
+			{uri ? (
+				<Image source={{ uri }} style={styles.actorImage} />
+			) : (
+				<View style={[styles.actorImage, styles.noImage]}>
+					<Text style={styles.noImageText}>Sin imagen</Text>
+				</View>
+			)}
+			<Text style={styles.actorName}>{nombre}</Text>
+			<Text style={styles.actorRole}>{rol}</Text>
+		</View>
+	);
+};
+
+const PantallaActoresPelicula = ({ route }) => {
+	const actores = route.params?.actores || [];
+
 	return (
 		<View style={styles.container}>
 			<FlatList
 				data={actores}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item, index) => (item._id ? item._id.toString() : index.toString())}
 				numColumns={numColumns}
-				renderItem={({ item }) => <ActorItem {...item} />}
+				renderItem={({ item }) => <ActorItem nombre={item.name} rol={item.role} imagen={item.image} />}
 				contentContainerStyle={styles.listContainer}
 				showsVerticalScrollIndicator={false}
+				ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 30 }}>Sin actores para esta película.</Text>}
 			/>
 		</View>
 	);
@@ -80,8 +57,8 @@ const styles = StyleSheet.create({
 		gap: 15,
 	},
 	actorBox: {
-		width: itemSize,
-		flex: 1,
+		// width: itemSize,
+		flex: 1 / 3,
 		// backgroundColor: "#42d147ff",
 		alignItems: "center",
 		justifyContent: "space-between",
@@ -90,7 +67,9 @@ const styles = StyleSheet.create({
 	},
 	actorImage: {
 		width: "100%",
-		height: 140,
+		// height: 140,
+		// width: itemSize,
+		height: posterHeight,
 		borderRadius: 5,
 		marginBottom: 7,
 		resizeMode: "cover",
@@ -107,5 +86,14 @@ const styles = StyleSheet.create({
 		color: "#555",
 		textAlign: "center",
 	},
+	noImage: {
+		backgroundColor: "#ccc",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	noImageText: {
+		color: "#888",
+		fontSize: 12,
+		textAlign: "center",
+	},
 });
-

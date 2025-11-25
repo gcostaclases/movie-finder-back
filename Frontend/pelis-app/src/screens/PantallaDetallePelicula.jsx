@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
-import ButtonPrimary from "../components/ButtonPrimary";
-import ButtonSecondary from "../components/ButtonSecondary";
-import ButtonGoBack from "../components/ButtonGoBack";
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import ButtonSecondary from "../components/general/ButtonSecondary";
+import ButtonGoBack from "../components/general/ButtonGoBack";
 import { FontAwesome5 } from "@expo/vector-icons";
 import PantallaReportarDisponibilidadPelicula from "./PantallaReportarDisponibilidadPelicula";
 import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
 import useMovieDetail from "../hooks/useMovieDetail";
 import { Dimensions } from "react-native";
 import useMovieAvailability from "../hooks/useMovieAvailability";
+import { Rating } from "react-native-ratings";
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
@@ -37,7 +38,10 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 	// Navegar a los Actores de la película
 	const irAActores = () => {
 		const titulo = movie?.title || "Sin título";
-		navigation.push("PantallaActoresPelicula", { titulo });
+		navigation.push("PantallaActoresPelicula", {
+			titulo,
+			actores: movie.actors || [],
+		});
 	};
 
 	if (loading) {
@@ -148,10 +152,18 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 				<View style={styles.container}>
 					<Text style={styles.sectionTitle}>PUNTAJE</Text>
 					<View style={styles.ratingRow}>
-						{[...Array(5)].map((_, i) => (
-							<FontAwesome5 key={i} name="star" size={28} color="#FFD600" />
-						))}
-						<Text style={styles.ratingText}>{movie.averageRating ? movie.averageRating : 0}/5</Text>
+						<Rating
+							type="custom"
+							ratingCount={5}
+							imageSize={40}
+							readonly
+							startingValue={movie.averageRating ? movie.averageRating / 2 : 0} // <-- conversión a escala 5
+							fractions={1}
+							starStyle={{ marginHorizontal: 160 }}
+							tintColor="#f3f3f3ff"
+							ratingBackgroundColor="#ccc"
+						/>
+						<Text style={styles.ratingText}>{movie.averageRating ? (movie.averageRating / 2).toFixed(1) : 0}/5</Text>
 					</View>
 				</View>
 

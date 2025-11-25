@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import ButtonPrimary from "../components/ButtonPrimary";
-import SearchField from "../components/SearchField";
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import SearchField from "../components/search/SearchField";
 import { useState } from "react";
 
 const PantallaBuscar = () => {

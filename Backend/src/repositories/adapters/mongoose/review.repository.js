@@ -31,21 +31,53 @@ export const findReview = async (filter) => {
 	return await Review.findOne(filter).select("-__v");
 };
 
-/**
- * Busca todas las reseñas de una película con paginación
- * @param {string} movieId - ID de la película
- * @param {number} [page=1] - Número de página para la paginación
- * @param {number} [limit=10] - Cantidad de resultados por página
- * @returns {Promise<Array>} Lista de reseñas con datos del usuario
- */
+// /**
+//  * Busca todas las reseñas de una película con paginación
+//  * @param {string} movieId - ID de la película
+//  * @param {number} [page=1] - Número de página para la paginación
+//  * @param {number} [limit=10] - Cantidad de resultados por página
+//  * @returns {Promise<Array>} Lista de reseñas con datos del usuario
+//  */
+// export const findReviewsByMovie = async (movieId, page = 1, limit = 10) => {
+// 	return await Review.find({ movieId })
+// 		.populate("userId", "username -_id")
+// 		.select("-__v")
+// 		.sort({ createdAt: -1 })
+// 		.skip((page - 1) * limit) // Salto resultados para paginación
+// 		.limit(limit); // Limito la cantidad de resultados;
+// };
+
 export const findReviewsByMovie = async (movieId, page = 1, limit = 10) => {
 	return await Review.find({ movieId })
-		.populate("userId", "username -_id")
+		.populate({
+			path: "userId",
+			select: "username profileImage", // Trae username y foto
+			model: "User",
+		})
 		.select("-__v")
 		.sort({ createdAt: -1 })
-		.skip((page - 1) * limit) // Salto resultados para paginación
-		.limit(limit); // Limito la cantidad de resultados;
+		.skip((page - 1) * limit)
+		.limit(limit)
+		.lean(); // Devuelve objetos planos, pero mantiene userId como objeto
 };
+
+/**
+ * Cuenta la cantidad total de reseñas de una película
+ * @param {string} movieId - ID de la película
+ * @returns {Promise<number>} Cantidad total de reseñas
+ */
+export const countReviewsByMovie = async (movieId) => {
+	return await Review.countDocuments({ movieId });
+};
+
+// /**
+//  * Busca todas las reseñas de un usuario
+//  * @param {string} userId - ID del usuario
+//  * @returns {Promise<Array>} Lista de reseñas con datos de la película
+//  */
+// export const findReviewsByUser = async (userId) => {
+// 	return await Review.find({ userId }).populate("movieId", "title posterPath").select("-__v").sort({ createdAt: -1 });
+// };
 
 /**
  * Busca todas las reseñas de un usuario
@@ -53,7 +85,11 @@ export const findReviewsByMovie = async (movieId, page = 1, limit = 10) => {
  * @returns {Promise<Array>} Lista de reseñas con datos de la película
  */
 export const findReviewsByUser = async (userId) => {
-	return await Review.find({ userId }).populate("movieId", "title posterPath").select("-__v").sort({ createdAt: -1 });
+	return await Review.find({ userId })
+		.populate("movieId", "title posterPath")
+		.select("-__v")
+		.sort({ createdAt: -1 })
+		.lean();
 };
 
 /**

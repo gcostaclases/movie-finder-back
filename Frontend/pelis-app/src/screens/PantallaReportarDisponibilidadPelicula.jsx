@@ -1,20 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal, Image, Platform } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import ButtonPrimary from "../components/ButtonPrimary";
-
-// --- Proveedores ---
-const proveedores = [
-	{ id: "netflix", nombre: "NETFLIX", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "prime", nombre: "PRIME VIDEO", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "disney", nombre: "DISNEY+", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "hbomax", nombre: "HBO MAX", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "crunchyroll", nombre: "CRUNCHYROLL", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "paramount", nombre: "PARAMOUNT+", imagen: require("../assets/img/prueba/provider1.png") },
-	{ id: "otro", nombre: "OTRO", imagen: require("../assets/img/prueba/provider1.png") },
-];
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import useProviders from "../hooks/useProviders";
+import ButtonCloseModal from "../components/general/ButtonCloseModal";
 
 const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
+	// Custom hook para obtener proveedores
+	const { providers, loading, error } = useProviders();
+
 	const [seleccionado, setSeleccionado] = useState(null);
 
 	// --- Selección de proveedor ---
@@ -32,28 +26,36 @@ const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
 			<View style={[styles.modalWrapper]}>
 				<View style={styles.modalContainer}>
 					{/* --- Botón cerrar --- */}
-					<TouchableOpacity style={styles.closeButton} onPress={onClose}>
-						<FontAwesome5 name="times" size={28} color="#888" />
-					</TouchableOpacity>
+					<ButtonCloseModal onPress={onClose} />
 					{/* --- Título --- */}
 					<Text style={styles.titulo}>¿En dónde viste esta película?</Text>
 					{/* --- Grid de proveedores --- */}
 					<View style={styles.proveedoresGrid}>
-						{proveedores.map((prov) => (
-							<TouchableOpacity
-								key={prov.id}
-								style={[styles.proveedorBox, seleccionado === prov.id && styles.proveedorBoxActivo]}
-								activeOpacity={1}
-								onPress={() => handleSelect(prov.id)}>
-								<Image
-									source={prov.imagen}
-									style={[styles.proveedorImg, { opacity: seleccionado === prov.id ? 1 : 0.4 }]}
-								/>
-								<Text style={[styles.proveedorNombre, { opacity: seleccionado === prov.id ? 1 : 0.6 }]}>
-									{prov.nombre}
-								</Text>
-							</TouchableOpacity>
-						))}
+						{loading ? (
+							<Text>Cargando proveedores...</Text>
+						) : error ? (
+							<Text style={{ color: "red" }}>{error}</Text>
+						) : (
+							providers.map((prov) => (
+								<TouchableOpacity
+									key={prov._id}
+									style={[styles.proveedorBox, seleccionado === prov._id && styles.proveedorBoxActivo]}
+									activeOpacity={1}
+									onPress={() => handleSelect(prov._id)}>
+									<Image
+										source={prov.logo ? { uri: prov.logo } : undefined}
+										style={[
+											styles.proveedorImg,
+											{ opacity: seleccionado === prov._id ? 1 : 0.4 },
+											!prov.logo && { backgroundColor: "#ccc" },
+										]}
+									/>
+									<Text style={[styles.proveedorNombre, { opacity: seleccionado === prov._id ? 1 : 0.6 }]}>
+										{prov.name}
+									</Text>
+								</TouchableOpacity>
+							))
+						)}
 					</View>
 					{/* Botón Reportar */}
 					<ButtonPrimary
@@ -94,14 +96,6 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.1,
 		shadowRadius: 10,
 		shadowOffset: { width: 0, height: -5 },
-	},
-	// Botón cerrar
-	closeButton: {
-		position: "absolute",
-		top: 18,
-		right: 18,
-		zIndex: 2,
-		padding: 8,
 	},
 	// Título
 	titulo: {

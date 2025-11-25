@@ -1,9 +1,9 @@
 //#region ------------ IMPORTS ------------
 import { StyleSheet, View, Image, KeyboardAvoidingView, Platform, ScrollView, Text, Button } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
-import ButtonPrimary from "../components/ButtonPrimary";
-import TextInputLoginSignUp from "../components/TextInputLoginSignUp";
-import ButtonGoBack from "../components/ButtonGoBack";
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import TextInputLoginSignUp from "../components/auth/TextInputLoginSignUp";
+import ButtonGoBack from "../components/general/ButtonGoBack";
 import { useEffect, useState } from "react";
 import useRegister from "../hooks/useRegister";
 import { Dimensions } from "react-native";

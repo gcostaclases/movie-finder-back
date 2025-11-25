@@ -115,6 +115,56 @@ export const createReviewController = async (req, res) => {
 	}
 };
 
+// /**
+//  * Obtiene todas las reseñas de una película
+//  *
+//  * Este método utiliza cache para optimizar la carga:
+//  * - Cachea las reviews de la película.
+//  *
+//  * @param {Object} req - Request de Express
+//  * @param {Object} req.params - Parámetros de la ruta
+//  * @param {string} req.params.movieId - ID de la película
+//  * @param {Object} res - Response de Express
+//  * @returns {Promise<void>} JSON con las reseñas
+//  */
+// export const getMovieReviewsController = async (req, res) => {
+// 	const { movieId } = req.params;
+// 	const { page = 1, limit = 10 } = req.query;
+
+// 	// Cache key
+// 	const reviewsCacheKey = `reviews:movie:${movieId}:page:${page}:limit:${limit}`;
+
+// 	try {
+// 		// Verificar si la película existe
+// 		const movie = await repoFactory.findMovie({ _id: movieId });
+// 		if (!movie) {
+// 			return res.status(404).json({
+// 				message: "Película no encontrada",
+// 			});
+// 		}
+
+// 		// Intento obtener las reviews del cache
+// 		let reviews = await cacheService.get(reviewsCacheKey);
+// 		if (!reviews) {
+// 			// Si no están en cache, consulto la base de datos
+// 			reviews = await repoFactory.findReviewsByMovie(movieId);
+// 			// Solo guardo en cache por 5 minutos si el array no está vacío
+// 			if (reviews.length > 0) {
+// 				await cacheService.set(reviewsCacheKey, reviews, 300);
+// 			}
+// 		}
+
+// 		// Respondo con las reviews
+// 		// TODO: Agregar paginación en la respuesta ("total": 15, "page": 1, "limit": 5 como en los demás)
+// 		return res.status(200).json(reviews);
+// 	} catch (error) {
+// 		console.error("Error al obtener reseñas:", error);
+// 		return res.status(500).json({
+// 			message: INTERNAL_SERVER_ERROR,
+// 		});
+// 	}
+// };
+
 /**
  * Obtiene todas las reseñas de una película
  *
@@ -131,7 +181,6 @@ export const getMovieReviewsController = async (req, res) => {
 	const { movieId } = req.params;
 	const { page = 1, limit = 10 } = req.query;
 
-	// Cache key
 	const reviewsCacheKey = `reviews:movie:${movieId}:page:${page}:limit:${limit}`;
 
 	try {
@@ -144,19 +193,34 @@ export const getMovieReviewsController = async (req, res) => {
 		}
 
 		// Intento obtener las reviews del cache
-		let reviews = await cacheService.get(reviewsCacheKey);
-		if (!reviews) {
-			// Si no están en cache, consulto la base de datos
-			reviews = await repoFactory.findReviewsByMovie(movieId);
+		let reviewsClean = await cacheService.get(reviewsCacheKey);
+		if (!reviewsClean) {
+			let reviews = await repoFactory.findReviewsByMovie(movieId, page, limit);
+
+			// Renombrar userId a user y eliminar userId y movieId de la respuesta
+			reviewsClean = reviews.map((r) => {
+				const { userId, movieId, ...rest } = r;
+				return {
+					user: userId,
+					...rest,
+				};
+			});
+
 			// Solo guardo en cache por 5 minutos si el array no está vacío
-			if (reviews.length > 0) {
-				await cacheService.set(reviewsCacheKey, reviews, 300);
+			if (reviewsClean.length > 0) {
+				await cacheService.set(reviewsCacheKey, reviewsClean, 300);
 			}
 		}
 
-		// Respondo con las reviews
-		// TODO: Agregar paginación en la respuesta ("total": 15, "page": 1, "limit": 5 como en los demás)
-		return res.status(200).json(reviews);
+		// Obtener el total de reviews para la película
+		const total = await repoFactory.countReviewsByMovie(movieId);
+
+		return res.status(200).json({
+			reviews: reviewsClean,
+			total,
+			page: Number(page),
+			limit: Number(limit),
+		});
 	} catch (error) {
 		console.error("Error al obtener reseñas:", error);
 		return res.status(500).json({
@@ -186,16 +250,25 @@ export const getMyReviewsController = async (req, res) => {
 
 	try {
 		// Intento obtener las reviews del cache
-		let reviews = await cacheService.get(userReviewsCacheKey);
-		if (!reviews) {
-			// Si no están en cache, consulto la base de datos
-			reviews = await repoFactory.findReviewsByUser(userId);
+		let reviewsClean = await cacheService.get(userReviewsCacheKey);
+		if (!reviewsClean) {
+			let reviews = await repoFactory.findReviewsByUser(userId);
+
+			// Renombrar movieId a movie y eliminar movieId y userId de la respuesta
+			reviewsClean = reviews.map((r) => {
+				const { movieId, userId, ...rest } = r;
+				return {
+					movie: movieId,
+					...rest,
+				};
+			});
+
 			// Guardo en cache por 5 minutos
-			await cacheService.set(userReviewsCacheKey, reviews, 300);
+			await cacheService.set(userReviewsCacheKey, reviewsClean, 300);
 		}
 
 		// Respondo con las reviews
-		return res.status(200).json(reviews);
+		return res.status(200).json(reviewsClean);
 	} catch (error) {
 		console.error("Error al obtener mis reseñas:", error);
 		return res.status(500).json({
@@ -316,3 +389,4 @@ export const deleteReviewController = async (req, res) => {
 		});
 	}
 };
+

@@ -84,16 +84,28 @@ const Menu = () => {
 					// Con esto detecto la pantalla activa y si es Login o Registro oculto el tab bar
 					const routeName = getFocusedRouteNameFromRoute(route);
 					const hideTabBar = routeName === "PantallaLogin" || routeName === "PantallaRegistro";
-					return {
-						tabBarLabel: "Usuario",
-						headerShown: false,
-						tabBarStyle: hideTabBar
-							? { display: "none" }
-							: {
-									backgroundColor: "#CCDEE5",
-									height: tabBarHeight,
-							  },
-					};
+					// Si está logueado muestro el header, sino no
+					return isLogged
+						? {
+								tabBarLabel: "Usuario",
+								headerShown: true,
+								tabBarStyle: hideTabBar
+									? { display: "none" }
+									: {
+											backgroundColor: "#CCDEE5",
+											height: tabBarHeight,
+									  },
+						  }
+						: {
+								tabBarLabel: "Usuario",
+								headerShown: false,
+								tabBarStyle: hideTabBar
+									? { display: "none" }
+									: {
+											backgroundColor: "#CCDEE5",
+											height: tabBarHeight,
+									  },
+						  };
 				}}
 			/>
 			<Tab.Screen

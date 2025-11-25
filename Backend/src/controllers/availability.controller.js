@@ -50,6 +50,8 @@ export const reportMovieAvailabilityController = async (req, res) => {
 			});
 		}
 
+		// POR AHORA VOY A DEJAR QUE EL USUARIO PUEDA REPORTAR CUALQUIER PROVEEDOR
+		/*
 		// Verifico que el proveedor esté en la lista del usuario
 		const user = await repoFactory.findUser({ _id: userId });
 		const userWithProviders = await repoFactory.populateUserProviders(user);
@@ -60,6 +62,7 @@ export const reportMovieAvailabilityController = async (req, res) => {
 				message: "No puedes reportar disponibilidad en un proveedor que no tienes contratado.",
 			});
 		}
+		*/
 
 		// Guardo el reporte
 		await repoFactory.saveAvailability(userId, movieId, providerId);
@@ -163,3 +166,4 @@ export const getPersonalizedAvailabilityController = async (req, res) => {
 		return res.status(500).json({ message: INTERNAL_SERVER_ERROR });
 	}
 };
+

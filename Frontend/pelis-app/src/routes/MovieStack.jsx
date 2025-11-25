@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import PantallaPeliculas from "../screens/PantallaPeliculas";
 import PantallaDetallePelicula from "../screens/PantallaDetallePelicula";
-import ButtonGoBack from "../components/ButtonGoBack";
+import ButtonGoBack from "../components/general/ButtonGoBack";
 import PantallaReseniasPelicula from "../screens/PantallaReseniasPelicula";
 import PantallaActoresPelicula from "../screens/PantallaActoresPelicula";
 import { LinearGradient } from "expo-linear-gradient";

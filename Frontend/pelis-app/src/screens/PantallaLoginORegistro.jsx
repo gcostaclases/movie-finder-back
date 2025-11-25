@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
-import ButtonPrimary from "../components/ButtonPrimary";
-import ButtonSecondary from "../components/ButtonSecondary";
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import ButtonSecondary from "../components/general/ButtonSecondary";
 
 const PantallaLoginORegistro = ({ navigation }) => {
 	// Navegar al Registro

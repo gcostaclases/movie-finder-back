@@ -1,23 +1,37 @@
-import { StyleSheet, View, FlatList, Image, TouchableOpacity, Dimensions, Text } from "react-native";
+//#region ----------- IMPORTS ------------
+import { StyleSheet, View, FlatList, Image, TouchableOpacity, Dimensions, Text, ActivityIndicator } from "react-native";
 import useMovies from "../hooks/useMovies";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import Toast from "react-native-toast-message";
+import StitchDesconfiado from "../assets/img/Stitch-Desconfiado.png";
+//#endregion ------------ IMPORTS ------------
 
+// Dimensiones para calcular el tamaño de los posters
 const { width } = Dimensions.get("window");
 const numColumns = 3;
 const itemSize = (width - 40) / numColumns; // 40 = paddingHorizontal + margen
-
-const posterWidth = itemSize; // o un valor fijo, ej: 100
-const posterHeight = Math.round(posterWidth * 1.5); // proporción típica de poster
+const posterWidth = itemSize;
+const posterHeight = Math.round(posterWidth * 1.5); // Proporción de poster
 
 const PantallaPeliculas = ({ navigation }) => {
+	// Custom hook para obtener películas
 	const { movies, loading, error, loadMore, hasMore } = useMovies(12);
-	// const { movies, loading, error } = useMovies(1, 12);
 
 	// Navegar al Detalle de la película
 	const irADetalle = (movie) => {
 		// console.log("Movie:", movie);
 		navigation.push("PantallaDetallePelicula", { movieId: movie._id, movieTitle: movie.title });
 	};
+
+	useEffect(() => {
+		if (error) {
+			Toast.show({
+				type: "error",
+				text1: "Error al cargar películas",
+				text2: error,
+			});
+		}
+	}, [error]);
 
 	return (
 		<View style={styles.container}>
@@ -46,11 +60,20 @@ const PantallaPeliculas = ({ navigation }) => {
 				onEndReached={hasMore ? loadMore : null}
 				onEndReachedThreshold={0.5}
 				ListFooterComponent={
-					loading ? <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text> : null
+					loading && <ActivityIndicator size="large" color="#27AAE1" style={{ marginVertical: 20 }} />
+				}
+				ListEmptyComponent={
+					!loading &&
+					(error || movies.length === 0) && (
+						<View style={styles.emptyContainer}>
+							<Image source={StitchDesconfiado} style={styles.emptyImage} resizeMode="contain" />
+							<Text style={styles.emptyText}>
+								{error ? "Ocurrió un error al cargar las películas" : "No se encontraron películas"}
+							</Text>
+						</View>
+					)
 				}
 			/>
-			{/* {loading && <Text style={{ textAlign: "center", justifyContent: "center" }}>Cargando...</Text>} */}
-			{error && <Text style={{ color: "red", textAlign: "center" }}>{error}</Text>}
 		</View>
 	);
 };
@@ -93,6 +116,24 @@ const styles = StyleSheet.create({
 		color: "#888",
 		fontSize: 12,
 		textAlign: "center",
+	},
+	emptyContainer: {
+		// backgroundColor: "#ba1d1dff",
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		// marginTop: 30,
+	},
+	emptyImage: {
+		width: 180,
+		height: 180,
+		marginBottom: 20,
+	},
+	emptyText: {
+		fontSize: 18,
+		color: "#222",
+		textAlign: "center",
+		fontWeight: "500", // Semi-bold
 	},
 });
 

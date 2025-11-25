@@ -8,11 +8,17 @@ export const reviewCreateSchema = Joi.object({
 		"string.empty": "El ID de la película es obligatorio.",
 		"any.required": "El ID de la película es obligatorio.",
 	}),
-	rating: Joi.number().integer().min(1).max(10).required().messages({
+	// rating: Joi.number().integer().min(1).max(10).required().messages({
+	// 	"number.base": "La puntuación debe ser un número.",
+	// 	"number.integer": "La puntuación debe ser un número entero.",
+	// 	"number.min": "La puntuación debe ser al menos 1.",
+	// 	"number.max": "La puntuación no puede ser mayor a 10.",
+	// 	"any.required": "La puntuación es obligatoria.",
+	// }),
+	rating: Joi.number().min(0).max(5).required().messages({
 		"number.base": "La puntuación debe ser un número.",
-		"number.integer": "La puntuación debe ser un número entero.",
-		"number.min": "La puntuación debe ser al menos 1.",
-		"number.max": "La puntuación no puede ser mayor a 10.",
+		"number.min": "La puntuación debe ser al menos 0.",
+		"number.max": "La puntuación no puede ser mayor a 5.",
 		"any.required": "La puntuación es obligatoria.",
 	}),
 	comment: Joi.string().max(500).optional().allow("").messages({
