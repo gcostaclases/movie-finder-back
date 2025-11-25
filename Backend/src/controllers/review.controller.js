@@ -89,6 +89,15 @@ export const createReviewController = async (req, res) => {
 		await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
 
+		// Regenero y guardo el cache de rating actualizado
+		const reviewStats = await repoFactory.getAverageRating(movieId);
+		// Filtrar solo los campos necesarios
+		const cacheStats = {
+			averageRating: reviewStats.averageRating,
+			totalReviews: reviewStats.totalReviews,
+		};
+		await cacheService.set(`movie:${movieId}:rating`, cacheStats, 300); // 5 minutos
+
 		// Si se incluye providerId, también reporto disponibilidad
 		if (providerId) {
 			// Verifico que el provider existe
@@ -326,6 +335,15 @@ export const updateReviewController = async (req, res) => {
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
 		//await cacheService.delete(`movie:${review.movieId}:reviews`);
 
+		// Regenero y guardo el cache de rating actualizado
+		const reviewStats = await repoFactory.getAverageRating(review.movieId);
+		// Filtrar solo los campos necesarios
+		const cacheStats = {
+			averageRating: reviewStats.averageRating,
+			totalReviews: reviewStats.totalReviews,
+		};
+		await cacheService.set(`movie:${review.movieId}:rating`, cacheStats, 300); // 5 minutos
+
 		return res.status(200).json(updatedReview);
 	} catch (error) {
 		console.error("Error al actualizar reseña:", error);
@@ -380,6 +398,15 @@ export const deleteReviewController = async (req, res) => {
 		await cacheService.delete(`reviews:movie:${review.movieId}`); // Reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
 		//await cacheService.delete(`movie:${review.movieId}:reviews`);
+
+		// Regenero y guardo el cache de rating actualizado
+		const reviewStats = await repoFactory.getAverageRating(review.movieId);
+		// Filtrar solo los campos necesarios
+		const cacheStats = {
+			averageRating: reviewStats.averageRating,
+			totalReviews: reviewStats.totalReviews,
+		};
+		await cacheService.set(`movie:${review.movieId}:rating`, cacheStats, 300); // 5 minutos
 
 		return res.status(200).json({ message: "Reseña eliminada correctamente" });
 	} catch (error) {

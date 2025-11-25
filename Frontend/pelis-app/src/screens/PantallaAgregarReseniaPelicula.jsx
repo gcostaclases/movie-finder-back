@@ -8,7 +8,7 @@ import { resetRating } from "../store/slices/ratingSlice";
 import { resetReview } from "../store/slices/reviewSlice";
 import useAddReview from "../hooks/useAddReview";
 
-const PantallaAgregarReseniaPelicula = ({ visible, onClose }) => {
+const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 	const dispatch = useDispatch();
 
 	const { createReview, loading, error, success } = useAddReview();
@@ -25,7 +25,7 @@ const PantallaAgregarReseniaPelicula = ({ visible, onClose }) => {
 	const handleReview = async () => {
 		await createReview({
 			movieId,
-			rating: puntaje * 2, // Convierto a escala 10 (porque asi lo hice en el back)
+			rating: puntaje,
 			comment: resenia,
 		});
 		handleClose();

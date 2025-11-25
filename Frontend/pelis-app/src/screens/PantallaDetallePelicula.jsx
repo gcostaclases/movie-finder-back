@@ -9,7 +9,7 @@ import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
 import useMovieDetail from "../hooks/useMovieDetail";
 import { Dimensions } from "react-native";
 import useMovieAvailability from "../hooks/useMovieAvailability";
-import { Rating } from "react-native-ratings";
+import MovieDetailRating from "../components/movie/MovieDetailRating";
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
@@ -149,23 +149,7 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 				</View>
 
 				{/* Puntaje */}
-				<View style={styles.container}>
-					<Text style={styles.sectionTitle}>PUNTAJE</Text>
-					<View style={styles.ratingRow}>
-						<Rating
-							type="custom"
-							ratingCount={5}
-							imageSize={40}
-							readonly
-							startingValue={movie.averageRating ? movie.averageRating / 2 : 0} // <-- conversión a escala 5
-							fractions={1}
-							starStyle={{ marginHorizontal: 160 }}
-							tintColor="#f3f3f3ff"
-							ratingBackgroundColor="#ccc"
-						/>
-						<Text style={styles.ratingText}>{movie.averageRating ? (movie.averageRating / 2).toFixed(1) : 0}/5</Text>
-					</View>
-				</View>
+				<MovieDetailRating movie={movie} />
 
 				{/* Proveedores */}
 				<View style={styles.container}>
@@ -212,6 +196,7 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 			<PantallaAgregarReseniaPelicula
 				visible={modalAgregarReseniaVisible}
 				onClose={() => setModalAgregarReseniaVisible(false)}
+				movieId={movieId}
 			/>
 		</>
 	);
