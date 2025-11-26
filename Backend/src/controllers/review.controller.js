@@ -84,6 +84,13 @@ export const createReviewController = async (req, res) => {
 		// Creo la review
 		const newReview = await repoFactory.saveReview(userId, movieId, rating, comment);
 
+		// Traigo la review poblada con el usuario
+		const reviewPopulated = await repoFactory.findReview({ _id: newReview._id }, { populateUser: true });
+
+		// Renombro userId a user y elimino movieId de la respuesta (igual que en el get)
+		const { userId: user, movieId: _movieId, ...rest } = reviewPopulated;
+		const reviewClean = { user, ...rest };
+
 		// Invalido caches relacionados
 		await cacheService.delete(`movie:${movieId}:rating`); // Puntaje de la película
 		await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
@@ -115,7 +122,7 @@ export const createReviewController = async (req, res) => {
 			}
 		}
 
-		return res.status(201).json(newReview);
+		return res.status(201).json(reviewClean);
 	} catch (error) {
 		console.error("Error al crear reseña:", error);
 		return res.status(500).json({
@@ -321,13 +328,21 @@ export const updateReviewController = async (req, res) => {
 		}
 
 		// Verifico que el usuario es el autor de la reseña
-		if (review.userId.toString() !== userId) {
+		// console.log(review.userId);
+		if (review.userId._id.toString() !== userId) {
 			return res.status(403).json({
 				message: "No tienes permiso para editar esta reseña",
 			});
 		}
 
-		const updatedReview = await repoFactory.updateReview(reviewId, rating, comment);
+		await repoFactory.updateReview(reviewId, rating, comment);
+
+		// Traigo la review actualizada y poblada
+		const updatedReviewPopulated = await repoFactory.findReview({ _id: reviewId }, { populateUser: true });
+
+		// Renombro userId a user y elimino movieId de la respuesta
+		const { userId: user, movieId: _movieId, ...rest } = updatedReviewPopulated;
+		const reviewClean = { user, ...rest };
 
 		// Invalido caches relacionados
 		await cacheService.delete(`movie:${review.movieId}:rating`); // Puntaje de la película
@@ -344,7 +359,7 @@ export const updateReviewController = async (req, res) => {
 		};
 		await cacheService.set(`movie:${review.movieId}:rating`, cacheStats, 300); // 5 minutos
 
-		return res.status(200).json(updatedReview);
+		return res.status(200).json(reviewClean);
 	} catch (error) {
 		console.error("Error al actualizar reseña:", error);
 		return res.status(500).json({
@@ -384,7 +399,8 @@ export const deleteReviewController = async (req, res) => {
 		}
 
 		// Verifico que el usuario es el autor de la reseña
-		if (review.userId.toString() !== userId) {
+		console.log(review.userId);
+		if (review.userId._id.toString() !== userId) {
 			return res.status(403).json({
 				message: "No tienes permiso para eliminar esta reseña",
 			});

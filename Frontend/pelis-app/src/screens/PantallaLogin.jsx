@@ -11,11 +11,15 @@ import Toast from "react-native-toast-message";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../forms/auth.schema";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/slices/userSlice";
 //#endregion ------------ IMPORTS ------------
 
 const windowHeight = Dimensions.get("window").height;
 
 const PantallaLogin = ({ navigation }) => {
+	const dispatch = useDispatch();
+
 	// Custom hook de login
 	const { handleLogin, loading, error, errorDetails, success } = useLogin();
 
@@ -63,9 +67,20 @@ const PantallaLogin = ({ navigation }) => {
 	// Handler de submit del formulario
 	const onSubmit = async (data) => {
 		// console.log("SUBMIT!", data);
-		const ok = await handleLogin(data.identifier, data.password);
+		// const ok = await handleLogin(data.identifier, data.password);
+		const datos = await handleLogin(data.identifier, data.password);
 		// Navego a PantallaPeliculas si el login fue exitoso
-		if (ok) {
+		// if (ok) {
+		// 	reset();
+		// 	navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
+		// }
+		if (datos && datos.token) {
+			dispatch(
+				loginUser({
+					username: datos.user.username,
+					profileImage: datos.user.profileImage,
+				})
+			);
 			reset();
 			navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
 		}

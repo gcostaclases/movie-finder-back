@@ -9,10 +9,10 @@ export const reviewSlice = createSlice({
 	initialState,
 	reducers: {
 		setUserReview: (state, action) => {
-			state.value = action.payload;
+			state.userReview = action.payload;
 		},
 		resetUserReview: (state) => {
-			state.value = "";
+			state.userReview = "";
 		},
 	},
 });

@@ -1,9 +1,12 @@
+//#region ----------- IMPORTS ------------
 import { StyleSheet, Text, View } from "react-native";
 import { Rating } from "react-native-ratings";
 import { useSelector } from "react-redux";
+//#endregion ------------ IMPORTS ------------
 
 const MovieDetailRating = () => {
 	const averageRating = useSelector((state) => state.movie.reviewStats.averageRating);
+	// console.log("Puntaje promedio de la película:", averageRating);
 
 	return (
 		<View style={styles.container}>

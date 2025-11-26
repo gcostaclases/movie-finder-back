@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { login } from "../services/authService";
 import * as SecureStore from "expo-secure-store";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../store/slices/userSlice";
 
 export default function useLogin() {
-	const dispatch = useDispatch();
-
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [errorDetails, setErrorDetails] = useState([]);
@@ -23,11 +19,13 @@ export default function useLogin() {
 			//Si 200 entro acá
 			if (datos.token) {
 				setSuccess(datos.message);
-				// Guardo el token en la SecureStore
+				// Guardo el token y los datos del usuario en SecureStore
+				console.log("Token Usuario:", datos.token);
+				console.log("Datos Usuario:", datos.user);
 				await SecureStore.setItemAsync("userToken", datos.token);
-				// Cambio el estado global a logged in true
-				dispatch(loginUser());
-				return true;
+				await SecureStore.setItemAsync("userProfile", JSON.stringify(datos.user));
+				return datos;
+				// return true;
 			} else {
 				setError(datos.message);
 				return false;
@@ -45,7 +43,8 @@ export default function useLogin() {
 				setError("ERROR: Error de conexión");
 				setErrorDetails([]);
 			}
-			return false;
+			return null;
+			// return false;
 		} finally {
 			setLoading(false);
 		}

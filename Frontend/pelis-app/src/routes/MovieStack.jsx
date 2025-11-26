@@ -1,3 +1,4 @@
+//#region ----------- IMPORTS ------------
 import { createStackNavigator } from "@react-navigation/stack";
 import PantallaPeliculas from "../screens/PantallaPeliculas";
 import PantallaDetallePelicula from "../screens/PantallaDetallePelicula";
@@ -5,10 +6,15 @@ import ButtonGoBack from "../components/general/ButtonGoBack";
 import PantallaReseniasPelicula from "../screens/PantallaReseniasPelicula";
 import PantallaActoresPelicula from "../screens/PantallaActoresPelicula";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSelector } from "react-redux";
+//#endregion ------------ IMPORTS ------------
 
 const Stack = createStackNavigator();
 
 const MovieStack = () => {
+	const movieTitle = useSelector((state) => state.movie.title);
+	// console.log("Título de la película en MovieStack:", movieTitle);
+
 	return (
 		<Stack.Navigator
 			initialRouteName="PantallaPeliculas"
@@ -37,7 +43,8 @@ const MovieStack = () => {
 				name="PantallaDetallePelicula"
 				component={PantallaDetallePelicula}
 				options={({ route, navigation }) => ({
-					headerTitle: route.params?.movieTitle || "Detalle",
+					// headerTitle: route.params?.movieTitle || "Detalle",
+					headerTitle: `${movieTitle || "Detalle"}`,
 					headerLeft: () => <ButtonGoBack navigation={navigation} size={28} />,
 				})}
 			/>
@@ -45,7 +52,7 @@ const MovieStack = () => {
 				name="PantallaReseniasPelicula"
 				component={PantallaReseniasPelicula}
 				options={({ route, navigation }) => ({
-					headerTitle: `Reseñas de ${route.params?.titulo}`,
+					headerTitle: `Reseñas de ${movieTitle || "Reseñas"}`,
 					headerLeft: () => <ButtonGoBack navigation={navigation} size={28} />,
 				})}
 			/>
@@ -53,7 +60,7 @@ const MovieStack = () => {
 				name="PantallaActoresPelicula"
 				component={PantallaActoresPelicula}
 				options={({ route, navigation }) => ({
-					headerTitle: `Actores de ${route.params?.titulo}`,
+					headerTitle: `Actores de ${movieTitle || "Actores"}`,
 					headerLeft: () => <ButtonGoBack navigation={navigation} size={28} />,
 				})}
 			/>

@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
 	review: reviewReducer,
 	movie: movieReducer,
 	providers: providersReducer,
-	movieReviews: movieReviewsReducer,
+	// movieReviews: movieReviewsReducer,
 });
 
 export const store = createStore(rootReducer, composeWithDevTools());

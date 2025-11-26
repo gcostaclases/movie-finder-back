@@ -1,5 +1,8 @@
+//#region ----------- IMPORTS ------------
 import { View, Text, Image, Dimensions, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+//#endregion ------------ IMPORTS ------------
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
@@ -11,7 +14,10 @@ const mainPosterWidth = "100%";
 // const smallPosterWidth = 100;
 // const smallPosterHeight = 150;
 
-const MovieDetailInfo = ({ movie }) => {
+const MovieDetailInfo = () => {
+	const movie = useSelector((state) => state.movie);
+	// console.log("MovieDetailInfo movie:", movie);
+
 	return (
 		<>
 			{/* Imagen principal */}

@@ -27,8 +27,29 @@ export const saveReview = async (userId, movieId, rating, comment) => {
  * @param {Object} filter - Filtro de búsqueda
  * @returns {Promise<Object|null>} Reseña encontrada o null
  */
+// ASI ESTABA ANTES
+// export const findReview = async (filter) => {
+// 	return await Review.findOne(filter).select("-__v");
+// };
 export const findReview = async (filter) => {
-	return await Review.findOne(filter).select("-__v");
+	return await Review.findOne(filter)
+		.populate({
+			path: "userId",
+			select: "username profileImage", // Trae username y foto
+			model: "User",
+		})
+		.select("-__v")
+		.lean();
+	// let query = Review.findOne(filter).select("-__v");
+	// if (options.populateUser) {
+	// 	query = query.populate({
+	// 		path: "userId",
+	// 		select: "username profileImage _id",
+	// 		model: "User",
+	// 	});
+	// }
+	// const review = await query.lean();
+	// return review;
 };
 
 // /**

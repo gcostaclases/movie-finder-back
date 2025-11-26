@@ -4259,53 +4259,19 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"userId": {
-											"type": "string",
-											"example": "68d31ad598655d0a37332581"
-										},
-										"movieId": {
-											"type": "string",
-											"example": "68e7069e7c16280b8b499c26"
-										},
-										"rating": {
-											"type": "number",
-											"example": 4.5
-										},
-										"comment": {
-											"type": "string",
-											"example": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes."
-										},
-										"_id": {
-											"type": "string",
-											"example": "68ef58848a8b05df2c8c0ca3"
-										},
-										"createdAt": {
-											"type": "string",
-											"format": "date-time",
-											"example": "2025-10-15T08:17:08.769Z"
-										},
-										"updatedAt": {
-											"type": "string",
-											"format": "date-time",
-											"example": "2025-10-15T08:17:08.769Z"
-										},
-										"__v": {
-											"type": "integer",
-											"example": 0
-										}
-									}
+									"$ref": "#/components/schemas/Review"
 								},
 								"example": {
-									"userId": "691272beb42463e5b149eee3",
-									"movieId": "69221bac2a82d6f08e7df630",
-									"rating": 5,
-									"comment": "Opaaa",
-									"_id": "6925584eaf37e520c38aa753",
-									"createdAt": "2025-11-25T07:18:38.324Z",
-									"updatedAt": "2025-11-25T07:18:38.324Z",
-									"__v": 0
+									"_id": "692743ca0bcd4fd64cb003f1",
+									"user": {
+										"_id": "69273c9e34c3a3f7e3ed03e6",
+										"username": "carlosr",
+										"profileImage": null
+									},
+									"rating": 1,
+									"comment": "Mala.",
+									"createdAt": "2025-11-26T18:15:38.173Z",
+									"updatedAt": "2025-11-26T18:15:38.173Z"
 								}
 							}
 						}
@@ -4561,14 +4527,16 @@
 									"$ref": "#/components/schemas/Review"
 								},
 								"example": {
-									"_id": "6925584eaf37e520c38aa753",
-									"userId": "691272beb42463e5b149eee3",
-									"movieId": "69221bac2a82d6f08e7df630",
-									"rating": 2,
-									"comment": "Uhh.",
-									"createdAt": "2025-11-25T07:18:38.324Z",
-									"updatedAt": "2025-11-25T07:22:06.317Z",
-									"__v": 0
+									"_id": "692743ca0bcd4fd64cb003f1",
+									"user": {
+										"_id": "69273c9e34c3a3f7e3ed03e6",
+										"username": "carlosr",
+										"profileImage": null
+									},
+									"rating": 4,
+									"comment": "Ahora me parece buena.",
+									"createdAt": "2025-11-26T18:15:38.173Z",
+									"updatedAt": "2025-11-26T18:38:13.830Z"
 								}
 							}
 						}

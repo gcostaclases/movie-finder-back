@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 const MovieDetailProviders = () => {
 	const availability = useSelector((state) => state.movie.availability);
+	// console.log("Disponibilidad de proveedores:", availability);
 
 	return (
 		<View style={styles.container}>

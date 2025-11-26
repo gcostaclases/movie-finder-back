@@ -4,11 +4,9 @@ import { useDispatch } from "react-redux";
 import { loginUser, logoutUser } from "../store/slices/userSlice";
 
 /*
-  Cuando el usuario se loguea, guardo el token en la SecureStore y hago el dispatch en la pantalla de login.
-  
-  Pero cuando el usuario cierra y vuelve a abrir la app, el estado de Redux se reinicia (o sea se pierde), y tengo que volver a cargar el token desde la SecureStore para restaurar el estado global (isLogged -> en el slice de usuario).
-  
-  Por eso, con el custom hook leo el token guardado en la SecureStore y actualizo el estado de Redux al iniciar la app, así la sesión persiste aunque se cierre la app.
+  Cuando el usuario se loguea, guardo el token y el perfil en SecureStore y hago el dispatch en la pantalla de login.
+	
+  Cuando el usuario cierra y vuelve a abrir la app, el estado de Redux se reinicia, así que leo el token y el perfil desde SecureStore para restaurar el estado global.
 */
 
 export default function useVerificarSesion() {
@@ -19,8 +17,16 @@ export default function useVerificarSesion() {
 		const verificarSesion = async () => {
 			try {
 				const token = await SecureStore.getItemAsync("userToken");
+				const userProfileStr = await SecureStore.getItemAsync("userProfile");
+				const userProfile = userProfileStr ? JSON.parse(userProfileStr) : {};
+
 				if (token) {
-					dispatch(loginUser());
+					dispatch(
+						loginUser({
+							username: userProfile.username || "",
+							profileImage: userProfile.profileImage || null,
+						})
+					);
 				} else {
 					dispatch(logoutUser());
 				}

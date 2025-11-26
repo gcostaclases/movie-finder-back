@@ -1,4 +1,8 @@
+//#region ----------- IMPORTS ------------
 import { StyleSheet, View, Text, FlatList, Image, Dimensions } from "react-native";
+import { useSelector } from "react-redux";
+import StitchDesconfiado from "../assets/img/Stitch-Desconfiado.png";
+//#endregion ------------ IMPORTS ------------
 
 const { width } = Dimensions.get("window");
 const numColumns = 3;
@@ -7,11 +11,12 @@ const itemSize = (width - 40) / numColumns; // 40 = paddingHorizontal + margen
 const posterWidth = itemSize;
 const posterHeight = Math.round(posterWidth * 1.5); // Proporción de poster
 
-const ActorItem = ({ nombre, rol, imagen }) => {
-	const uri = imagen ? `https://image.tmdb.org/t/p/w500${imagen}` : null;
+const ActorItem = ({ name, role, image }) => {
+	const uri = image ? `https://image.tmdb.org/t/p/w500${image}` : null;
 
 	return (
 		<View style={styles.actorBox}>
+			{/* Si hay imagen se muestra sino se muestra un placeholder con texto sin imagen */}
 			{uri ? (
 				<Image source={{ uri }} style={styles.actorImage} />
 			) : (
@@ -19,25 +24,37 @@ const ActorItem = ({ nombre, rol, imagen }) => {
 					<Text style={styles.noImageText}>Sin imagen</Text>
 				</View>
 			)}
-			<Text style={styles.actorName}>{nombre}</Text>
-			<Text style={styles.actorRole}>{rol}</Text>
+			<Text style={styles.actorName}>{name}</Text>
+			<Text style={styles.actorRole}>{role}</Text>
 		</View>
 	);
 };
 
 const PantallaActoresPelicula = ({ route }) => {
-	const actores = route.params?.actores || [];
+	const actors = useSelector((state) => state.movie.actors);
+	// console.log("Actores de la película:", actors);
 
 	return (
 		<View style={styles.container}>
 			<FlatList
-				data={actores}
-				keyExtractor={(item, index) => (item._id ? item._id.toString() : index.toString())}
+				data={actors}
+				keyExtractor={(item, index) => item._id}
 				numColumns={numColumns}
-				renderItem={({ item }) => <ActorItem nombre={item.name} rol={item.role} imagen={item.image} />}
+				renderItem={({ item }) => <ActorItem name={item.name} role={item.role} image={item.image} />}
 				contentContainerStyle={styles.listContainer}
 				showsVerticalScrollIndicator={false}
-				ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 30 }}>Sin actores para esta película.</Text>}
+				ListEmptyComponent={
+					<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+						<Image
+							source={StitchDesconfiado}
+							style={{ width: 180, height: 180, marginBottom: 24 }}
+							resizeMode="contain"
+						/>
+						<Text style={{ color: "#222", fontSize: 20, textAlign: "center", fontWeight: "500" }}>
+							No se encontraron actores para esta película
+						</Text>
+					</View>
+				}
 			/>
 		</View>
 	);
@@ -97,3 +114,4 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 });
+

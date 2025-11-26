@@ -33,6 +33,16 @@ const PantallaPeliculas = ({ navigation }) => {
 		}
 	}, [error]);
 
+	// Loader centrado solo si es la primera carga
+	if (loading && movies.length === 0) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<ActivityIndicator size="large" color="#27AAE1" />
+				<Text>Cargando...</Text>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			{/* Lista de películas */}
@@ -130,7 +140,7 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 	},
 	emptyText: {
-		fontSize: 18,
+		fontSize: 20,
 		color: "#222",
 		textAlign: "center",
 		fontWeight: "500", // Semi-bold

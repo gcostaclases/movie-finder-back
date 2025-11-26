@@ -1,4 +1,4 @@
-import { useState } from "react";
+//#region ----------- IMPORTS ------------
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonSecondary from "../components/general/ButtonSecondary";
@@ -10,9 +10,11 @@ import useMovieDetail from "../hooks/useMovieDetail";
 import MovieDetailInfo from "../components/movie/MovieDetailInfo";
 import MovieDetailProviders from "../components/movie/MovieDetailProviders";
 import MovieDetailRating from "../components/movie/MovieDetailRating";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setMovieDetail } from "../store/slices/movieSlice";
+import StitchDesconfiado from "../assets/img/Stitch-Desconfiado.png";
+//#endregion ------------ IMPORTS ------------
 
 const PantallaDetallePelicula = ({ navigation, route }) => {
 	const movieId = route.params?.movieId;
@@ -28,26 +30,13 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 
 	// Navegar a las Reseñas de la película
 	const irAResenias = () => {
-		const titulo = movie?.title || "Reseñas";
-		console.log("Navegando a reseñas de la película:", movie?._id);
-		navigation.push("PantallaReseniasPelicula", { titulo, movieId: movie?._id });
+		navigation.push("PantallaReseniasPelicula");
 	};
 
 	// Navegar a los Actores de la película
 	const irAActores = () => {
-		const titulo = movie?.title || "Actores";
-		navigation.push("PantallaActoresPelicula", {
-			titulo,
-			actores: movie.actors || [],
-		});
+		navigation.push("PantallaActoresPelicula");
 	};
-
-	// Acá seteo la info necesaria de la película en el store
-	useEffect(() => {
-		if (movie) {
-			dispatch(setMovieDetail(movie));
-		}
-	}, [movie]);
 
 	if (loading) {
 		return (
@@ -61,19 +50,19 @@ const PantallaDetallePelicula = ({ navigation, route }) => {
 	if (error) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
-				<Text style={{ color: "red", fontSize: 16, textAlign: "center" }}>{error}</Text>
-				<ButtonGoBack onPress={() => navigation.goBack()} />
+				<Image source={StitchDesconfiado} style={{ width: 180, height: 180, marginBottom: 24 }} resizeMode="contain" />
+				<Text style={{ color: "#222", fontSize: 20, textAlign: "center", fontWeight: "500" }}>
+					Hubo un error al cargar los datos de la película
+				</Text>
 			</View>
 		);
 	}
-
-	if (!movie) return null;
 
 	return (
 		<>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
 				{/* Info principal de la película */}
-				<MovieDetailInfo movie={movie} />
+				<MovieDetailInfo />
 
 				{/* Contenedor */}
 				<View style={styles.container}>

@@ -67,16 +67,20 @@ const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 			const { averageRating, totalReviews } = getUpdatedReviewStats(prevAverage, prevTotal, puntaje);
 			dispatch(updateReviewStats({ averageRating, totalReviews }));
 
-			// Agregar la nueva reseña al store de movieReviews
+			// Agrego la nueva reseña al store de movieReviews
+			console.log(user);
 			dispatch(
 				addMovieReview({
-					user: {
-						username: user?.username || "Usuario",
-						profileImage: user?.profileImage || null,
+					movieId,
+					review: {
+						user: {
+							username: user?.username,
+							profileImage: user?.profileImage,
+						},
+						rating: puntaje,
+						comment: resenia,
+						_id: Date.now().toString(),
 					},
-					rating: puntaje,
-					comment: resenia,
-					_id: Date.now().toString(), // O el id real si lo devuelve el backend
 				})
 			);
 

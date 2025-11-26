@@ -11,11 +11,11 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		loginUser: (state, action) => {
-			// state.token = action.payload;
 			state.isLogged = true;
+			state.username = action.payload.username;
+			state.profileImage = action.payload.profileImage;
 		},
 		logoutUser: (state) => {
-			// state.token = "";
 			state.isLogged = false;
 		},
 	},

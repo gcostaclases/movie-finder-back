@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-	reviews: [],
+	reviewsByMovie: {},
 };
 
 export const movieReviewsSlice = createSlice({
@@ -9,16 +9,23 @@ export const movieReviewsSlice = createSlice({
 	initialState,
 	reducers: {
 		setMovieReviews: (state, action) => {
-			state.reviews = action.payload;
+			const { movieId, reviews } = action.payload;
+			state.reviewsByMovie[movieId] = reviews;
 		},
 		addMovieReview: (state, action) => {
-			state.reviews = [action.payload, ...state.reviews];
+			const { movieId, review } = action.payload;
+			if (!state.reviewsByMovie[movieId]) {
+				state.reviewsByMovie[movieId] = [];
+			}
+			state.reviewsByMovie[movieId] = [review, ...state.reviewsByMovie[movieId]];
 		},
-		resetMovieReviews: (state) => {
-			state.reviews = [];
+		resetMovieReviews: (state, action) => {
+			const { movieId } = action.payload;
+			state.reviewsByMovie[movieId] = [];
 		},
 	},
 });
 
 export const { setMovieReviews, addMovieReview, resetMovieReviews } = movieReviewsSlice.actions;
 export default movieReviewsSlice.reducer;
+

@@ -1,10 +1,15 @@
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator } from "react-native";
+//#region ----------- IMPORTS ------------
+import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Rating } from "react-native-ratings";
 import useMovieReviews from "../hooks/useMovieReviews";
 import StitchExpectante from "../assets/img/Stitch-Expectante.png";
+import StitchDesconfiado from "../assets/img/Stitch-Desconfiado.png";
 import ButtonPrimary from "../components/general/ButtonPrimary";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
+import { useSelector } from "react-redux";
+import { FontAwesome5 } from "@expo/vector-icons";
+//#endregion ----------- IMPORTS ------------
 
 const ReseñaItem = ({ user, rating, comment }) => (
 	<View style={styles.itemContainer}>
@@ -32,8 +37,9 @@ const ReseñaItem = ({ user, rating, comment }) => (
 );
 
 const PantallaReseniasPelicula = ({ navigation, route }) => {
-	const movieId = route.params?.movieId;
+	const movieId = useSelector((state) => state.movie.id);
 
+	// Custom hook que obtiene las reseñas
 	const { reviews, loading, error } = useMovieReviews(movieId);
 
 	const [modalAgregarReseniaVisible, setModalAgregarReseniaVisible] = useState(false);
@@ -41,6 +47,16 @@ const PantallaReseniasPelicula = ({ navigation, route }) => {
 	const handleAgregarResenia = () => {
 		setModalAgregarReseniaVisible(true);
 	};
+
+	useEffect(() => {
+		if (error) {
+			Toast.show({
+				type: "error",
+				text1: "Error al cargar reseñas",
+				text2: error,
+			});
+		}
+	}, [error]);
 
 	if (loading) {
 		return (
@@ -53,8 +69,11 @@ const PantallaReseniasPelicula = ({ navigation, route }) => {
 
 	if (error) {
 		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "red" }}>{error}</Text>
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
+				<Image source={StitchDesconfiado} style={{ width: 180, height: 180, marginBottom: 24 }} resizeMode="contain" />
+				<Text style={{ color: "#222", fontSize: 20, textAlign: "center", fontWeight: "500" }}>
+					Hubo un error al cargar las reseñas de la película
+				</Text>
 			</View>
 		);
 	}
@@ -81,6 +100,13 @@ const PantallaReseniasPelicula = ({ navigation, route }) => {
 					</View>
 				}
 			/>
+			{/* Botón para agregar reseña - cuando hay listado de reseñas */}
+			{reviews.length > 0 && (
+				<TouchableOpacity style={styles.fab} activeOpacity={0.7} onPress={handleAgregarResenia}>
+					<FontAwesome5 name="plus" size={24} color="#fff" solid />
+				</TouchableOpacity>
+			)}
+
 			<PantallaAgregarReseniaPelicula
 				visible={modalAgregarReseniaVisible}
 				onClose={() => setModalAgregarReseniaVisible(false)}
@@ -156,6 +182,23 @@ const styles = StyleSheet.create({
 		color: "#888",
 		textAlign: "center",
 		marginBottom: 16,
+	},
+	fab: {
+		position: "absolute",
+		right: 24,
+		bottom: 32,
+		backgroundColor: "#27AE60",
+		width: 56,
+		height: 56,
+		borderRadius: 28,
+		alignItems: "center",
+		justifyContent: "center",
+		elevation: 5, // sombra Android
+		shadowColor: "#000", // sombra iOS
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		zIndex: 10,
 	},
 });
 
