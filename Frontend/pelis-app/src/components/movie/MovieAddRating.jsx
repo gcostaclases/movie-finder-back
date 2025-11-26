@@ -1,14 +1,17 @@
+//#region ----------- IMPORTS ------------
 import { StyleSheet, Text, View } from "react-native";
 import { Rating } from "react-native-ratings";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserRating } from "../../store/slices/ratingSlice";
+import { setMovieRating } from "../../store/slices/userSlice";
+//#endregion ----------- IMPORTS ------------
 
 const MovieAddRating = () => {
 	const dispatch = useDispatch();
-	const puntaje = useSelector((state) => state.rating.userRating);
+	const rating = useSelector((state) => state.user.movieReview.rating);
 
 	const handleRating = (rating) => {
-		dispatch(setUserRating(rating));
+		dispatch(setMovieRating(rating));
+		// console.log("Rating seleccionado:", rating);
 	};
 
 	return (
@@ -22,13 +25,13 @@ const MovieAddRating = () => {
 					type="custom"
 					ratingCount={5}
 					imageSize={48}
-					startingValue={puntaje}
+					startingValue={rating}
 					fractions={1}
 					onFinishRating={handleRating}
 					tintColor="#ffffff"
 					ratingBackgroundColor="#ccc"
 				/>
-				<Text style={styles.ratingText}>{puntaje}/5</Text>
+				<Text style={styles.ratingText}>{rating}/5</Text>
 			</View>
 		</>
 	);

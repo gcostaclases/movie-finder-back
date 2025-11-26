@@ -1,11 +1,19 @@
+//#region ----------- IMPORTS ------------
 import { StyleSheet, Text, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserReview } from "../../store/slices/reviewSlice";
+import { setMovieComment } from "../../store/slices/userSlice";
+//#endregion ----------- IMPORTS ------------
 
 const MovieAddReview = () => {
 	const dispatch = useDispatch();
+	const comment = useSelector((state) => state.user.movieReview.comment);
 
-	const resenia = useSelector((state) => state.review.userReview);
+	const handleReview = (text) => {
+		//Para que no me manden espacios vacíos al inicio
+		const trimmed = text.trimStart();
+		dispatch(setMovieComment(trimmed));
+		// console.log("Review:", trimmed);
+	};
 
 	return (
 		<>
@@ -17,8 +25,8 @@ const MovieAddReview = () => {
 				style={styles.textInput}
 				multiline
 				placeholder="Escriba aquí..."
-				value={resenia}
-				onChangeText={(text) => dispatch(setUserReview(text))}
+				value={comment}
+				onChangeText={handleReview}
 				maxLength={400}
 			/>
 		</>

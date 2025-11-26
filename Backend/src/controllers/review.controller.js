@@ -85,9 +85,9 @@ export const createReviewController = async (req, res) => {
 		const newReview = await repoFactory.saveReview(userId, movieId, rating, comment);
 
 		// Traigo la review poblada con el usuario
-		const reviewPopulated = await repoFactory.findReview({ _id: newReview._id }, { populateUser: true });
+		const reviewPopulated = await repoFactory.findReview({ _id: newReview._id });
 
-		// Renombro userId a user y elimino movieId de la respuesta (igual que en el get)
+		// Renombro userId a user y elimino movieId de la respuesta
 		const { userId: user, movieId: _movieId, ...rest } = reviewPopulated;
 		const reviewClean = { user, ...rest };
 
@@ -122,7 +122,19 @@ export const createReviewController = async (req, res) => {
 			}
 		}
 
-		return res.status(201).json(reviewClean);
+		// Armo el objeto movie para la respuesta
+		const movieInfo = {
+			_id: movie._id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			overview: movie.overview,
+			reviewStats: cacheStats,
+		};
+
+		return res.status(201).json({
+			...reviewClean,
+			movie: movieInfo,
+		});
 	} catch (error) {
 		console.error("Error al crear reseña:", error);
 		return res.status(500).json({
@@ -274,7 +286,13 @@ export const getMyReviewsController = async (req, res) => {
 			reviewsClean = reviews.map((r) => {
 				const { movieId, userId, ...rest } = r;
 				return {
-					movie: movieId,
+					movie: {
+						_id: movieId._id,
+						title: movieId.title,
+						posterPath: movieId.posterPath,
+						overview: movieId.overview,
+						reviewStats: movieId.reviewStats,
+					},
 					...rest,
 				};
 			});
@@ -338,7 +356,7 @@ export const updateReviewController = async (req, res) => {
 		await repoFactory.updateReview(reviewId, rating, comment);
 
 		// Traigo la review actualizada y poblada
-		const updatedReviewPopulated = await repoFactory.findReview({ _id: reviewId }, { populateUser: true });
+		const updatedReviewPopulated = await repoFactory.findReview({ _id: reviewId });
 
 		// Renombro userId a user y elimino movieId de la respuesta
 		const { userId: user, movieId: _movieId, ...rest } = updatedReviewPopulated;
@@ -359,7 +377,20 @@ export const updateReviewController = async (req, res) => {
 		};
 		await cacheService.set(`movie:${review.movieId}:rating`, cacheStats, 300); // 5 minutos
 
-		return res.status(200).json(reviewClean);
+		// Busco la info de la película para la respuesta
+		const movie = await repoFactory.findMovie({ _id: review.movieId });
+		const movieInfo = {
+			_id: movie._id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			overview: movie.overview,
+			reviewStats: cacheStats,
+		};
+
+		return res.status(200).json({
+			...reviewClean,
+			movie: movieInfo,
+		});
 	} catch (error) {
 		console.error("Error al actualizar reseña:", error);
 		return res.status(500).json({

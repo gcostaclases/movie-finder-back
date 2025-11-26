@@ -16,37 +16,33 @@ import MovieAddRating from "../components/movie/MovieAddRating";
 import MovieAddReview from "../components/movie/MovieAddReview";
 import Toast from "react-native-toast-message";
 import { useSelector, useDispatch } from "react-redux";
-import { resetUserRating } from "../store/slices/ratingSlice";
-import { resetUserReview } from "../store/slices/reviewSlice";
-import { addMovieReview } from "../store/slices/movieReviewsSlice";
+import { resetMovieRating, resetMovieComment } from "../store/slices/userSlice";
 import useAddReview from "../hooks/useAddReview";
 import { updateReviewStats } from "../store/slices/movieSlice";
 import { useEffect } from "react";
 import { getUpdatedReviewStats } from "../utils/review";
 //#endregion ----------- IMPORTS ------------
 
-const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
+const PantallaAgregarReseniaPelicula = ({ visible, onClose }) => {
 	const dispatch = useDispatch();
+
+	const movieId = useSelector((state) => state.movie.id);
+	const rating = useSelector((state) => state.user.movieReview.rating);
+	const comment = useSelector((state) => state.user.movieReview.comment);
 
 	const { createReview, loading, error, success } = useAddReview();
 
-	const user = useSelector((state) => state.user);
-	const puntaje = useSelector((state) => state.rating.userRating);
-	const resenia = useSelector((state) => state.review.userReview);
-	const prevAverage = useSelector((state) => state.movie.reviewStats.averageRating);
-	const prevTotal = useSelector((state) => state.movie.reviewStats.totalReviews);
-
 	const handleClose = () => {
-		dispatch(resetUserRating());
-		dispatch(resetUserReview());
+		dispatch(resetMovieRating());
+		dispatch(resetMovieComment());
 		onClose();
 	};
 
 	const handleReview = async () => {
 		await createReview({
 			movieId,
-			rating: puntaje,
-			comment: resenia,
+			rating,
+			comment,
 		});
 	};
 
@@ -61,29 +57,9 @@ const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 		}
 	}, [error]);
 
-	// Toast de éxito y actualización del store
+	// Toast de éxito
 	useEffect(() => {
 		if (success) {
-			const { averageRating, totalReviews } = getUpdatedReviewStats(prevAverage, prevTotal, puntaje);
-			dispatch(updateReviewStats({ averageRating, totalReviews }));
-
-			// Agrego la nueva reseña al store de movieReviews
-			console.log(user);
-			dispatch(
-				addMovieReview({
-					movieId,
-					review: {
-						user: {
-							username: user?.username,
-							profileImage: user?.profileImage,
-						},
-						rating: puntaje,
-						comment: resenia,
-						_id: Date.now().toString(),
-					},
-				})
-			);
-
 			Toast.show({
 				type: "success",
 				text1: "¡Reseña creada exitosamente!",
@@ -110,8 +86,8 @@ const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 						<ButtonPrimary
 							title="Reseñar"
 							onPress={handleReview}
-							style={{ width: "80%", marginTop: 10, opacity: puntaje && resenia ? 1 : 0.5 }}
-							disabled={!puntaje || !resenia}
+							style={{ width: "80%", marginTop: 10, opacity: rating && comment ? 1 : 0.5 }}
+							disabled={!rating || !comment}
 						/>
 					</View>
 				</KeyboardAvoidingView>

@@ -110,7 +110,6 @@ const PantallaReseniasPelicula = ({ navigation, route }) => {
 			<PantallaAgregarReseniaPelicula
 				visible={modalAgregarReseniaVisible}
 				onClose={() => setModalAgregarReseniaVisible(false)}
-				movieId={movieId}
 			/>
 		</>
 	);

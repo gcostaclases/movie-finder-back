@@ -4,6 +4,10 @@ const initialState = {
 	username: "",
 	profileImage: null,
 	isLogged: false,
+	movieReview: {
+		rating: 0,
+		comment: "",
+	},
 };
 
 export const userSlice = createSlice({
@@ -18,10 +22,23 @@ export const userSlice = createSlice({
 		logoutUser: (state) => {
 			state.isLogged = false;
 		},
+		setMovieRating: (state, action) => {
+			state.movieReview.rating = action.payload;
+		},
+		resetMovieRating: (state) => {
+			state.movieReview.rating = 0;
+		},
+		setMovieComment: (state, action) => {
+			state.movieReview.comment = action.payload;
+		},
+		resetMovieComment: (state) => {
+			state.movieReview.comment = "";
+		},
 	},
 });
 
-export const { loginUser, logoutUser } = userSlice.actions;
+export const { loginUser, logoutUser, setMovieRating, resetMovieRating, setMovieComment, resetMovieComment } =
+	userSlice.actions;
 
 export default userSlice.reducer;
 

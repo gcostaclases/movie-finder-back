@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addMovieReview } from "./movieReviewsSlice";
 
 const initialState = {
 	id: "",
@@ -94,6 +93,7 @@ export const movieSlice = createSlice({
 export const {
 	setMovieDetail,
 	setMovieReviews,
+	addMovieReview,
 	updateReviewStats,
 	updateAvailability,
 	resetMovieDetail,

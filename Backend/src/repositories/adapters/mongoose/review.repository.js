@@ -105,9 +105,16 @@ export const countReviewsByMovie = async (movieId) => {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Lista de reseñas con datos de la película
  */
+// export const findReviewsByUser = async (userId) => {
+// 	return await Review.find({ userId })
+// 		.populate("movieId", "title posterPath")
+// 		.select("-__v")
+// 		.sort({ createdAt: -1 })
+// 		.lean();
+// };
 export const findReviewsByUser = async (userId) => {
 	return await Review.find({ userId })
-		.populate("movieId", "title posterPath")
+		.populate("movieId", "title posterPath overview reviewStats")
 		.select("-__v")
 		.sort({ createdAt: -1 })
 		.lean();

@@ -4258,15 +4258,23 @@
 						"description": "Reseña creada exitosamente",
 						"content": {
 							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Review"
-								},
+								"schema": { "$ref": "#/components/schemas/Review" },
 								"example": {
 									"_id": "692743ca0bcd4fd64cb003f1",
 									"user": {
 										"_id": "69273c9e34c3a3f7e3ed03e6",
 										"username": "carlosr",
 										"profileImage": null
+									},
+									"movie": {
+										"_id": "69221bac2a82d6f08e7df609",
+										"title": "Expediente Warren: El último rito",
+										"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
+										"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador...",
+										"reviewStats": {
+											"averageRating": 2.9,
+											"totalReviews": 1
+										}
 									},
 									"rating": 1,
 									"comment": "Mala.",
@@ -4368,66 +4376,22 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"reviews": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"_id": { "type": "string", "example": "68ef5a86a47714309114c5e3" },
-													"movie": {
-														"type": "object",
-														"properties": {
-															"_id": { "type": "string", "example": "68e7069e7c16280b8b499c26" },
-															"title": { "type": "string", "example": "Expediente Warren: El último rito" },
-															"posterPath": { "type": "string", "example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg" }
-														}
-													},
-													"rating": { "type": "number", "format": "float", "minimum": 0, "maximum": 5, "example": 4.5 },
-													"comment": {
-														"type": "string",
-														"example": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes."
-													},
-													"createdAt": {
-														"type": "string",
-														"format": "date-time",
-														"example": "2025-10-15T08:25:42.315Z"
-													},
-													"updatedAt": {
-														"type": "string",
-														"format": "date-time",
-														"example": "2025-10-15T08:25:42.315Z"
-													}
-												}
-											}
-										}
-									}
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/Review" }
 								},
 								"example": [
 									{
-										"_id": "68ef5a86a47714309114c5e3",
 										"movie": {
 											"_id": "69221bac2a82d6f08e7df609",
 											"title": "Expediente Warren: El último rito",
-											"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg"
+											"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
+											"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador en el que están implicadas entidades misteriosas a las que deben enfrentarse."
 										},
-										"rating": 4.5,
-										"comment": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes.",
-										"createdAt": "2025-10-15T08:25:42.315Z",
-										"updatedAt": "2025-10-15T08:25:42.315Z"
-									},
-									{
-										"_id": "68e81188a0954456370d5076",
-										"movie": {
-											"_id": "69221bd22a82d6f08e7e088d",
-											"title": "Superman",
-											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg"
-										},
-										"rating": 4,
-										"comment": "Una película increíblemente aterradora con una trama bien desarrollada y actuaciones sobresalientes.",
-										"createdAt": "2025-10-15T08:25:42.315Z",
-										"updatedAt": "2025-10-15T08:25:42.315Z"
+										"_id": "69275b3592dff7f946c81bcf",
+										"rating": 2,
+										"comment": "No me gusto.",
+										"createdAt": "2025-11-26T19:55:33.620Z",
+										"updatedAt": "2025-11-26T19:59:42.211Z"
 									}
 								]
 							}
@@ -4532,6 +4496,16 @@
 										"_id": "69273c9e34c3a3f7e3ed03e6",
 										"username": "carlosr",
 										"profileImage": null
+									},
+									"movie": {
+										"_id": "69221bac2a82d6f08e7df609",
+										"title": "Expediente Warren: El último rito",
+										"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
+										"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador...",
+										"reviewStats": {
+											"averageRating": 2.9,
+											"totalReviews": 1
+										}
 									},
 									"rating": 4,
 									"comment": "Ahora me parece buena.",
@@ -4930,11 +4904,48 @@
 							}
 						}
 					},
-					"movieId": { "type": "string", "example": "68e706a57c16280b8b499ebf" },
+					"movie": {
+						"type": "object",
+						"properties": {
+							"_id": { "type": "string", "example": "68e7069e7c16280b8b499c26" },
+							"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+							"posterPath": { "type": "string", "example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg" },
+							"overview": { "type": "string", "example": "Sinopsis de la película..." },
+							"reviewStats": {
+								"type": "object",
+								"properties": {
+									"averageRating": { "type": "number", "example": 4.2 },
+									"totalReviews": { "type": "integer", "example": 12 }
+								}
+							}
+						}
+					},
 					"rating": { "type": "number", "format": "float", "minimum": 0, "maximum": 5, "example": 4.5 },
 					"comment": { "type": "string", "example": "Excelente película, muy entretenida y con grandes actuaciones." },
 					"createdAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" },
 					"updatedAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" }
+				},
+				"example": {
+					"_id": "68e70d507c16280b8b49a1a5",
+					"user": {
+						"_id": "68d31ad598655d0a37332581",
+						"username": "juanp",
+						"profileImage": null
+					},
+					"movie": {
+						"_id": "68e7069e7c16280b8b499c26",
+						"title": "Expediente Warren: El último rito",
+						"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg",
+						"overview": "Sinopsis de la película...",
+						"reviewStats": {
+							"averageRating": 4.2,
+							"totalReviews": 12
+						}
+					},
+					"rating": 4.5,
+					"comment": "Excelente película, muy entretenida y con grandes actuaciones.",
+					"createdAt": "2025-10-06T15:30:00.000Z",
+					"updatedAt": "2025-10-06T15:30:00.000Z"
 				}
 			},
 			"SuccessResponse": {
