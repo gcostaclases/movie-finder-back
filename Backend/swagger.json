@@ -3705,51 +3705,56 @@
 								"schema": {
 									"type": "object",
 									"properties": {
-										"movieId": {
-											"type": "string",
-											"example": "68e706a57c16280b8b499ebf"
-										},
-										"movieTitle": {
-											"type": "string",
-											"example": "Superman"
-										},
-										"availability": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
-													"providerName": { "type": "string", "example": "Netflix" },
-													"providerLogo": {
-														"type": "string",
-														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
-													},
-													"reportCount": { "type": "integer", "example": 1 },
-													"percentage": { "type": "integer", "example": 50 }
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "68e706a57c16280b8b499ebf" },
+												"title": { "type": "string", "example": "Superman" },
+												"posterPath": { "type": "string", "example": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg" },
+												"overview": { "type": "string", "example": "Sinopsis de la película..." },
+												"availability": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+															"providerName": { "type": "string", "example": "Netflix" },
+															"providerLogo": {
+																"type": "string",
+																"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
+															},
+															"reportCount": { "type": "integer", "example": 1 },
+															"percentage": { "type": "integer", "example": 50 }
+														}
+													}
 												}
 											}
 										}
 									}
 								},
 								"example": {
-									"movieId": "68e706a57c16280b8b499ebf",
-									"movieTitle": "Superman",
-									"availability": [
-										{
-											"providerId": "68d055db6aa347d04a2053e2",
-											"providerName": "Disney+",
-											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
-											"reportCount": 1,
-											"percentage": 50
-										},
-										{
-											"providerId": "68d055c86aa347d04a2053da",
-											"providerName": "Netflix",
-											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
-											"reportCount": 1,
-											"percentage": 50
-										}
-									]
+									"movie": {
+										"_id": "68e706a57c16280b8b499ebf",
+										"title": "Superman",
+										"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+										"overview": "Sinopsis de la película...",
+										"availability": [
+											{
+												"providerId": "68d055c86aa347d04a2053da",
+												"providerName": "Netflix",
+												"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
+												"reportCount": 1,
+												"percentage": 50
+											},
+											{
+												"providerId": "68d055db6aa347d04a2053e2",
+												"providerName": "Disney+",
+												"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
+												"reportCount": 1,
+												"percentage": 50
+											}
+										]
+									}
 								}
 							}
 						}
@@ -3825,10 +3830,60 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"type": "object",
+									"properties": {
+										"message": { "type": "string", "example": "Disponibilidad reportada correctamente" },
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "68e706a57c16280b8b499ebf" },
+												"title": { "type": "string", "example": "Superman" },
+												"posterPath": { "type": "string", "example": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg" },
+												"overview": { "type": "string", "example": "Sinopsis de la película..." },
+												"availability": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+															"providerName": { "type": "string", "example": "Netflix" },
+															"providerLogo": {
+																"type": "string",
+																"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
+															},
+															"reportCount": { "type": "integer", "example": 2 },
+															"percentage": { "type": "integer", "example": 67 }
+														}
+													}
+												}
+											}
+										}
+									}
 								},
 								"example": {
-									"message": "Disponibilidad reportada correctamente"
+									"message": "Disponibilidad reportada correctamente",
+									"movie": {
+										"_id": "68e706a57c16280b8b499ebf",
+										"title": "Superman",
+										"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+										"overview": "Sinopsis de la película...",
+										"availability": [
+											{
+												"providerId": "68d055c86aa347d04a2053da",
+												"providerName": "Netflix",
+												"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
+												"reportCount": 2,
+												"percentage": 67
+											},
+											{
+												"providerId": "68d055db6aa347d04a2053e2",
+												"providerName": "Disney+",
+												"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
+												"reportCount": 1,
+												"percentage": 33
+											}
+										]
+									}
 								}
 							}
 						}
@@ -3953,69 +4008,81 @@
 								"schema": {
 									"type": "object",
 									"properties": {
-										"movieId": {
-											"type": "string",
-											"example": "68e706a57c16280b8b499ebf"
-										},
-										"movieTitle": {
-											"type": "string",
-											"example": "Superman"
-										},
-										"yourServices": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
-													"providerName": { "type": "string", "example": "Netflix" },
-													"providerLogo": {
-														"type": "string",
-														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
-													},
-													"reportCount": { "type": "integer", "example": 1 },
-													"percentage": { "type": "integer", "example": 50 }
-												}
-											}
-										},
-										"otherServices": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"providerId": { "type": "string", "example": "68d055db6aa347d04a2053e2" },
-													"providerName": { "type": "string", "example": "Disney+" },
-													"providerLogo": {
-														"type": "string",
-														"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg"
-													},
-													"reportCount": { "type": "integer", "example": 1 },
-													"percentage": { "type": "integer", "example": 50 }
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "68e706a57c16280b8b499ebf" },
+												"title": { "type": "string", "example": "Superman" },
+												"posterPath": { "type": "string", "example": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg" },
+												"overview": { "type": "string", "example": "Sinopsis de la película..." },
+												"availability": {
+													"type": "object",
+													"properties": {
+														"yourServices": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"providerId": { "type": "string", "example": "68d055c86aa347d04a2053da" },
+																	"providerName": { "type": "string", "example": "Netflix" },
+																	"providerLogo": {
+																		"type": "string",
+																		"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg"
+																	},
+																	"reportCount": { "type": "integer", "example": 1 },
+																	"percentage": { "type": "integer", "example": 50 }
+																}
+															}
+														},
+														"otherServices": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"providerId": { "type": "string", "example": "68d055db6aa347d04a2053e2" },
+																	"providerName": { "type": "string", "example": "Disney+" },
+																	"providerLogo": {
+																		"type": "string",
+																		"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg"
+																	},
+																	"reportCount": { "type": "integer", "example": 1 },
+																	"percentage": { "type": "integer", "example": 50 }
+																}
+															}
+														}
+													}
 												}
 											}
 										}
 									}
 								},
 								"example": {
-									"movieId": "68e706a57c16280b8b499ebf",
-									"movieTitle": "Expediente Warren: El último rito",
-									"yourServices": [
-										{
-											"providerId": "68d055c86aa347d04a2053da",
-											"providerName": "Netflix",
-											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
-											"reportCount": 1,
-											"percentage": 50
+									"movie": {
+										"_id": "68e706a57c16280b8b499ebf",
+										"title": "Superman",
+										"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
+										"overview": "Sinopsis de la película...",
+										"availability": {
+											"yourServices": [
+												{
+													"providerId": "68d055c86aa347d04a2053da",
+													"providerName": "Netflix",
+													"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
+													"reportCount": 1,
+													"percentage": 50
+												}
+											],
+											"otherServices": [
+												{
+													"providerId": "68d055db6aa347d04a2053e2",
+													"providerName": "Disney+",
+													"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
+													"reportCount": 1,
+													"percentage": 50
+												}
+											]
 										}
-									],
-									"otherServices": [
-										{
-											"providerId": "68d19eeaa4688d7933d4e289",
-											"providerName": "HBO Max",
-											"providerLogo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/hbo.jpg",
-											"reportCount": 1,
-											"percentage": 50
-										}
-									]
+									}
 								}
 							}
 						}

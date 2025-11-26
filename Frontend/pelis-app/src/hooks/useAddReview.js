@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addReview } from "../services/reviewService";
-import { addMovieReview } from "../store/slices/movieSlice";
+import { addMovieReview, updateReviewStats } from "../store/slices/movieSlice";
 
 export default function useAddReview() {
 	const dispatch = useDispatch();
@@ -15,7 +15,9 @@ export default function useAddReview() {
 		setSuccess(false);
 		try {
 			const newReview = await addReview({ movieId, rating, comment });
+			// console.log("Nueva reseña creada:", newReview);
 			dispatch(addMovieReview(newReview));
+			dispatch(updateReviewStats(newReview.movie.reviewStats));
 			setSuccess(true);
 		} catch (e) {
 			// Uso el error del backend sino uno genérico

@@ -1,3 +1,4 @@
+//#region ----------- IMPORTS ------------
 import { StyleSheet, Text, View, Modal, Alert } from "react-native";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonCloseModal from "../components/general/ButtonCloseModal";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import useProviders from "../hooks/useProviders";
 import { useEffect } from "react";
 import { getUpdatedAvailability } from "../utils/availability";
+//#endregion ------------ IMPORTS ------------
 
 const PantallaReportarDisponibilidadPelicula = ({ visible, onClose, movieId }) => {
 	const dispatch = useDispatch();

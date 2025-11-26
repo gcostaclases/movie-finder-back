@@ -70,8 +70,18 @@ export const reportMovieAvailabilityController = async (req, res) => {
 		// Invalido cache de availability
 		await cacheService.delete(`movie:${movieId}:availability`);
 
+		// Traigo availability actualizado
+		const availability = await repoFactory.getMovieAvailabilityStats(movieId);
+
 		return res.status(201).json({
 			message: "Disponibilidad reportada correctamente",
+			movie: {
+				_id: movie._id,
+				title: movie.title,
+				posterPath: movie.posterPath,
+				overview: movie.overview,
+				availability,
+			},
 		});
 	} catch (error) {
 		console.error("Error al reportar disponibilidad:", error);
@@ -113,9 +123,13 @@ export const getMovieAvailabilityController = async (req, res) => {
 		}
 
 		return res.status(200).json({
-			movieId,
-			movieTitle: movie.title,
-			availability,
+			movie: {
+				_id: movie._id,
+				title: movie.title,
+				posterPath: movie.posterPath,
+				overview: movie.overview,
+				availability,
+			},
 		});
 	} catch (error) {
 		console.error("Error al obtener disponibilidad:", error);
@@ -157,9 +171,13 @@ export const getPersonalizedAvailabilityController = async (req, res) => {
 		const availability = await repoFactory.getPersonalizedAvailability(movieId, userWithProviders.providers);
 
 		return res.status(200).json({
-			movieId,
-			movieTitle: movie.title,
-			...availability,
+			movie: {
+				_id: movie._id,
+				title: movie.title,
+				posterPath: movie.posterPath,
+				overview: movie.overview,
+				availability, // { yourServices: [...], otherServices: [...] }
+			},
 		});
 	} catch (error) {
 		console.error("Error al obtener disponibilidad personalizada:", error);
