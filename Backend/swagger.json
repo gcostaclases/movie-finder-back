@@ -106,8 +106,12 @@
 									"$ref": "#/components/schemas/LoginResponse"
 								},
 								"example": {
-									"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQzMWFkNTk4NjU1ZDBhMzczMzI1ODEiLCJ1c2VyUm9sZSI6ImNsaWVudCIsImlhdCI6MTc2MDA0NDk0NywiZXhwIjoxNzYwMDQ4NTQ3fQ.NedjELvuvxHN5RN0JSReSfSeQGQtJ6T6ZZGYLquopg4",
-									"message": "Inicio de sesión exitoso"
+									"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+									"message": "Inicio de sesión exitoso",
+									"user": {
+										"username": "juanp",
+										"profileImage": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
+									}
 								}
 							}
 						}
@@ -4815,6 +4819,17 @@
 					"message": {
 						"type": "string",
 						"example": "Inicio de sesión exitoso"
+					},
+					"user": {
+						"type": "object",
+						"properties": {
+							"username": { "type": "string", "example": "juanp" },
+							"profileImage": {
+								"type": "string",
+								"nullable": true,
+								"example": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
+							}
+						}
 					}
 				}
 			},

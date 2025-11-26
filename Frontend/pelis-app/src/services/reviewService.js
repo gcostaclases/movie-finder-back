@@ -9,3 +9,9 @@ export async function addReview({ movieId, rating, comment }) {
 	});
 	return response.data;
 }
+
+// Obtener reseñas de una película
+export async function getReviewsByMovie(movieId) {
+	const response = await api.get(`/reviews/movies/${movieId}`);
+	return response.data.reviews;
+}

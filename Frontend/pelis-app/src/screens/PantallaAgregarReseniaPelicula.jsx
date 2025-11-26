@@ -1,24 +1,44 @@
-import { StyleSheet, Text, View, Modal, TextInput } from "react-native";
+//#region ----------- IMPORTS ------------
+import {
+	StyleSheet,
+	Text,
+	View,
+	Modal,
+	TextInput,
+	KeyboardAvoidingView,
+	Platform,
+	TouchableWithoutFeedback,
+	Keyboard,
+} from "react-native";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonCloseModal from "../components/general/ButtonCloseModal";
 import MovieAddRating from "../components/movie/MovieAddRating";
 import MovieAddReview from "../components/movie/MovieAddReview";
+import Toast from "react-native-toast-message";
 import { useSelector, useDispatch } from "react-redux";
-import { resetRating } from "../store/slices/ratingSlice";
-import { resetReview } from "../store/slices/reviewSlice";
+import { resetUserRating } from "../store/slices/ratingSlice";
+import { resetUserReview } from "../store/slices/reviewSlice";
+import { addMovieReview } from "../store/slices/movieReviewsSlice";
 import useAddReview from "../hooks/useAddReview";
+import { updateReviewStats } from "../store/slices/movieSlice";
+import { useEffect } from "react";
+import { getUpdatedReviewStats } from "../utils/review";
+//#endregion ----------- IMPORTS ------------
 
 const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 	const dispatch = useDispatch();
 
 	const { createReview, loading, error, success } = useAddReview();
 
-	const puntaje = useSelector((state) => state.rating.value);
-	const resenia = useSelector((state) => state.review.value);
+	const user = useSelector((state) => state.user);
+	const puntaje = useSelector((state) => state.rating.userRating);
+	const resenia = useSelector((state) => state.review.userReview);
+	const prevAverage = useSelector((state) => state.movie.reviewStats.averageRating);
+	const prevTotal = useSelector((state) => state.movie.reviewStats.totalReviews);
 
 	const handleClose = () => {
-		dispatch(resetRating());
-		dispatch(resetReview());
+		dispatch(resetUserRating());
+		dispatch(resetUserReview());
 		onClose();
 	};
 
@@ -28,31 +48,70 @@ const PantallaAgregarReseniaPelicula = ({ visible, onClose, movieId }) => {
 			rating: puntaje,
 			comment: resenia,
 		});
-		handleClose();
 	};
+
+	// Toast de error
+	useEffect(() => {
+		if (error) {
+			Toast.show({
+				type: "error",
+				text1: "Error al enviar reseña",
+				text2: error,
+			});
+		}
+	}, [error]);
+
+	// Toast de éxito y actualización del store
+	useEffect(() => {
+		if (success) {
+			const { averageRating, totalReviews } = getUpdatedReviewStats(prevAverage, prevTotal, puntaje);
+			dispatch(updateReviewStats({ averageRating, totalReviews }));
+
+			// Agregar la nueva reseña al store de movieReviews
+			dispatch(
+				addMovieReview({
+					user: {
+						username: user?.username || "Usuario",
+						profileImage: user?.profileImage || null,
+					},
+					rating: puntaje,
+					comment: resenia,
+					_id: Date.now().toString(), // O el id real si lo devuelve el backend
+				})
+			);
+
+			Toast.show({
+				type: "success",
+				text1: "¡Reseña creada exitosamente!",
+			});
+			handleClose();
+		}
+	}, [success]);
 
 	return (
 		<Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-			<View style={styles.modalWrapper}>
-				<View style={styles.modalContainer}>
-					{/* Botón cerrar */}
-					<ButtonCloseModal onPress={handleClose} />
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalWrapper}>
+					<View style={styles.modalContainer}>
+						{/* Botón cerrar */}
+						<ButtonCloseModal onPress={handleClose} />
 
-					{/* Puntaje */}
-					<MovieAddRating />
+						{/* Puntaje */}
+						<MovieAddRating />
 
-					{/* Reseña */}
-					<MovieAddReview />
+						{/* Reseña */}
+						<MovieAddReview />
 
-					{/* Botón Reseñar */}
-					<ButtonPrimary
-						title="Reseñar"
-						onPress={handleReview}
-						style={{ width: "80%", marginTop: 10, opacity: puntaje && resenia ? 1 : 0.5 }}
-						disabled={!puntaje || !resenia}
-					/>
-				</View>
-			</View>
+						{/* Botón Reseñar */}
+						<ButtonPrimary
+							title="Reseñar"
+							onPress={handleReview}
+							style={{ width: "80%", marginTop: 10, opacity: puntaje && resenia ? 1 : 0.5 }}
+							disabled={!puntaje || !resenia}
+						/>
+					</View>
+				</KeyboardAvoidingView>
+			</TouchableWithoutFeedback>
 		</Modal>
 	);
 };

@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { StyleSheet, Text, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { setReview } from "../../store/slices/reviewSlice";
+import { setUserReview } from "../../store/slices/reviewSlice";
 
 const MovieAddReview = () => {
 	const dispatch = useDispatch();
-	const resenia = useSelector((state) => state.review.value);
+
+	const resenia = useSelector((state) => state.review.userReview);
 
 	return (
 		<>
@@ -18,7 +18,7 @@ const MovieAddReview = () => {
 				multiline
 				placeholder="Escriba aquí..."
 				value={resenia}
-				onChangeText={(text) => dispatch(setReview(text))}
+				onChangeText={(text) => dispatch(setUserReview(text))}
 				maxLength={400}
 			/>
 		</>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 	},
 	textInput: {
 		width: 320,
-		height: 170, // Más alto
+		height: 170,
 		backgroundColor: "#D9E7EF",
 		borderRadius: 10,
 		padding: 12,

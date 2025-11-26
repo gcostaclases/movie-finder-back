@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Rating } from "react-native-ratings";
+import { useSelector } from "react-redux";
 
-const MovieDetailRating = ({ movie }) => {
+const MovieDetailRating = () => {
+	const averageRating = useSelector((state) => state.movie.reviewStats.averageRating);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.sectionTitle}>PUNTAJE</Text>
@@ -11,13 +14,16 @@ const MovieDetailRating = ({ movie }) => {
 					ratingCount={5}
 					imageSize={40}
 					readonly
-					startingValue={movie?.averageRating || 0}
+					startingValue={averageRating}
 					fractions={1}
 					starStyle={{ marginHorizontal: 160 }}
 					tintColor="#f3f3f3ff"
 					ratingBackgroundColor="#ccc"
 				/>
-				<Text style={styles.ratingText}>{movie?.averageRating ? movie.averageRating.toFixed(1) : 0}/5</Text>
+				{/* Si es entero no muestro los decimales sino si */}
+				<Text style={styles.ratingText}>
+					{Number.isInteger(averageRating) ? averageRating : averageRating.toFixed(1)}/5
+				</Text>
 			</View>
 		</View>
 	);

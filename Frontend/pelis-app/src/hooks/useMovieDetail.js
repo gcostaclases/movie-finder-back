@@ -15,7 +15,7 @@ export default function useMovieDetail(id) {
 				const data = await getMovieById(id);
 				setMovie(data);
 			} catch (e) {
-				// Si el backend devuelve un mensaje personalizado, lo mostramos
+				// Devuelvo el mensaje personalizado del backend si existe
 				if (e.response?.data?.message) {
 					setError(e.response.data.message);
 				} else {

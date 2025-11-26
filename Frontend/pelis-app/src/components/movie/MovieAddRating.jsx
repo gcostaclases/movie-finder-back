@@ -1,15 +1,14 @@
-import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Rating } from "react-native-ratings";
 import { useDispatch, useSelector } from "react-redux";
-import { setRating } from "../../store/slices/ratingSlice";
+import { setUserRating } from "../../store/slices/ratingSlice";
 
 const MovieAddRating = () => {
 	const dispatch = useDispatch();
-	const puntaje = useSelector((state) => state.rating.value);
+	const puntaje = useSelector((state) => state.rating.userRating);
 
 	const handleRating = (rating) => {
-		dispatch(setRating(rating));
+		dispatch(setUserRating(rating));
 	};
 
 	return (

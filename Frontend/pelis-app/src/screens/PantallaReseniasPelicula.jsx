@@ -1,79 +1,92 @@
-import { StyleSheet, Text, View, FlatList, Image } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator } from "react-native";
+import { Rating } from "react-native-ratings";
+import useMovieReviews from "../hooks/useMovieReviews";
+import StitchExpectante from "../assets/img/Stitch-Expectante.png";
+import ButtonPrimary from "../components/general/ButtonPrimary";
+import { useState } from "react";
+import PantallaAgregarReseniaPelicula from "./PantallaAgregarReseniaPelicula";
 
-const reseñas = [
-	{
-		id: "1",
-		nombre: "Juancito",
-		avatar: require("../assets/img/prueba/hombre1.png"),
-		texto: "¡Está bastante bien!",
-		puntaje: 4,
-	},
-	{
-		id: "2",
-		nombre: "Francisco",
-		avatar: require("../assets/img/prueba/hombre1.png"),
-		texto:
-			"Lorem ipsum dolor sit amet consectetur. Egestas nunc ut eros massa est massa. Volutpat sollicitudin hendrerit pulvinar non vestibulum sed eget habitant. Ipsum eros commodo amet diam. Volutpat volutpat eget pellentesque ac. Sed lobortis ut arcu morbi imperdiet. Vestibulum pellentesque ut eget leo in sed.",
-		puntaje: 5,
-	},
-	{
-		id: "3",
-		nombre: "Lorena",
-		avatar: require("../assets/img/prueba/hombre1.png"),
-		texto:
-			"Lorem ipsum dolor sit amet consectetur. Egestas nunc ut eros massa est massa. Volutpat sollicitudin hendrerit pulvinar non vestibulum sed eget habitant. Ipsum eros commodo amet diam. Volutpat volutpat eget pellentesque ac. Sed lobortis ut arcu morbi imperdiet. Vestibulum pellentesque ut eget leo in sed.",
-		puntaje: 3,
-	},
-	{
-		id: "4",
-		nombre: "Victoria",
-		avatar: require("../assets/img/prueba/hombre1.png"),
-		texto:
-			"Lorem ipsum dolor sit amet consectetur. Egestas nunc ut eros massa est massa. Volutpat sollicitudin hendrerit pulvinar non vestibulum sed eget habitant. Ipsum eros commodo amet diam. Volutpat volutpat eget pellentesque ac. Sed lobortis ut arcu morbi imperdiet. Vestibulum pellentesque ut eget leo in sed.",
-		puntaje: 4,
-	},
-	{
-		id: "5",
-		nombre: "Pablo",
-		avatar: require("../assets/img/prueba/hombre1.png"),
-		texto:
-			"Lorem ipsum dolor sit amet consectetur. Egestas nunc ut eros massa est massa. Volutpat sollicitudin hendrerit pulvinar non vestibulum sed eget habitant. Ipsum eros commodo amet diam. Volutpat volutpat eget pellentesque ac. Sed lobortis ut arcu morbi imperdiet. Vestibulum pellentesque ut eget leo in sed.",
-		puntaje: 2,
-	},
-];
-
-const ReseñaItem = ({ nombre, avatar, texto, puntaje }) => (
+const ReseñaItem = ({ user, rating, comment }) => (
 	<View style={styles.itemContainer}>
 		<View style={styles.userAndRating}>
-			<Image source={avatar} style={styles.avatar} />
-			<Text style={styles.userName}>{nombre}</Text>
+			<Image
+				source={user?.profileImage ? { uri: user.profileImage } : require("../assets/img/User-Placeholder.png")}
+				style={styles.avatar}
+			/>
+			<Text style={styles.userName}>{user?.username || "Usuario"}</Text>
 			<View style={styles.stars}>
-				{[...Array(5)].map((_, i) => (
-					<FontAwesome5
-						key={i}
-						name="star"
-						size={20}
-						color={i < puntaje ? "#FFD600" : "#E0E0E0"}
-						style={{ marginLeft: 2 }}
-						solid
-					/>
-				))}
+				<Rating
+					type="custom"
+					ratingCount={5}
+					imageSize={25}
+					readonly
+					startingValue={rating}
+					fractions={1}
+					tintColor="#f3f3f3ff"
+					ratingBackgroundColor="#ccc"
+				/>
 			</View>
 		</View>
-		<Text style={styles.review}>{texto}</Text>
+		<Text style={styles.review}>{comment}</Text>
 	</View>
 );
 
-const PantallaReseniasPelicula = () => {
+const PantallaReseniasPelicula = ({ navigation, route }) => {
+	const movieId = route.params?.movieId;
+
+	const { reviews, loading, error } = useMovieReviews(movieId);
+
+	const [modalAgregarReseniaVisible, setModalAgregarReseniaVisible] = useState(false);
+
+	const handleAgregarResenia = () => {
+		setModalAgregarReseniaVisible(true);
+	};
+
+	if (loading) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<ActivityIndicator size="large" color="#27AAE1" />
+				<Text>Cargando reseñas...</Text>
+			</View>
+		);
+	}
+
+	if (error) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text style={{ color: "red" }}>{error}</Text>
+			</View>
+		);
+	}
+
 	return (
-		<FlatList
-			data={reseñas}
-			keyExtractor={(item) => item.id}
-			renderItem={({ item }) => <ReseñaItem {...item} />}
-			contentContainerStyle={styles.listContainer}
-			ItemSeparatorComponent={() => <View style={styles.separator} />}
-		/>
+		<>
+			<FlatList
+				data={reviews}
+				keyExtractor={(item) => item._id}
+				renderItem={({ item }) => <ReseñaItem {...item} />}
+				contentContainerStyle={reviews.length === 0 ? { flex: 1, justifyContent: "center" } : null}
+				ItemSeparatorComponent={() => <View style={styles.separator} />}
+				ListEmptyComponent={
+					<View style={styles.emptyContainer}>
+						<Image source={StitchExpectante} style={styles.emptyImage} resizeMode="contain" />
+						<Text style={styles.emptyText}>No se encontraron reseñas{"\n"}para esta película</Text>
+						<Text style={styles.emptySubText}>¿Quieres realizar una reseña?</Text>
+						<ButtonPrimary
+							title="Agregar reseña"
+							iconName="edit"
+							onPress={handleAgregarResenia}
+							style={{ width: "85%", marginTop: 8 }}
+						/>
+					</View>
+				}
+			/>
+			<PantallaAgregarReseniaPelicula
+				visible={modalAgregarReseniaVisible}
+				onClose={() => setModalAgregarReseniaVisible(false)}
+				movieId={movieId}
+			/>
+		</>
 	);
 };
 
@@ -82,10 +95,6 @@ export default PantallaReseniasPelicula;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-	},
-	listContainer: {
-		// backgroundColor: "#27ddc5ff",
-		// paddingVertical: 0,
 	},
 	itemContainer: {
 		// backgroundColor: "#d23131ff",
@@ -123,6 +132,30 @@ const styles = StyleSheet.create({
 	separator: {
 		height: 1,
 		backgroundColor: "#E0E0E0",
+	},
+	emptyContainer: {
+		// backgroundColor: "#38bc45ff",
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	emptyImage: {
+		width: 180,
+		height: 180,
+		marginBottom: 20,
+	},
+	emptyText: {
+		fontSize: 18,
+		color: "#222",
+		textAlign: "center",
+		fontWeight: "500",
+		marginBottom: 4,
+	},
+	emptySubText: {
+		fontSize: 14,
+		color: "#888",
+		textAlign: "center",
+		marginBottom: 16,
 	},
 });
 

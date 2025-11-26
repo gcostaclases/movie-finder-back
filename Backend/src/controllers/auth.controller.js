@@ -55,9 +55,17 @@ export const postLogin = async (req, res) => {
 		const token = signToken(user.id, user.role);
 
 		// Retorno el token y un mensaje de éxito
+		// return res.status(200).json({
+		// 	token,
+		// 	message: "Inicio de sesión exitoso",
+		// });
 		return res.status(200).json({
 			token,
 			message: "Inicio de sesión exitoso",
+			user: {
+				username: user.username,
+				profileImage: user.profileImage,
+			},
 		});
 	} catch (error) {
 		console.log(error);
@@ -112,3 +120,4 @@ export const postSignup = async (req, res) => {
 		});
 	}
 };
+

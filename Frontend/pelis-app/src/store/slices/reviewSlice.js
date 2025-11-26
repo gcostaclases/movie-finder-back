@@ -1,22 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-	value: "",
+	userReview: "",
 };
 
 export const reviewSlice = createSlice({
 	name: "review",
 	initialState,
 	reducers: {
-		setReview: (state, action) => {
+		setUserReview: (state, action) => {
 			state.value = action.payload;
 		},
-		resetReview: (state) => {
+		resetUserReview: (state) => {
 			state.value = "";
 		},
 	},
 });
 
-export const { setReview, resetReview } = reviewSlice.actions;
+export const { setUserReview, resetUserReview } = reviewSlice.actions;
 export default reviewSlice.reducer;
-

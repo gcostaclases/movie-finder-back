@@ -1,19 +1,26 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
 import useProviders from "../../hooks/useProviders";
-import { useDispatch, useSelector } from "react-redux";
-import { setProvider } from "../../store/slices/providerSlice";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setProviders } from "../../store/slices/providersSlice";
 
-const MovieAddAvailabilityReport = () => {
+const MovieAddAvailabilityReport = ({ seleccionado, setSeleccionado }) => {
 	const dispatch = useDispatch();
 
 	// Custom hook para obtener proveedores
 	const { providers, loading, error } = useProviders();
 
-	const seleccionado = useSelector((state) => state.provider.value);
-
+	// Si el proveedor ya está seleccionado, lo deselecciono; si no, lo selecciono
 	const handleSelect = (id) => {
-		dispatch(setProvider(seleccionado === id ? null : id));
+		setSeleccionado(seleccionado === id ? null : id);
 	};
+
+	// Cargo los proveedores en el store
+	useEffect(() => {
+		if (providers.length > 0) {
+			dispatch(setProviders(providers));
+		}
+	}, [providers, dispatch]);
 
 	return (
 		<>

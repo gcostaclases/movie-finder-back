@@ -3,20 +3,35 @@ import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonCloseModal from "../components/general/ButtonCloseModal";
 import MovieAddAvailabilityReport from "../components/movie/MovieAddAvailabilityReport";
 import { useSelector, useDispatch } from "react-redux";
-import { resetProvider } from "../store/slices/providerSlice";
+import { updateAvailability } from "../store/slices/movieSlice";
+import useReportMovieAvailability from "../hooks/useReportMovieAvailability";
+import { useState } from "react";
+import useProviders from "../hooks/useProviders";
+import { useEffect } from "react";
+import { getUpdatedAvailability } from "../utils/availability";
 
-const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
+const PantallaReportarDisponibilidadPelicula = ({ visible, onClose, movieId }) => {
 	const dispatch = useDispatch();
 
-	const seleccionado = useSelector((state) => state.provider.value);
+	// Custom hook para reportar disponibilidad
+	const { reportAvailability } = useReportMovieAvailability();
+
+	const [seleccionado, setSeleccionado] = useState(null);
+
+	const prevAvailability = useSelector((state) => state.movie.availability);
+	const providers = useSelector((state) => state.providers.providers);
 
 	const handleClose = () => {
-		dispatch(resetProvider());
+		setSeleccionado(null);
 		onClose();
 	};
 
-	const handleReport = () => {
-		Alert.alert("Reporte DE PRUEBA enviado", "¡Gracias por reportar la disponibilidad!");
+	const handleReport = async () => {
+		await reportAvailability(movieId, seleccionado);
+
+		const finalAvailability = getUpdatedAvailability(prevAvailability, seleccionado, providers);
+
+		dispatch(updateAvailability(finalAvailability));
 		handleClose();
 	};
 
@@ -28,7 +43,7 @@ const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
 					<ButtonCloseModal onPress={handleClose} />
 
 					{/* Selector de proveedores */}
-					<MovieAddAvailabilityReport />
+					<MovieAddAvailabilityReport seleccionado={seleccionado} setSeleccionado={setSeleccionado} />
 
 					{/* Botón Reportar */}
 					<ButtonPrimary
