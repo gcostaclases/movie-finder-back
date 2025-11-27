@@ -1,7 +1,9 @@
+//#region ----------- IMPORTS ------------
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addReview } from "../services/reviewService";
 import { addMovieReview, updateReviewStats } from "../store/slices/movieSlice";
+//#endregion ------------ IMPORTS ------------
 
 export default function useAddReview() {
 	const dispatch = useDispatch();
@@ -33,4 +35,3 @@ export default function useAddReview() {
 
 	return { createReview, loading, error, success };
 }
-

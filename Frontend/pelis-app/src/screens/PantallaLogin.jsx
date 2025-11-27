@@ -4,22 +4,18 @@ import MovieFinderLogoBlack from "../assets/logo/MovieFinderLogoBlack";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import TextInputLoginSignUp from "../components/auth/TextInputLoginSignUp";
 import ButtonGoBack from "../components/general/ButtonGoBack";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useLogin from "../hooks/useLogin";
 import { Dimensions } from "react-native";
 import Toast from "react-native-toast-message";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../forms/auth.schema";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/slices/userSlice";
 //#endregion ------------ IMPORTS ------------
 
 const windowHeight = Dimensions.get("window").height;
 
-const PantallaLogin = ({ navigation }) => {
-	const dispatch = useDispatch();
-
+const PantallaLogin = ({ route, navigation }) => {
 	// Custom hook de login
 	const { handleLogin, loading, error, errorDetails, success } = useLogin();
 
@@ -64,25 +60,23 @@ const PantallaLogin = ({ navigation }) => {
 		}
 	}, [success, error]);
 
+	// Params para volver a la pantalla anterior si corresponde
+	const { returnStack, returnScreen, returnParams } = route?.params || {};
+
 	// Handler de submit del formulario
 	const onSubmit = async (data) => {
-		// console.log("SUBMIT!", data);
-		// const ok = await handleLogin(data.identifier, data.password);
 		const datos = await handleLogin(data.identifier, data.password);
-		// Navego a PantallaPeliculas si el login fue exitoso
-		// if (ok) {
-		// 	reset();
-		// 	navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
-		// }
 		if (datos && datos.token) {
-			dispatch(
-				loginUser({
-					username: datos.user.username,
-					profileImage: datos.user.profileImage,
-				})
-			);
-			reset();
-			navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
+			reset(); // Reseteo el formulario
+			// console.log(returnStack, returnScreen, returnParams);
+			if (returnStack && returnScreen) {
+				navigation.navigate(returnStack, {
+					screen: returnScreen,
+					params: returnParams,
+				});
+			} else {
+				navigation.navigate("MovieStack", { screen: "PantallaPeliculas" });
+			}
 		}
 	};
 
@@ -140,8 +134,6 @@ const PantallaLogin = ({ navigation }) => {
 				</View>
 
 				{loading && <Text>Cargando...</Text>}
-
-				{/* {error && <Text style={{ color: "red" }}>{error}</Text>} */}
 
 				{(yupErrors.length > 0 || errorDetails.length > 0) && (
 					<View style={{ justifyContent: "center", alignItems: "flex-start", width: "80%" }}>

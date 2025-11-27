@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { login } from "../services/authService";
 import * as SecureStore from "expo-secure-store";
+import { loginUser } from "../store/slices/userSlice";
 
 export default function useLogin() {
+	const dispatch = useDispatch();
+
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [errorDetails, setErrorDetails] = useState([]);
@@ -20,12 +24,18 @@ export default function useLogin() {
 			if (datos.token) {
 				setSuccess(datos.message);
 				// Guardo el token y los datos del usuario en SecureStore
-				console.log("Token Usuario:", datos.token);
-				console.log("Datos Usuario:", datos.user);
+				//console.log("Token Usuario:", datos.token);
+				//console.log("Datos Usuario:", datos.user);
 				await SecureStore.setItemAsync("userToken", datos.token);
 				await SecureStore.setItemAsync("userProfile", JSON.stringify(datos.user));
+				// Guardo en el store de Redux
+				dispatch(
+					loginUser({
+						username: datos.user.username,
+						profileImage: datos.user.profileImage,
+					})
+				);
 				return datos;
-				// return true;
 			} else {
 				setError(datos.message);
 				return false;
@@ -52,4 +62,3 @@ export default function useLogin() {
 
 	return { handleLogin, loading, error, errorDetails, success };
 }
-

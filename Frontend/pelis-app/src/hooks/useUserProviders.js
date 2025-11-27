@@ -1,8 +1,13 @@
+//#region ----------- IMPORTS ------------
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { getUserProviders } from "../services/userService";
+import { setProviders } from "../store/slices/userSlice";
+//#endregion ------------ IMPORTS ------------
 
 export default function useUserProviders() {
-	const [providers, setProviders] = useState([]);
+	const dispatch = useDispatch();
+	const [providers, setProvidersLocal] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
@@ -11,16 +16,22 @@ export default function useUserProviders() {
 			setLoading(true);
 			try {
 				const data = await getUserProviders();
-				setProviders(data);
+				setProvidersLocal(data);
+				dispatch(setProviders(data)); // Guardo en el store
 				setError(null);
 			} catch (e) {
-				setError("ERROR: Error al cargar proveedores");
+				// Uso el error del backend sino uno genérico
+				if (e.response?.data?.message) {
+					setError(e.response.data.message);
+				} else {
+					setError("ERROR: Error al cargar proveedores");
+				}
 			} finally {
 				setLoading(false);
 			}
 		};
 		fetchProviders();
-	}, []);
+	}, [dispatch]);
 
 	return { providers, loading, error };
 }

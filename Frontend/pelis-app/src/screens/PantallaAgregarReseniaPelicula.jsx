@@ -18,9 +18,7 @@ import Toast from "react-native-toast-message";
 import { useSelector, useDispatch } from "react-redux";
 import { resetMovieRating, resetMovieComment } from "../store/slices/userSlice";
 import useAddReview from "../hooks/useAddReview";
-import { updateReviewStats } from "../store/slices/movieSlice";
 import { useEffect } from "react";
-import { getUpdatedReviewStats } from "../utils/review";
 //#endregion ----------- IMPORTS ------------
 
 const PantallaAgregarReseniaPelicula = ({ visible, onClose }) => {

@@ -1,26 +1,27 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
 import useProviders from "../../hooks/useProviders";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedProviderForMovie } from "../../store/slices/userSlice";
+import { setSelectedProvider } from "../../store/slices/userSlice";
 
-const MovieAddAvailabilityReport = () => {
+const UserAddProvider = () => {
 	const dispatch = useDispatch();
 
 	// Custom hook para obtener proveedores
 	const { loading, error } = useProviders();
 
 	const providers = useSelector((state) => state.providers.providers);
-	const seleccionado = useSelector((state) => state.user.movieAvailability.selectedProvider);
+	const seleccionado = useSelector((state) => state.user.selectedProvider);
 
 	// Si el proveedor ya está seleccionado, lo deselecciono; si no, lo selecciono
 	const handleSelect = (id) => {
-		dispatch(setSelectedProviderForMovie(seleccionado === id ? null : id));
+		dispatch(setSelectedProvider(seleccionado === id ? null : id));
 	};
 
 	return (
 		<>
 			{/* Título */}
-			<Text style={styles.titulo}>¿En dónde viste esta película?</Text>
+			<Text style={styles.titulo}>¿Cuáles proveedores tienes contratados?</Text>
 
 			{/* Proveedores */}
 			<View style={styles.proveedoresGrid}>
@@ -54,7 +55,7 @@ const MovieAddAvailabilityReport = () => {
 	);
 };
 
-export default MovieAddAvailabilityReport;
+export default UserAddProvider;
 
 const styles = StyleSheet.create({
 	titulo: {
@@ -63,7 +64,9 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		textAlign: "center",
 		marginBottom: 28,
-		marginTop: 10,
+		marginTop: 20,
+		width: "70%",
+		// backgroundColor: "#cd4949ff",
 	},
 	proveedoresGrid: {
 		// backgroundColor: "#2987becc",

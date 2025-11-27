@@ -27,7 +27,7 @@ const Menu = () => {
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
-					if (route.name === "AuthStack" || route.name === "UserStack") {
+					if (route.name === "AuthOrUserStack") {
 						iconName = "user";
 					} else if (route.name === "MovieStack") {
 						iconName = "film";
@@ -78,7 +78,7 @@ const Menu = () => {
 				animation: "fade",
 			})}>
 			<Tab.Screen
-				name="AuthStack"
+				name="AuthOrUserStack"
 				component={isLogged ? UserStack : AuthStack}
 				options={({ route }) => {
 					// Con esto detecto la pantalla activa y si es Login o Registro oculto el tab bar
@@ -146,4 +146,3 @@ const Menu = () => {
 };
 
 export default Menu;
-

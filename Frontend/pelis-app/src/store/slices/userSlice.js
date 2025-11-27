@@ -2,11 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
 	username: "",
+	email: "",
 	profileImage: null,
+	providers: [],
 	isLogged: false,
+	selectedProvider: null,
 	movieReview: {
 		rating: 0,
 		comment: "",
+	},
+	movieAvailability: {
+		selectedProvider: null,
 	},
 };
 
@@ -20,7 +26,10 @@ export const userSlice = createSlice({
 			state.profileImage = action.payload.profileImage;
 		},
 		logoutUser: (state) => {
-			state.isLogged = false;
+			Object.assign(state, initialState); // Vuelvo todo al estado inicial
+		},
+		setProviders: (state, action) => {
+			state.providers = action.payload;
 		},
 		setMovieRating: (state, action) => {
 			state.movieReview.rating = action.payload;
@@ -34,11 +43,45 @@ export const userSlice = createSlice({
 		resetMovieComment: (state) => {
 			state.movieReview.comment = "";
 		},
+		setSelectedProvider: (state, action) => {
+			state.selectedProvider = action.payload;
+		},
+		resetSelectedProvider: (state) => {
+			state.selectedProvider = null;
+		},
+		setSelectedProviderForMovie: (state, action) => {
+			state.movieAvailability.selectedProvider = action.payload;
+		},
+		resetSelectedProviderForMovie: (state) => {
+			state.movieAvailability.selectedProvider = null;
+		},
+		updateProfileInfo: (state, action) => {
+			state.username = action.payload.username;
+			state.email = action.payload.email;
+			state.profileImage = action.payload.profileImage;
+		},
+		updateProfileImage: (state, action) => {
+			state.profileImage = action.payload;
+		},
 	},
 });
 
-export const { loginUser, logoutUser, setMovieRating, resetMovieRating, setMovieComment, resetMovieComment } =
-	userSlice.actions;
+export const {
+	loginUser,
+	logoutUser,
+	setProviders,
+	setMovieRating,
+	resetMovieRating,
+	setMovieComment,
+	resetMovieComment,
+	setSelectedProvider,
+	resetSelectedProvider,
+	setSelectedProviderForMovie,
+	resetSelectedProviderForMovie,
+	setPendingAction,
+	updateProfileInfo,
+	updateProfileImage,
+} = userSlice.actions;
 
 export default userSlice.reducer;
 

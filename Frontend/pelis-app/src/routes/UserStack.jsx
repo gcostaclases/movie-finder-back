@@ -1,15 +1,12 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import PantallaPerfilUsuario from "../screens/PantallaPerfilUsuario";
+import PantallasUsuario from "../screens/PantallasUsuario";
 
 const Stack = createStackNavigator();
 
 const UserStack = () => {
 	return (
-		<Stack.Navigator initialRouteName="PantallaPerfilUsuario" screenOptions={{ headerShown: false }}>
-			{/* Pantallas relacionadas al usuario y sus cosas */}
-			<Stack.Screen name="PantallaPerfilUsuario" component={PantallaPerfilUsuario} />
-			{/* <Stack.Screen name="PantallaLogin" component={PantallaLogin} /> */}
-			{/* <Stack.Screen name="PantallaRegistro" component={PantallaRegistro} /> */}
+		<Stack.Navigator initialRouteName="PantallasUsuario" screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="PantallasUsuario" component={PantallasUsuario} />
 		</Stack.Navigator>
 	);
 };

@@ -1,36 +1,30 @@
-import { useState } from "react";
+//#region ----------- IMPORTS ------------
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+//#endregion ------------ IMPORTS ------------
 
 const SECCIONES = ["Perfil", "Reseñas", "Watchlist"];
 
-const UserMenuTabs = ({ onChange }) => {
-	const [active, setActive] = useState(SECCIONES[0]);
+const UserMenuTabs = ({ active, onChange }) => (
+	<View style={styles.tabsContainer}>
+		{SECCIONES.map((section) => (
+			<TouchableOpacity
+				key={section}
+				style={[styles.tab, active === section && styles.tabActive]}
+				onPress={() => onChange(section)}
+				activeOpacity={0.8}>
+				<Text style={[styles.tabText, active === section && styles.tabTextActive]}>{section}</Text>
+			</TouchableOpacity>
+		))}
+	</View>
+);
 
-	const handlePress = (section) => {
-		setActive(section);
-		onChange && onChange(section);
-	};
-
-	return (
-		<View style={styles.tabsContainer}>
-			{SECCIONES.map((section, idx) => (
-				<TouchableOpacity
-					key={section}
-					style={[styles.tab, active === section && styles.tabActive]}
-					onPress={() => handlePress(section)}
-					activeOpacity={0.8}>
-					<Text style={[styles.tabText, active === section && styles.tabTextActive]}>{section}</Text>
-				</TouchableOpacity>
-			))}
-		</View>
-	);
-};
+export default UserMenuTabs;
 
 const styles = StyleSheet.create({
 	tabsContainer: {
 		flexDirection: "row",
 		alignSelf: "center",
-		marginBottom: 20,
+		// marginBottom: 20,
 		borderRadius: 5,
 		overflow: "hidden",
 		borderWidth: 1,
@@ -55,6 +49,4 @@ const styles = StyleSheet.create({
 		color: "#fff",
 	},
 });
-
-export default UserMenuTabs;
 

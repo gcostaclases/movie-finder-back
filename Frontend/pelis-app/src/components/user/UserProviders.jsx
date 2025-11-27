@@ -1,6 +1,9 @@
+//#region ----------- IMPORTS ------------
 import { View, Text, Image, ActivityIndicator, StyleSheet } from "react-native";
 import { useState } from "react";
 import useUserProviders from "../../hooks/useUserProviders";
+import { useSelector } from "react-redux";
+//#endregion ------------ IMPORTS ------------
 
 // Componente para mostrar la imagen del proveedor con placeholder si falla
 const PlaceholderProveedor = () => <View style={styles.proveedorImgPlaceholder} />;
@@ -12,7 +15,9 @@ const ProveedorImg = ({ uri }) => {
 };
 
 export default function UserProviders() {
-	const { providers, loading, error } = useUserProviders();
+	const { loading, error } = useUserProviders();
+
+	const providers = useSelector((state) => state.user.providers);
 
 	return (
 		<>
@@ -46,22 +51,24 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		flexWrap: "wrap",
 		justifyContent: "center",
-		gap: 18,
+		gap: 15,
 		marginBottom: 20,
+		// backgroundColor: "#c44949ff",
+		width: "85%",
 	},
 	proveedorImg: {
-		width: 60,
-		height: 60,
+		width: 50,
+		height: 50,
 		borderRadius: 5,
 		resizeMode: "contain",
 		margin: 6,
-		backgroundColor: "#eee",
 	},
 	proveedorImgPlaceholder: {
-		width: 60,
-		height: 60,
+		width: 50,
+		height: 50,
 		borderRadius: 5,
 		backgroundColor: "#ccc",
 		margin: 6,
 	},
 });
+

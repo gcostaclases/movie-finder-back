@@ -2,31 +2,31 @@
 import { StyleSheet, Text, View, Modal, Alert } from "react-native";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonCloseModal from "../components/general/ButtonCloseModal";
-import MovieAddAvailabilityReport from "../components/movie/MovieAddAvailabilityReport";
 import { useSelector, useDispatch } from "react-redux";
 import useReportMovieAvailability from "../hooks/useReportMovieAvailability";
 import { useEffect } from "react";
-import { resetSelectedProviderForMovie } from "../store/slices/userSlice";
+import { resetSelectedProvider } from "../store/slices/userSlice";
 import Toast from "react-native-toast-message";
+import UserAddProvider from "../components/user/UserAddProvider";
+import useAddUserProvider from "../hooks/useAddUserProvider";
 //#endregion ------------ IMPORTS ------------
 
-const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
+const PantallaAgregarProveedorUsuario = ({ visible, onClose }) => {
 	const dispatch = useDispatch();
 
 	// Custom hook para reportar disponibilidad
-	const { reportAvailability, loading, error, success } = useReportMovieAvailability();
+	const { addProvider, loading, error, success } = useAddUserProvider();
 
-	const movieId = useSelector((state) => state.movie.id);
-	const seleccionado = useSelector((state) => state.user.movieAvailability.selectedProvider);
+	const seleccionado = useSelector((state) => state.user.selectedProvider);
 
-	const handleClose = () => {
-		dispatch(resetSelectedProviderForMovie());
-		onClose();
+	const handleAddProvider = async () => {
+		await addProvider(seleccionado);
+		handleClose();
 	};
 
-	const handleReport = async () => {
-		await reportAvailability(movieId, seleccionado);
-		handleClose();
+	const handleClose = () => {
+		dispatch(resetSelectedProvider());
+		onClose();
 	};
 
 	// Toast de error
@@ -59,12 +59,12 @@ const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
 					<ButtonCloseModal onPress={handleClose} />
 
 					{/* Selector de proveedores */}
-					<MovieAddAvailabilityReport />
+					<UserAddProvider />
 
 					{/* Botón Reportar */}
 					<ButtonPrimary
-						title="Reportar"
-						onPress={handleReport}
+						title="Agregar"
+						onPress={handleAddProvider}
 						style={{ width: "85%", marginTop: 10, opacity: seleccionado ? 1 : 0.5 }}
 						disabled={!seleccionado}
 					/>
@@ -74,7 +74,7 @@ const PantallaReportarDisponibilidadPelicula = ({ visible, onClose }) => {
 	);
 };
 
-export default PantallaReportarDisponibilidadPelicula;
+export default PantallaAgregarProveedorUsuario;
 
 const styles = StyleSheet.create({
 	modalWrapper: {
