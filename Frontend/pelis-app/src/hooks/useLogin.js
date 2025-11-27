@@ -23,7 +23,7 @@ export default function useLogin() {
 			//Si 200 entro acá
 			if (datos.token) {
 				setSuccess(datos.message);
-				// Guardo el token y los datos del usuario en SecureStore
+				// Guardo el token en el SecureStore
 				//console.log("Token Usuario:", datos.token);
 				//console.log("Datos Usuario:", datos.user);
 				await SecureStore.setItemAsync("userToken", datos.token);
@@ -32,6 +32,7 @@ export default function useLogin() {
 				dispatch(
 					loginUser({
 						username: datos.user.username,
+						email: datos.user.email,
 						profileImage: datos.user.profileImage,
 					})
 				);
@@ -62,3 +63,4 @@ export default function useLogin() {
 
 	return { handleLogin, loading, error, errorDetails, success };
 }
+

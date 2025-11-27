@@ -17,10 +17,12 @@ const PantallasUsuario = () => {
 	};
 
 	return (
-		<ScrollView contentContainerStyle={styles.container}>
+		<View style={styles.container}>
 			<UserMenuTabs active={activeScreen} onChange={setActiveScreen} />
-			<View style={{ width: "100%" }}>{renderContent()}</View>
-		</ScrollView>
+			<ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+				{renderContent()}
+			</ScrollView>
+		</View>
 	);
 };
 
@@ -28,11 +30,16 @@ export default PantallasUsuario;
 
 const styles = StyleSheet.create({
 	container: {
-		flexGrow: 1,
-		alignItems: "center",
-		// paddingTop: 30,
-    marginTop: 20,
+		flex: 1,
+		width: "100%",
+		marginTop: 20,
+	},
+	scroll: {
+		flex: 1,
+		width: "100%",
+	},
+	scrollContent: {
+		minWidth: "100%",
 		// paddingBottom: 40,
 	},
 });
-
