@@ -67,6 +67,32 @@ class CacheManager {
 		return await this.client.del(key);
 	}
 
+	// AGREGADO
+	async deleteByPattern(pattern) {
+		if (this.#debug) {
+			console.log(`[Deleting by Pattern]: ${pattern}`);
+		}
+		if (this.#type === "redis") {
+			// Redis: keys acepta patrón tipo "reviews:movie:ID:page:*"
+			const keys = await this.client.keys(pattern + "*");
+			console.log("[Redis] Keys encontradas para borrar:", keys);
+			if (keys.length > 0) {
+				// Upstash Redis: del solo acepta un key por vez, así que borramos en paralelo
+				await Promise.all(keys.map((key) => this.client.del(key)));
+			}
+			return keys.length;
+		} else {
+			// In-memory: keys devuelve todas, filtramos por startsWith
+			const allKeys = await this.client.keys();
+			const toDelete = allKeys.filter((key) => key.startsWith(pattern));
+			console.log("[InMemory] Keys encontradas para borrar:", toDelete);
+			if (toDelete.length > 0) {
+				await this.client.del(toDelete);
+			}
+			return toDelete.length;
+		}
+	}
+
 	getType() {
 		return this.#type;
 	}

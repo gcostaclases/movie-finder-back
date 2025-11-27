@@ -24,10 +24,6 @@ const PantallaPerfilUsuario = () => {
 		setModalEditarProveedoresVisible(true);
 	};
 
-	// const handleEditarProveedores = () => {
-	// 	Alert.alert("Editar proveedores", "Funcionalidad próximamente disponible.");
-	// };
-
 	return (
 		<>
 			<ScrollView contentContainerStyle={styles.container}>

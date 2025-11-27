@@ -51,6 +51,18 @@ class CacheService {
 		}
 	}
 
+	// AGREGADO
+	async deleteByPattern(pattern) {
+		try {
+			return await this.getInstance().deleteByPattern(pattern);
+		} catch (error) {
+			if (this.isDebugEnabled()) {
+				console.error(`[CacheService] Error deleting by pattern ${pattern}:`, error.message);
+			}
+			return false;
+		}
+	}
+
 	getType() {
 		return this.getInstance().getType();
 	}

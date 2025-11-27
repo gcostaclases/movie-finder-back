@@ -1,18 +1,39 @@
 //#region ----------- IMPORTS ------------
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet, Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import useUserProfile from "../../hooks/useUserProfile";
 import { useSelector } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
+import useUploadProfileImage from "../../hooks/useUploadProfileImage";
 //#endregion ------------ IMPORTS ------------
 
 const USER_PLACEHOLDER = require("../../assets/img/User-Placeholder.png");
 
 export default function UserInfo() {
 	const { loading, error } = useUserProfile();
+	const { uploadImage, loading: loadingUpload, error: errorUpload, success } = useUploadProfileImage();
 
 	const username = useSelector((state) => state.user.username);
 	const email = useSelector((state) => state.user.email);
 	const profileImage = useSelector((state) => state.user.profileImage);
+
+	const handlePickImage = async () => {
+		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (status !== "granted") {
+			Alert("Se requieren permisos para acceder a la galería.");
+			return;
+		}
+		const result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [1, 1],
+			quality: 1,
+		});
+		if (!result.canceled && result.assets && result.assets.length > 0) {
+			const image = result.assets[0];
+			await uploadImage(image.uri);
+		}
+	};
 
 	return (
 		<>
@@ -23,9 +44,11 @@ export default function UserInfo() {
 			) : (
 				<>
 					<Image source={profileImage ? { uri: profileImage } : USER_PLACEHOLDER} style={styles.avatar} />
-					<TouchableOpacity>
-						<Text style={styles.editarFoto}>Editar foto</Text>
+					<TouchableOpacity onPress={handlePickImage} disabled={loadingUpload}>
+						<Text style={styles.editarFoto}>{loadingUpload ? "Subiendo imagen..." : "Editar foto"}</Text>
 					</TouchableOpacity>
+					{errorUpload && <Text style={{ color: "red", textAlign: "center" }}>{errorUpload}</Text>}
+					{success && <Text style={{ color: "green", textAlign: "center" }}>¡Imagen actualizada!</Text>}
 					<View style={styles.infoRow}>
 						<View style={styles.iconAndLabelWrapper}>
 							<FontAwesome5 name="user" size={20} color="#222" style={styles.icon} solid />

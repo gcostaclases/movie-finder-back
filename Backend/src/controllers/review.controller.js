@@ -93,7 +93,9 @@ export const createReviewController = async (req, res) => {
 
 		// Invalido caches relacionados
 		await cacheService.delete(`movie:${movieId}:rating`); // Puntaje de la película
-		await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
+		// await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
+		// await cacheService.deleteByPattern(`reviews:movie:${movieId}:page:`); // Todas las páginas cacheadas
+		await cacheService.deleteByPattern(`reviews:movie:${movieId}:`); // Borra todas las variantes de reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
 
 		// Regenero y guardo el cache de rating actualizado
@@ -194,16 +196,19 @@ export const createReviewController = async (req, res) => {
 // };
 
 /**
- * Obtiene todas las reseñas de una película
+ * Obtiene las reseñas paginadas de una película
  *
  * Este método utiliza cache para optimizar la carga:
- * - Cachea las reviews de la película.
+ * - Cachea las reviews paginadas de la película.
  *
  * @param {Object} req - Request de Express
  * @param {Object} req.params - Parámetros de la ruta
  * @param {string} req.params.movieId - ID de la película
+ * @param {Object} req.query - Query params
+ * @param {number} [req.query.page=1] - Número de página (opcional, default 1)
+ * @param {number} [req.query.limit=10] - Cantidad de reviews por página (opcional, default 10)
  * @param {Object} res - Response de Express
- * @returns {Promise<void>} JSON con las reseñas
+ * @returns {Promise<void>} JSON con las reseñas paginadas, total, página y límite
  */
 export const getMovieReviewsController = async (req, res) => {
 	const { movieId } = req.params;
@@ -358,15 +363,20 @@ export const updateReviewController = async (req, res) => {
 		// Traigo la review actualizada y poblada
 		const updatedReviewPopulated = await repoFactory.findReview({ _id: reviewId });
 
+		// Me lo guardo antes de eliminarlo del objeto
+		const movieId = review.movieId;
+
 		// Renombro userId a user y elimino movieId de la respuesta
 		const { userId: user, movieId: _movieId, ...rest } = updatedReviewPopulated;
 		const reviewClean = { user, ...rest };
 
 		// Invalido caches relacionados
-		await cacheService.delete(`movie:${review.movieId}:rating`); // Puntaje de la película
-		await cacheService.delete(`reviews:movie:${review.movieId}`); // Reviews de la película
+		await cacheService.delete(`movie:${movieId}:rating`); // Puntaje de la película
+		// await cacheService.delete(`reviews:movie:${movieId}`); // Reviews de la película
+		// await cacheService.deleteByPattern(`reviews:movie:${movieId}:page:`); // Todas las páginas cacheadas
+		await cacheService.deleteByPattern(`reviews:movie:${movieId}:`); // Borra todas las variantes de reviews de la película
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
-		//await cacheService.delete(`movie:${review.movieId}:reviews`);
+		//await cacheService.delete(`movie:${movieId}:reviews`);
 
 		// Regenero y guardo el cache de rating actualizado
 		const reviewStats = await repoFactory.getAverageRating(review.movieId);
@@ -442,7 +452,8 @@ export const deleteReviewController = async (req, res) => {
 
 		// Invalidar caches relacionados
 		await cacheService.delete(`movie:${review.movieId}:rating`); // Puntaje de la película
-		await cacheService.delete(`reviews:movie:${review.movieId}`); // Reviews de la película
+		// await cacheService.delete(`reviews:movie:${review.movieId}`); // Reviews de la película
+		await cacheService.deleteByPattern(`reviews:movie:${review.movieId}:page:`); // Todas las páginas cacheadas
 		await cacheService.delete(`reviews:user:${userId}`); // Reviews del usuario
 		//await cacheService.delete(`movie:${review.movieId}:reviews`);
 
