@@ -15,3 +15,9 @@ export async function addUserProvider(providerId) {
 	const response = await api.post("/me/providers", { providerId });
 	return response.data; // { message: "..."}
 }
+
+// Reemplazar la lista completa de proveedores del usuario autenticado
+export async function replaceUserProviders(providerIds) {
+	const response = await api.put("/me/providers", providerIds);
+	return response.data; // Array de proveedores actualizados
+}

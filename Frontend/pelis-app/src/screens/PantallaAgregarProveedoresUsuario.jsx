@@ -3,29 +3,28 @@ import { StyleSheet, Text, View, Modal, Alert } from "react-native";
 import ButtonPrimary from "../components/general/ButtonPrimary";
 import ButtonCloseModal from "../components/general/ButtonCloseModal";
 import { useSelector, useDispatch } from "react-redux";
-import useReportMovieAvailability from "../hooks/useReportMovieAvailability";
 import { useEffect } from "react";
-import { resetSelectedProvider } from "../store/slices/userSlice";
+import { resetSelectedProviders } from "../store/slices/userSlice";
 import Toast from "react-native-toast-message";
-import UserAddProvider from "../components/user/UserAddProvider";
-import useAddUserProvider from "../hooks/useAddUserProvider";
+import UserAddProviders from "../components/user/UserAddProviders";
+import useAddUserProviders from "../hooks/useAddUserProviders";
 //#endregion ------------ IMPORTS ------------
 
 const PantallaAgregarProveedorUsuario = ({ visible, onClose }) => {
 	const dispatch = useDispatch();
 
 	// Custom hook para reportar disponibilidad
-	const { addProvider, loading, error, success } = useAddUserProvider();
+	const { addProviders, loading, error, success } = useAddUserProviders();
 
-	const seleccionado = useSelector((state) => state.user.selectedProvider);
+	const seleccionados = useSelector((state) => state.user.selectedProviders);
 
-	const handleAddProvider = async () => {
-		await addProvider(seleccionado);
+	const handleAddProviders = async () => {
+		await addProviders(seleccionados);
 		handleClose();
 	};
 
 	const handleClose = () => {
-		dispatch(resetSelectedProvider());
+		dispatch(resetSelectedProviders());
 		onClose();
 	};
 
@@ -45,7 +44,7 @@ const PantallaAgregarProveedorUsuario = ({ visible, onClose }) => {
 		if (success) {
 			Toast.show({
 				type: "success",
-				text1: "¡Reporte creado exitosamente!",
+				text1: "¡Proveedores editados!",
 			});
 			handleClose();
 		}
@@ -59,14 +58,14 @@ const PantallaAgregarProveedorUsuario = ({ visible, onClose }) => {
 					<ButtonCloseModal onPress={handleClose} />
 
 					{/* Selector de proveedores */}
-					<UserAddProvider />
+					<UserAddProviders />
 
 					{/* Botón Reportar */}
 					<ButtonPrimary
-						title="Agregar"
-						onPress={handleAddProvider}
-						style={{ width: "85%", marginTop: 10, opacity: seleccionado ? 1 : 0.5 }}
-						disabled={!seleccionado}
+						title="Editar"
+						onPress={handleAddProviders}
+						style={{ width: "85%", marginTop: 10, opacity: seleccionados ? 1 : 0.5 }}
+						disabled={!seleccionados}
 					/>
 				</View>
 			</View>

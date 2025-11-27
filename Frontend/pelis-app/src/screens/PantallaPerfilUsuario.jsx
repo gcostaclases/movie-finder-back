@@ -7,7 +7,7 @@ import { cerrarSesion } from "../utils/cerrarSesion";
 import UserInfo from "../components/user/UserInfo";
 import UserProviders from "../components/user/UserProviders";
 import { useState } from "react";
-import PantallaAgregarProveedorUsuario from "./PantallaAgregarProveedorUsuario";
+import PantallaAgregarProveedorUsuario from "./PantallaAgregarProveedoresUsuario";
 //#endregion ------------ IMPORTS ------------
 
 const PantallaPerfilUsuario = () => {

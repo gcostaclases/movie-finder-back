@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addUserProvider, getUserProviders } from "../services/userService";
+import { replaceUserProviders, getUserProviders } from "../services/userService";
 import { setProviders } from "../store/slices/userSlice";
 
-export default function useAddUserProvider() {
+export default function useAddUserProviders() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(false);
 
-	const addProvider = async (providerId) => {
+	const addProviders = async (providerIds) => {
 		setLoading(true);
 		setError(null);
 		setSuccess(false);
 		try {
-			const result = await addUserProvider(providerId);
-			//! 👀
-			const updated = await getUserProviders();
-			dispatch(setProviders(updated.providers || updated));
+			const result = await replaceUserProviders(providerIds);
+			dispatch(setProviders(result));
 			setSuccess(true);
 			return result;
 		} catch (e) {
@@ -33,6 +31,5 @@ export default function useAddUserProvider() {
 		}
 	};
 
-	return { addProvider, loading, error, success };
+	return { addProviders, loading, error, success };
 }
-

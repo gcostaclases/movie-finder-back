@@ -6,7 +6,7 @@ const initialState = {
 	profileImage: null,
 	providers: [],
 	isLogged: false,
-	selectedProvider: null,
+	selectedProviders: [],
 	movieReview: {
 		rating: 0,
 		comment: "",
@@ -43,11 +43,11 @@ export const userSlice = createSlice({
 		resetMovieComment: (state) => {
 			state.movieReview.comment = "";
 		},
-		setSelectedProvider: (state, action) => {
-			state.selectedProvider = action.payload;
+		setSelectedProviders: (state, action) => {
+			state.selectedProviders = action.payload;
 		},
-		resetSelectedProvider: (state) => {
-			state.selectedProvider = null;
+		resetSelectedProviders: (state) => {
+			state.selectedProviders = [];
 		},
 		setSelectedProviderForMovie: (state, action) => {
 			state.movieAvailability.selectedProvider = action.payload;
@@ -74,8 +74,8 @@ export const {
 	resetMovieRating,
 	setMovieComment,
 	resetMovieComment,
-	setSelectedProvider,
-	resetSelectedProvider,
+	setSelectedProviders,
+	resetSelectedProviders,
 	setSelectedProviderForMovie,
 	resetSelectedProviderForMovie,
 	setPendingAction,
