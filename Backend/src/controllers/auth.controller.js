@@ -64,6 +64,7 @@ export const postLogin = async (req, res) => {
 			message: "Inicio de sesión exitoso",
 			user: {
 				username: user.username,
+				email: user.email,
 				profileImage: user.profileImage,
 			},
 		});

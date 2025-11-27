@@ -80,6 +80,51 @@ export const addProviderToUserController = async (req, res) => {
 };
 
 /**
+ * Reemplaza la lista completa de proveedores del usuario autenticado
+ * PUT /users/me/providers
+ * @param {Object} req - Request de Express
+ * @param {Array<string>} req.body - Array de IDs de proveedores a dejar en la lista
+ * @param {Object} req.user - Usuario autenticado
+ * @param {string} req.user.userId - ID del usuario autenticado
+ * @param {Object} res - Response de Express
+ * @returns {Promise<void>} JSON con array de proveedores actualizado o error
+ */
+export const replaceUserProvidersController = async (req, res) => {
+	const providerIds = req.body; // Ahora el body es directamente un array
+	const { userId } = req.user;
+
+	try {
+		// console.log("IDs recibidos en el body:", providerIds);
+
+		const user = await repoFactory.findUser({ _id: userId });
+		if (!user) {
+			return res.status(404).json({
+				message: "Usuario no encontrado",
+			});
+		}
+
+		// console.log("Providers ANTES de asignar:", user.providers);
+
+		user.providers = providerIds;
+		await user.save();
+
+		// console.log("Providers DESPUÉS de asignar y guardar:", user.providers);
+
+		// Populo los providers para devolver el array completo
+		const userWithProviders = await repoFactory.populateUserProviders(user);
+
+		// console.log("Providers después de populate:", userWithProviders.providers);
+
+		return res.status(200).json(userWithProviders.providers);
+	} catch (error) {
+		console.error("Error al actualizar proveedores:", error);
+		return res.status(500).json({
+			message: INTERNAL_SERVER_ERROR,
+		});
+	}
+};
+
+/**
  * Remueve un proveedor de la lista del usuario autenticado
  * DELETE /users/me/providers/:providerId
  * @param {Object} req - Request de Express
@@ -282,7 +327,7 @@ export const getMyProfileController = async (req, res) => {
 
 /**
  * Actualiza la imagen de perfil del usuario autenticado
- * POST /me/profile-image
+ * PUT /me/profile-image
  * @param {Object} req - Request de Express
  * @param {Object} req.user - Usuario autenticado (desde middleware)
  * @param {string} req.user.userId - ID del usuario autenticado
@@ -359,3 +404,4 @@ export const uploadProfileImageController = async (req, res) => {
 };
 
 //#endregion ----------- PROFILE -----------
+

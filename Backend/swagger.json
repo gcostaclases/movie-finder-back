@@ -110,6 +110,7 @@
 									"message": "Inicio de sesión exitoso",
 									"user": {
 										"username": "juanp",
+										"email": "juanperez@gmail.com",
 										"profileImage": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/profile-images/imagen.jpg"
 									}
 								}
@@ -850,7 +851,7 @@
 			}
 		},
 		"/me/profile-image": {
-			"post": {
+			"put": {
 				"tags": ["User - Profile"],
 				"summary": "Subir o actualizar imagen de perfil",
 				"description": "Permite al usuario autenticado subir o actualizar su imagen de perfil. Si ya tenía una imagen, la anterior será eliminada de Cloudinary.",
@@ -987,36 +988,27 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"providers": {
-											"type": "array",
-											"items": {
-												"$ref": "#/components/schemas/Provider"
-											}
-										}
-									}
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/Provider" }
 								},
-								"example": {
-									"providers": [
-										{
-											"_id": "68d055c86aa347d04a2053da",
-											"name": "Netflix",
-											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/netflix.jpg",
-											"createdAt": "2025-09-21T19:45:12.864Z",
-											"updatedAt": "2025-09-21T19:45:12.864Z",
-											"__v": 0
-										},
-										{
-											"_id": "68d055db6aa347d04a2053e2",
-											"name": "Disney+",
-											"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
-											"createdAt": "2025-09-21T19:45:12.864Z",
-											"updatedAt": "2025-09-21T19:45:12.864Z",
-											"__v": 0
-										}
-									]
-								}
+								"example": [
+									{
+										"_id": "6922ac6b290f214f9c63e537",
+										"name": "Netflix",
+										"logo": "https://res.cloudinary.com/dp15vyovv/image/upload/v1763880043/provider-logos/rlhk6dnje8zabp9f6seq.png",
+										"createdAt": "2025-11-23T06:40:43.363Z",
+										"updatedAt": "2025-11-23T06:40:43.363Z",
+										"__v": 0
+									},
+									{
+										"_id": "68d055db6aa347d04a2053e2",
+										"name": "Disney+",
+										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
+										"createdAt": "2025-09-21T19:45:12.864Z",
+										"updatedAt": "2025-09-21T19:45:12.864Z",
+										"__v": 0
+									}
+								]
 							}
 						}
 					},
@@ -1170,6 +1162,106 @@
 								},
 								"example": {
 									"message": "Error interno del servidor"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["User - Providers"],
+				"summary": "Reemplazar lista de proveedores del usuario",
+				"description": "Reemplaza la lista completa de proveedores contratados del usuario por los IDs enviados.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "type": "string" },
+								"example": ["68d055db6aa347d04a2053e2", "68d055c86aa347d04a2053da"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Lista de proveedores actualizada",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/Provider" }
+								},
+								"example": [
+									{
+										"_id": "6922ac6b290f214f9c63e537",
+										"name": "Netflix",
+										"logo": "https://res.cloudinary.com/dp15vyovv/image/upload/v1763880043/provider-logos/rlhk6dnje8zabp9f6seq.png",
+										"createdAt": "2025-11-23T06:40:43.363Z",
+										"updatedAt": "2025-11-23T06:40:43.363Z",
+										"__v": 0
+									},
+									{
+										"_id": "68d055db6aa347d04a2053e2",
+										"name": "Disney+",
+										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/disneyplus.jpg",
+										"createdAt": "2025-09-21T19:45:12.864Z",
+										"updatedAt": "2025-09-21T19:45:12.864Z",
+										"__v": 0
+									},
+									{
+										"_id": "68d055d16aa347d04a2053de",
+										"name": "HBO Max",
+										"logo": "https://res.cloudinary.com/tu-cloud/image/upload/v1234567890/provider-logos/hbo.jpg",
+										"createdAt": "2025-09-21T19:45:12.864Z",
+										"updatedAt": "2025-09-21T19:45:12.864Z",
+										"__v": 0
+									}
+								]
+							}
+						}
+					},
+					"400": {
+						"description": "Payload inválido",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/ErrorResponseWithDetails" },
+								"examples": {
+									"invalidPayload": {
+										"summary": "Payload inválido",
+										"value": {
+											"message": "Payload inválido",
+											"details": [
+												"Debes enviar un array de IDs de proveedores.",
+												"El campo providerIds es obligatorio."
+											]
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuario no encontrado",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/ErrorResponseWithDetails" },
+								"example": {
+									"message": "Usuario no encontrado",
+									"details": ["Usuario no encontrado"]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Error interno del servidor",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/ErrorResponseWithDetails" },
+								"example": {
+									"message": "Error interno del servidor",
+									"details": ["Error al actualizar proveedores: ..."]
 								}
 							}
 						}
@@ -4833,6 +4925,7 @@
 						"type": "object",
 						"properties": {
 							"username": { "type": "string", "example": "juanp" },
+							"email": { "type": "string", "example": "juanperez@gmail.com" },
 							"profileImage": {
 								"type": "string",
 								"nullable": true,
