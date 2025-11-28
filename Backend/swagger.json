@@ -1403,510 +1403,49 @@
 										"movies": {
 											"type": "array",
 											"items": {
-												"$ref": "#/components/schemas/Movie"
+												"type": "object",
+												"properties": {
+													"_id": { "type": "string", "example": "68e7069e7c16280b8b499c26" },
+													"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+													"posterPath": { "type": "string", "example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg" },
+													"releaseDate": { "type": "string", "format": "date", "example": "2025-09-03" },
+													"duration": { "type": "integer", "example": 135 },
+													"directors": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"tmdbId": { "type": "integer", "example": 54321 },
+																"name": { "type": "string", "example": "Director Ejemplo" },
+																"image": { "type": "string", "example": "/directorimg.jpg" }
+															}
+														}
+													},
+													"overview": { "type": "string", "example": "Sinopsis de la película..." }
+												}
 											}
 										},
-										"total": {
-											"type": "integer",
-											"description": "Total de películas en la watchlist",
-											"example": 2
-										},
-										"page": {
-											"type": "integer",
-											"description": "Página actual",
-											"example": 1
-										},
-										"limit": {
-											"type": "integer",
-											"description": "Cantidad de resultados por página",
-											"example": 5
-										}
+										"total": { "type": "integer", "example": 1 },
+										"page": { "type": "integer", "example": 1 },
+										"limit": { "type": "integer", "example": 5 }
 									}
 								},
 								"example": {
 									"movies": [
 										{
-											"_id": "68e706a57c16280b8b499ebf",
-											"tmdbId": 1061474,
-											"title": "Superman",
-											"originalTitle": "Superman",
-											"overview": "En un mundo que ha perdido la fe en la bondad, Superman lucha por reconciliar su herencia kryptoniana con los valores humanos que moldearon su carácter. Criado en la Tierra, representa la verdad, la justicia y el estilo americano, pero debe enfrentarse a un mundo cínico que cuestiona sus ideales. Entre el deber de proteger a la humanidad y la búsqueda de su identidad, Superman demuestra que la esperanza y la bondad nunca pasan de moda, incluso en los tiempos más oscuros, inspirando a otros a creer en un futuro mejor.",
-											"posterPath": "/fvUJb08yatV2b3NUSwuYdQKYoFd.jpg",
-											"releaseDate": "2025-07-09T00:00:00.000Z",
-											"originalLanguage": "en",
-											"duration": 129,
-											"genres": ["Ciencia ficción", "Aventura", "Acción"],
-											"actors": [
-												{
-													"name": "David Corenswet",
-													"role": "Superman",
-													"_id": "68e706a57c16280b8b499ec0"
-												},
-												{
-													"name": "Rachel Brosnahan",
-													"role": "Lois Lane",
-													"_id": "68e706a57c16280b8b499ec1"
-												},
-												{
-													"name": "Nicholas Hoult",
-													"role": "Lex Luthor",
-													"_id": "68e706a57c16280b8b499ec2"
-												},
-												{
-													"name": "Edi Gathegi",
-													"role": "Mr. Terrific",
-													"_id": "68e706a57c16280b8b499ec3"
-												},
-												{
-													"name": "Nathan Fillion",
-													"role": "Guy Gardner",
-													"_id": "68e706a57c16280b8b499ec4"
-												},
-												{
-													"name": "Isabela Merced",
-													"role": "Hawkgirl",
-													"_id": "68e706a57c16280b8b499ec5"
-												},
-												{
-													"name": "María Gabriela de Faría",
-													"role": "The Engineer",
-													"_id": "68e706a57c16280b8b499ec6"
-												},
-												{
-													"name": "Skyler Gisondo",
-													"role": "Jimmy Olsen",
-													"_id": "68e706a57c16280b8b499ec7"
-												},
-												{
-													"name": "Alan Tudyk",
-													"role": "Gary",
-													"_id": "68e706a57c16280b8b499ec8"
-												},
-												{
-													"name": "Grace Chan",
-													"role": "Superman Robot #12 (voice)",
-													"_id": "68e706a57c16280b8b499ec9"
-												},
-												{
-													"name": "Bradley Cooper",
-													"role": "Jor-El",
-													"_id": "68e706a57c16280b8b499eca"
-												},
-												{
-													"name": "Angela Sarafyan",
-													"role": "Lara",
-													"_id": "68e706a57c16280b8b499ecb"
-												},
-												{
-													"name": "Michael Rooker",
-													"role": "Superman Robot #1 (voice)",
-													"_id": "68e706a57c16280b8b499ecc"
-												},
-												{
-													"name": "Pom Klementieff",
-													"role": "Superman Robot #5 (voice)",
-													"_id": "68e706a57c16280b8b499ecd"
-												},
-												{
-													"name": "Sara Sampaio",
-													"role": "Eve Teschmacher",
-													"_id": "68e706a57c16280b8b499ece"
-												},
-												{
-													"name": "Tatiana Piper",
-													"role": "Boravian Tech",
-													"_id": "68e706a57c16280b8b499ecf"
-												},
-												{
-													"name": "Stephen Blackehart",
-													"role": "Sydney Happersen",
-													"_id": "68e706a57c16280b8b499ed0"
-												},
-												{
-													"name": "Giovannie Cruz",
-													"role": "Cheryl Kimble",
-													"_id": "68e706a57c16280b8b499ed1"
-												},
-												{
-													"name": "Bonnie Discepolo",
-													"role": "Ms. Jessop",
-													"_id": "68e706a57c16280b8b499ed2"
-												},
-												{
-													"name": "Terence Rosemore",
-													"role": "Otis Berg",
-													"_id": "68e706a57c16280b8b499ed3"
-												},
-												{
-													"name": "Natasha Halevi",
-													"role": "Amanda Marie McCoy",
-													"_id": "68e706a57c16280b8b499ed4"
-												},
-												{
-													"name": "Adriana Leonard",
-													"role": "Comms Tech",
-													"_id": "68e706a57c16280b8b499ed5"
-												},
-												{
-													"name": "Paul Kim",
-													"role": "Larry Chin",
-													"_id": "68e706a57c16280b8b499ed6"
-												},
-												{
-													"name": "Jonah Lees",
-													"role": "Dean Farr",
-													"_id": "68e706a57c16280b8b499ed7"
-												},
-												{
-													"name": "Christian Lees",
-													"role": "Desmond Farr",
-													"_id": "68e706a57c16280b8b499ed8"
-												},
-												{
-													"name": "Dinesh Thyagarajan",
-													"role": "Malik 'Mali' Ali",
-													"_id": "68e706a57c16280b8b499ed9"
-												},
-												{
-													"name": "Rudy Quintanilla",
-													"role": "Reggie",
-													"_id": "68e706a57c16280b8b499eda"
-												},
-												{
-													"name": "Ryan J. Pezdirc",
-													"role": "Onlooker",
-													"_id": "68e706a57c16280b8b499edb"
-												},
-												{
-													"name": "Michael Ian Black",
-													"role": "Cleavis Thornwaite",
-													"_id": "68e706a57c16280b8b499edc"
-												},
-												{
-													"name": "Wendell Pierce",
-													"role": "Perry White",
-													"_id": "68e706a57c16280b8b499edd"
-												},
-												{
-													"name": "Beck Bennett",
-													"role": "Steve Lombard",
-													"_id": "68e706a57c16280b8b499ede"
-												},
-												{
-													"name": "Neva Howell",
-													"role": "Ma Kent",
-													"_id": "68e706a57c16280b8b499edf"
-												},
-												{
-													"name": "Pruitt Taylor Vince",
-													"role": "Pa Kent",
-													"_id": "68e706a57c16280b8b499ee0"
-												},
-												{
-													"name": "Mikaela Hoover",
-													"role": "Cat Grant",
-													"_id": "68e706a57c16280b8b499ee1"
-												},
-												{
-													"name": "Christopher McDonald",
-													"role": "Ron Troupe",
-													"_id": "68e706a57c16280b8b499ee2"
-												},
-												{
-													"name": "Zlatko Burić",
-													"role": "Vasil Ghurkos",
-													"_id": "68e706a57c16280b8b499ee3"
-												},
-												{
-													"name": "Martin Harris",
-													"role": "Boravian General",
-													"_id": "68e706a57c16280b8b499ee4"
-												},
-												{
-													"name": "Frank Grillo",
-													"role": "Rick Flag Sr.",
-													"_id": "68e706a57c16280b8b499ee5"
-												},
-												{
-													"name": "James Hiroyuki Liao",
-													"role": "General Mori",
-													"_id": "68e706a57c16280b8b499ee6"
-												},
-												{
-													"name": "Tinashe Kajese",
-													"role": "Flo Crawley",
-													"_id": "68e706a57c16280b8b499ee7"
-												},
-												{
-													"name": "Luis R. Hernandez",
-													"role": "Albert Tyler",
-													"_id": "68e706a57c16280b8b499ee8"
-												},
-												{
-													"name": "Mary Chatmon",
-													"role": "Loretto Bell",
-													"_id": "68e706a57c16280b8b499ee9"
-												},
-												{
-													"name": "Savannah Lumar",
-													"role": "Young Girl",
-													"_id": "68e706a57c16280b8b499eea"
-												},
-												{
-													"name": "Xingu Del Rosario",
-													"role": "Yogurt Eater",
-													"_id": "68e706a57c16280b8b499eeb"
-												},
-												{
-													"name": "Lawrence Gilligan",
-													"role": "Sphere News Reporter",
-													"_id": "68e706a57c16280b8b499eec"
-												},
-												{
-													"name": "Suzanne Hobbs",
-													"role": "GBS Reporter",
-													"_id": "68e706a57c16280b8b499eed"
-												},
-												{
-													"name": "Kimmy Suzuki",
-													"role": "Saved Woman",
-													"_id": "68e706a57c16280b8b499eee"
-												},
-												{
-													"name": "Will Reeve",
-													"role": "On the Ground Reporter",
-													"_id": "68e706a57c16280b8b499eef"
-												},
-												{
-													"name": "Jake Tapper",
-													"role": "Jack Tapir",
-													"_id": "68e706a57c16280b8b499ef0"
-												},
-												{
-													"name": "Ira Amyx",
-													"role": "Construction Worker",
-													"_id": "68e706a57c16280b8b499ef1"
-												},
-												{
-													"name": "Abel F. Alvarado",
-													"role": "International Reporter",
-													"_id": "68e706a57c16280b8b499ef2"
-												},
-												{
-													"name": "Karla Suyeon Kim",
-													"role": "International Reporter",
-													"_id": "68e706a57c16280b8b499ef3"
-												},
-												{
-													"name": "Jay Westbrook",
-													"role": "TV Interviewee",
-													"_id": "68e706a57c16280b8b499ef4"
-												},
-												{
-													"name": "Nea Dune",
-													"role": "Makeup Artist",
-													"_id": "68e706a57c16280b8b499ef5"
-												},
-												{
-													"name": "Darla Delgado",
-													"role": "Heather",
-													"_id": "68e706a57c16280b8b499ef6"
-												},
-												{
-													"name": "Ashleigh Morghan",
-													"role": "Luthorcorp Scientist",
-													"_id": "68e706a57c16280b8b499ef7"
-												},
-												{
-													"name": "Anthony Carrigan",
-													"role": "Metamorpho",
-													"_id": "68e706a57c16280b8b499ef8"
-												},
-												{
-													"name": "Trevor Newlin",
-													"role": "Mr. Handsome",
-													"_id": "68e706a57c16280b8b499ef9"
-												},
-												{
-													"name": "Lon Gowan",
-													"role": "Scientist #1",
-													"_id": "68e706a57c16280b8b499efa"
-												},
-												{
-													"name": "Taylor Valentine Lupini",
-													"role": "Scientist #2",
-													"_id": "68e706a57c16280b8b499efb"
-												},
-												{
-													"name": "Paige Mobley",
-													"role": "Fleurette",
-													"_id": "68e706a57c16280b8b499efc"
-												},
-												{
-													"name": "Zach Lane",
-													"role": "Tech Bro",
-													"_id": "68e706a57c16280b8b499efd"
-												},
-												{
-													"name": "Theo Kypri",
-													"role": "Thug",
-													"_id": "68e706a57c16280b8b499efe"
-												},
-												{
-													"name": "Michael Rosenbaum",
-													"role": "Raptor Guard #1",
-													"_id": "68e706a57c16280b8b499eff"
-												},
-												{
-													"name": "Alexis Prewitt",
-													"role": "Raptor Guard #2",
-													"_id": "68e706a57c16280b8b499f00"
-												},
-												{
-													"name": "Bobby Hernandez",
-													"role": "Raptor Guard #3",
-													"_id": "68e706a57c16280b8b499f01"
-												},
-												{
-													"name": "George Howard Adams",
-													"role": "Raptor Guard #4",
-													"_id": "68e706a57c16280b8b499f02"
-												},
-												{
-													"name": "David E. Collier",
-													"role": "Raptor Sergeant #1",
-													"_id": "68e706a57c16280b8b499f03"
-												},
-												{
-													"name": "Jimmy Chhiu",
-													"role": "Raptor Sergeant #2",
-													"_id": "68e706a57c16280b8b499f04"
-												},
-												{
-													"name": "Louisa Krause",
-													"role": "Sapphire Stagg",
-													"_id": "68e706a57c16280b8b499f05"
-												},
-												{
-													"name": "AJ Bernard",
-													"role": "Young Jarhanpurian Boy",
-													"_id": "68e706a57c16280b8b499f06"
-												},
-												{
-													"name": "Alayna Bernard",
-													"role": "Jarhanpurian Kid #1",
-													"_id": "68e706a57c16280b8b499f07"
-												},
-												{
-													"name": "Jai Soundar",
-													"role": "Jarhanpurian Kid #2",
-													"_id": "68e706a57c16280b8b499f08"
-												},
-												{
-													"name": "Annika Mazumdar",
-													"role": "Jarhanpurian Kid #3",
-													"_id": "68e706a57c16280b8b499f09"
-												},
-												{
-													"name": "Fahim Fazli",
-													"role": "Jarhanpurian Villager #1",
-													"_id": "68e706a57c16280b8b499f0a"
-												},
-												{
-													"name": "Chaim Jeraffi",
-													"role": "Jarhanpurian Villager #2",
-													"_id": "68e706a57c16280b8b499f0b"
-												},
-												{
-													"name": "Melissa O. Bowen",
-													"role": "Woman in Car",
-													"_id": "68e706a57c16280b8b499f0c"
-												},
-												{
-													"name": "Torsten Kellar",
-													"role": "Boravian Commander",
-													"_id": "68e706a57c16280b8b499f0d"
-												},
-												{
-													"name": "Johanna Braddy",
-													"role": "Metropolis Citizen #1",
-													"_id": "68e706a57c16280b8b499f0e"
-												},
-												{
-													"name": "Austin Freeman",
-													"role": "Metropolis Citizen #2",
-													"_id": "68e706a57c16280b8b499f0f"
-												},
-												{
-													"name": "Kim Brunhuber",
-													"role": "GBS Reporter #2",
-													"_id": "68e706a57c16280b8b499f10"
-												},
-												{
-													"name": "Sean Gunn",
-													"role": "Maxwell Lord",
-													"_id": "68e706a57c16280b8b499f11"
-												},
-												{
-													"name": "Sharon Carpenter",
-													"role": "Metro News Reporter",
-													"_id": "68e706a57c16280b8b499f12"
-												},
-												{
-													"name": "Greg Clarkson",
-													"role": "Mocking Reporter",
-													"_id": "68e706a57c16280b8b499f13"
-												},
-												{
-													"name": "Milli M.",
-													"role": "TV Show Host",
-													"_id": "68e706a57c16280b8b499f14"
-												},
-												{
-													"name": "Pierce Lackey",
-													"role": "Armed Sergeant",
-													"_id": "68e706a57c16280b8b499f15"
-												},
-												{
-													"name": "Oliver Diego Silva",
-													"role": "Young Clark (2 Years Old)",
-													"_id": "68e706a57c16280b8b499f16"
-												},
-												{
-													"name": "Lloyd Kaufman",
-													"role": "Metropolis Citizen #3 (uncredited)",
-													"_id": "68e706a57c16280b8b499f17"
-												},
-												{
-													"name": "John Cena",
-													"role": "Peacemaker (uncredited)",
-													"_id": "68e706a57c16280b8b499f18"
-												},
-												{
-													"name": "Milly Alcock",
-													"role": "Supergirl (uncredited)",
-													"_id": "68e706a57c16280b8b499f19"
-												},
-												{
-													"name": "Jennifer Holland",
-													"role": "Superman Robot #22 (voice) (uncredited)",
-													"_id": "68e706a57c16280b8b499f1a"
-												},
-												{
-													"name": "James Gunn",
-													"role": "Typewriting Monkeys (uncredited)",
-													"_id": "68e706a57c16280b8b499f1b"
-												}
-											],
+											"_id": "68e7069e7c16280b8b499c26",
+											"title": "Expediente Warren: El último rito",
+											"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg",
+											"releaseDate": "2025-09-03",
+											"duration": 135,
 											"directors": [
 												{
-													"name": "James Gunn",
-													"_id": "68e706a57c16280b8b499f1c"
+													"tmdbId": 54321,
+													"name": "Director Ejemplo",
+													"image": "/directorimg.jpg"
 												}
 											],
-											"createdAt": "2025-10-09T00:49:41.334Z",
-											"updatedAt": "2025-10-09T00:49:41.334Z",
-											"__v": 0
+											"overview": "Sinopsis de la película..."
 										}
 									],
 									"total": 1,
@@ -1999,10 +1538,50 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/SuccessResponse"
+									"type": "object",
+									"properties": {
+										"message": { "type": "string", "example": "Película agregada a la watchlist" },
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "68e7069e7c16280b8b499c26" },
+												"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+												"posterPath": { "type": "string", "example": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg" },
+												"releaseDate": { "type": "string", "format": "date", "example": "2025-09-03" },
+												"duration": { "type": "integer", "example": 135 },
+												"directors": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"tmdbId": { "type": "integer", "example": 54321 },
+															"name": { "type": "string", "example": "Director Ejemplo" },
+															"image": { "type": "string", "example": "/directorimg.jpg" }
+														}
+													}
+												},
+												"overview": { "type": "string", "example": "Sinopsis de la película..." }
+											}
+										}
+									}
 								},
 								"example": {
-									"message": "Película agregada a la watchlist"
+									"message": "Película agregada a la watchlist",
+									"movie": {
+										"_id": "68e7069e7c16280b8b499c26",
+										"title": "Expediente Warren: El último rito",
+										"posterPath": "/vrfti9ycF4mlA5WuIyfgCf1LJQG.jpg",
+										"releaseDate": "2025-09-03",
+										"duration": 135,
+										"directors": [
+											{
+												"tmdbId": 54321,
+												"name": "Director Ejemplo",
+												"image": "/directorimg.jpg"
+											}
+										],
+										"overview": "Sinopsis de la película..."
+									}
 								}
 							}
 						}
@@ -4417,7 +3996,56 @@
 						"description": "Reseña creada exitosamente",
 						"content": {
 							"application/json": {
-								"schema": { "$ref": "#/components/schemas/Review" },
+								"schema": {
+									"type": "object",
+									"properties": {
+										"_id": { "type": "string", "example": "692743ca0bcd4fd64cb003f1" },
+										"user": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "69273c9e34c3a3f7e3ed03e6" },
+												"username": { "type": "string", "example": "carlosr" },
+												"profileImage": { "type": "string", "nullable": true, "example": null }
+											}
+										},
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "69221bac2a82d6f08e7df609" },
+												"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+												"posterPath": { "type": "string", "example": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg" },
+												"releaseDate": { "type": "string", "format": "date", "example": "2025-09-03" },
+												"duration": { "type": "integer", "example": 135 },
+												"directors": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"tmdbId": { "type": "integer", "example": 54321 },
+															"name": { "type": "string", "example": "Director Ejemplo" },
+															"image": { "type": "string", "example": "/directorimg.jpg" }
+														}
+													}
+												},
+												"overview": { "type": "string", "example": "Sinopsis de la película..." },
+												"reviewStats": {
+													"type": "object",
+													"properties": {
+														"averageRating": { "type": "number", "example": 4.2 },
+														"totalReviews": { "type": "integer", "example": 12 }
+													}
+												}
+											}
+										},
+										"rating": { "type": "number", "example": 4.5 },
+										"comment": {
+											"type": "string",
+											"example": "Excelente película, muy entretenida y con grandes actuaciones."
+										},
+										"createdAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" },
+										"updatedAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" }
+									}
+								},
 								"example": {
 									"_id": "692743ca0bcd4fd64cb003f1",
 									"user": {
@@ -4429,16 +4057,25 @@
 										"_id": "69221bac2a82d6f08e7df609",
 										"title": "Expediente Warren: El último rito",
 										"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
-										"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador...",
+										"releaseDate": "2025-09-03",
+										"duration": 135,
+										"directors": [
+											{
+												"tmdbId": 54321,
+												"name": "Director Ejemplo",
+												"image": "/directorimg.jpg"
+											}
+										],
+										"overview": "Sinopsis de la película...",
 										"reviewStats": {
-											"averageRating": 2.9,
-											"totalReviews": 1
+											"averageRating": 4.2,
+											"totalReviews": 12
 										}
 									},
-									"rating": 1,
-									"comment": "Mala.",
-									"createdAt": "2025-11-26T18:15:38.173Z",
-									"updatedAt": "2025-11-26T18:15:38.173Z"
+									"rating": 4.5,
+									"comment": "Excelente película, muy entretenida y con grandes actuaciones.",
+									"createdAt": "2025-10-06T15:30:00.000Z",
+									"updatedAt": "2025-10-06T15:30:00.000Z"
 								}
 							}
 						}
@@ -4536,21 +4173,80 @@
 							"application/json": {
 								"schema": {
 									"type": "array",
-									"items": { "$ref": "#/components/schemas/Review" }
+									"items": {
+										"type": "object",
+										"properties": {
+											"movie": {
+												"type": "object",
+												"properties": {
+													"_id": { "type": "string", "example": "69221bad2a82d6f08e7df6d8" },
+													"title": { "type": "string", "example": "Misión: Imposible - Sentencia final" },
+													"posterPath": { "type": "string", "example": "/haOjJGUV00dKlZaJWgjM1UD1cJV.jpg" },
+													"releaseDate": {
+														"type": "string",
+														"format": "date-time",
+														"example": "2025-05-17T00:00:00.000Z"
+													},
+													"duration": { "type": "integer", "example": 169 },
+													"directors": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"tmdbId": { "type": "integer", "example": 9033 },
+																"name": { "type": "string", "example": "Christopher McQuarrie" },
+																"image": {
+																	"type": "string",
+																	"nullable": true,
+																	"example": "/xVbQBRpqzKkllUAvjJbgnAmTwaZ.jpg"
+																}
+															}
+														}
+													},
+													"overview": { "type": "string", "example": "El agente Ethan Hunt continúa su misión..." },
+													"reviewStats": {
+														"type": "object",
+														"properties": {
+															"averageRating": { "type": "number", "example": 4.2 },
+															"totalReviews": { "type": "integer", "example": 12 }
+														}
+													}
+												}
+											},
+											"_id": { "type": "string", "example": "6929332a7470d0a472826ff1" },
+											"rating": { "type": "number", "example": 3 },
+											"comment": { "type": "string", "example": "Está bien" },
+											"createdAt": { "type": "string", "format": "date-time", "example": "2025-11-28T05:29:14.563Z" },
+											"updatedAt": { "type": "string", "format": "date-time", "example": "2025-11-28T05:29:14.563Z" }
+										}
+									}
 								},
 								"example": [
 									{
 										"movie": {
-											"_id": "69221bac2a82d6f08e7df609",
-											"title": "Expediente Warren: El último rito",
-											"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
-											"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador en el que están implicadas entidades misteriosas a las que deben enfrentarse."
+											"_id": "69221bad2a82d6f08e7df6d8",
+											"title": "Misión: Imposible - Sentencia final",
+											"posterPath": "/haOjJGUV00dKlZaJWgjM1UD1cJV.jpg",
+											"releaseDate": "2025-05-17T00:00:00.000Z",
+											"duration": 169,
+											"directors": [
+												{
+													"tmdbId": 9033,
+													"name": "Christopher McQuarrie",
+													"image": "/xVbQBRpqzKkllUAvjJbgnAmTwaZ.jpg"
+												}
+											],
+											"overview": "El agente Ethan Hunt continúa su misión de impedir que Gabriel controle el tecnológicamente omnipotente programa de IA conocido como \"the Entity\".",
+											"reviewStats": {
+												"averageRating": 4.2,
+												"totalReviews": 12
+											}
 										},
-										"_id": "69275b3592dff7f946c81bcf",
-										"rating": 2,
-										"comment": "No me gusto.",
-										"createdAt": "2025-11-26T19:55:33.620Z",
-										"updatedAt": "2025-11-26T19:59:42.211Z"
+										"_id": "6929332a7470d0a472826ff1",
+										"rating": 3,
+										"comment": "Está bien",
+										"createdAt": "2025-11-28T05:29:14.563Z",
+										"updatedAt": "2025-11-28T05:29:14.563Z"
 									}
 								]
 							}
@@ -4647,7 +4343,51 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Review"
+									"type": "object",
+									"properties": {
+										"_id": { "type": "string", "example": "692743ca0bcd4fd64cb003f1" },
+										"user": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "69273c9e34c3a3f7e3ed03e6" },
+												"username": { "type": "string", "example": "carlosr" },
+												"profileImage": { "type": "string", "nullable": true, "example": null }
+											}
+										},
+										"movie": {
+											"type": "object",
+											"properties": {
+												"_id": { "type": "string", "example": "69221bac2a82d6f08e7df609" },
+												"title": { "type": "string", "example": "Expediente Warren: El último rito" },
+												"posterPath": { "type": "string", "example": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg" },
+												"releaseDate": { "type": "string", "format": "date", "example": "2025-09-03" },
+												"duration": { "type": "integer", "example": 135 },
+												"directors": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"tmdbId": { "type": "integer", "example": 54321 },
+															"name": { "type": "string", "example": "Director Ejemplo" },
+															"image": { "type": "string", "example": "/directorimg.jpg" }
+														}
+													}
+												},
+												"overview": { "type": "string", "example": "Sinopsis de la película..." },
+												"reviewStats": {
+													"type": "object",
+													"properties": {
+														"averageRating": { "type": "number", "example": 4.2 },
+														"totalReviews": { "type": "integer", "example": 12 }
+													}
+												}
+											}
+										},
+										"rating": { "type": "number", "example": 4 },
+										"comment": { "type": "string", "example": "Ahora me parece buena." },
+										"createdAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" },
+										"updatedAt": { "type": "string", "format": "date-time", "example": "2025-10-06T15:30:00.000Z" }
+									}
 								},
 								"example": {
 									"_id": "692743ca0bcd4fd64cb003f1",
@@ -4660,16 +4400,25 @@
 										"_id": "69221bac2a82d6f08e7df609",
 										"title": "Expediente Warren: El último rito",
 										"posterPath": "/qdoqogLNR6myoRrxYFxF4UTkFne.jpg",
-										"overview": "Los investigadores de lo paranormal Ed y Lorraine Warren se enfrentan a un último caso aterrador...",
+										"releaseDate": "2025-09-03",
+										"duration": 135,
+										"directors": [
+											{
+												"tmdbId": 54321,
+												"name": "Director Ejemplo",
+												"image": "/directorimg.jpg"
+											}
+										],
+										"overview": "Sinopsis de la película...",
 										"reviewStats": {
-											"averageRating": 2.9,
-											"totalReviews": 1
+											"averageRating": 4.2,
+											"totalReviews": 12
 										}
 									},
 									"rating": 4,
 									"comment": "Ahora me parece buena.",
-									"createdAt": "2025-11-26T18:15:38.173Z",
-									"updatedAt": "2025-11-26T18:38:13.830Z"
+									"createdAt": "2025-10-06T15:30:00.000Z",
+									"updatedAt": "2025-10-06T15:30:00.000Z"
 								}
 							}
 						}

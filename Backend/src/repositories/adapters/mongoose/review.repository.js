@@ -112,10 +112,20 @@ export const countReviewsByMovie = async (movieId) => {
 // 		.sort({ createdAt: -1 })
 // 		.lean();
 // };
+// export const findReviewsByUser = async (userId) => {
+// 	return await Review.find({ userId })
+// 		.populate("movieId", "title posterPath overview reviewStats releaseDate duration directors")
+// 		.select("-__v")
+// 		.sort({ createdAt: -1 })
+// 		.lean();
+// };
 export const findReviewsByUser = async (userId) => {
 	return await Review.find({ userId })
-		.populate("movieId", "title posterPath overview reviewStats")
-		.select("-__v")
+		.populate({
+			path: "movieId",
+			select: "-createdAt -updatedAt -__v",
+		})
+		.select("-createdAt -updatedAt -__v")
 		.sort({ createdAt: -1 })
 		.lean();
 };

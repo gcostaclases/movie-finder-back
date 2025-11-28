@@ -4,8 +4,12 @@ import User from "./models/user.model.js";
 //#endregion ----------- IMPORTS -----------
 
 // Buscar un usuario
+// export const findUser = async (filter) => {
+// 	const user = await User.findOne(filter);
+// 	return user;
+// };
 export const findUser = async (filter) => {
-	const user = await User.findOne(filter);
+	const user = await User.findOne(filter).select("-createdAt -updatedAt -__v");
 	return user;
 };
 
@@ -55,9 +59,16 @@ export const removeProviderFromUser = async (userId, providerId) => {
 
 // WATCHLIST
 // Popular la watchlist de un usuario ya obtenido
+// export const populateUserWatchlist = async (user) => {
+// 	if (!user) return null;
+// 	return await user.populate("watchlist");
+// };
 export const populateUserWatchlist = async (user) => {
 	if (!user) return null;
-	return await user.populate("watchlist");
+	return await user.populate({
+		path: "watchlist",
+		select: "-createdAt -updatedAt -__v",
+	});
 };
 
 // Agregar película a la watchlist del usuario
@@ -89,3 +100,4 @@ export const updateUserProfileImage = async (userId, imageUrl) => {
 	await user.save();
 	return user;
 };
+

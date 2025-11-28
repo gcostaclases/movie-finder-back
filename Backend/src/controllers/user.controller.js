@@ -193,9 +193,27 @@ export const getMyWatchlistController = async (req, res) => {
 		const total = userWithWatchlist.watchlist.length;
 		const paginatedWatchlist = userWithWatchlist.watchlist.slice((page - 1) * limit, page * limit);
 
-		// Respondo con la estructura completa
+		// Mapeo para asegurarme que solo se devuelven los campos deseados
+		const movies = paginatedWatchlist.map((movie) => ({
+			_id: movie._id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			releaseDate: movie.releaseDate,
+			duration: movie.duration,
+			directors: movie.directors,
+			overview: movie.overview,
+		}));
+
+		// // Respondo con la estructura completa
+		// res.status(200).json({
+		// 	movies: paginatedWatchlist,
+		// 	total,
+		// 	page: parseInt(page, 10),
+		// 	limit: parseInt(limit, 10),
+		// });
+
 		res.status(200).json({
-			movies: paginatedWatchlist,
+			movies,
 			total,
 			page: parseInt(page, 10),
 			limit: parseInt(limit, 10),
@@ -245,8 +263,20 @@ export const addMovieToWatchlistController = async (req, res) => {
 			});
 		}
 
+		// Devuelvo la info de la película agregada
+		const movieInfo = {
+			_id: movie._id,
+			title: movie.title,
+			posterPath: movie.posterPath,
+			releaseDate: movie.releaseDate,
+			duration: movie.duration,
+			directors: movie.directors,
+			overview: movie.overview,
+		};
+
 		return res.status(201).json({
 			message: "Película agregada a la watchlist",
+			movie: movieInfo,
 		});
 	} catch (error) {
 		console.error("Error al agregar película a la watchlist:", error);
