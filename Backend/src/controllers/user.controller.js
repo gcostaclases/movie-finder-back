@@ -189,9 +189,12 @@ export const getMyWatchlistController = async (req, res) => {
 		// Populo la watchlist del usuario
 		const userWithWatchlist = await repoFactory.populateUserWatchlist(user);
 
+		// Ordeno para que la última agregada quede primero
+		const orderedWatchlist = [...userWithWatchlist.watchlist].reverse();
+
 		// Pagino la watchlist
-		const total = userWithWatchlist.watchlist.length;
-		const paginatedWatchlist = userWithWatchlist.watchlist.slice((page - 1) * limit, page * limit);
+		const total = orderedWatchlist.length;
+		const paginatedWatchlist = orderedWatchlist.slice((page - 1) * limit, page * limit);
 
 		// Mapeo para asegurarme que solo se devuelven los campos deseados
 		const movies = paginatedWatchlist.map((movie) => ({
