@@ -112,7 +112,7 @@ export const searchMoviesController = async (req, res) => {
 		}
 
 		if (genre) {
-			filters.genres = { $regex: genre, $options: "i" }; // Buscar por género
+			filters["genres.name"] = { $regex: genre, $options: "i" }; // ✅ Buscar por el campo name dentro de cada objeto del array genres
 		}
 
 		if (language) {
@@ -250,3 +250,4 @@ export const getMovieByIdController = async (req, res) => {
 		});
 	}
 };
+
