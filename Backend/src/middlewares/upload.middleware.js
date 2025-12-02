@@ -30,7 +30,7 @@ const uploadMiddleware = (fieldName) => {
 				// Manejo de errores de multer
 				if (err.code === "LIMIT_FILE_SIZE") {
 					return res.status(400).json({
-						message: "El archivo es demasiado grande. El tamaño máximo permitido es de 2 MB.",
+						message: "Tamaño máximo 2 MB exedidos.",
 					});
 				}
 				if (err.message === "Solo se permiten archivos de imagen.") {
@@ -56,3 +56,4 @@ const uploadMiddleware = (fieldName) => {
 };
 
 export default uploadMiddleware;
+
