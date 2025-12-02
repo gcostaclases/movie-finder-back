@@ -7,7 +7,7 @@ import multer from "multer";
 const upload = multer({
 	storage: multer.memoryStorage(),
 	limits: {
-		fileSize: 2 * 1024 * 1024, // 2 MB (en bytes)
+		fileSize: 5 * 1024 * 1024, // 5 MB (en bytes)
 	},
 	fileFilter: (req, file, cb) => {
 		// Validar el tipo de archivo (solo imágenes)
@@ -30,7 +30,7 @@ const uploadMiddleware = (fieldName) => {
 				// Manejo de errores de multer
 				if (err.code === "LIMIT_FILE_SIZE") {
 					return res.status(400).json({
-						message: "Tamaño máximo 2 MB exedidos.",
+						message: "Tamaño máximo 5 MB excedidos.",
 					});
 				}
 				if (err.message === "Solo se permiten archivos de imagen.") {
