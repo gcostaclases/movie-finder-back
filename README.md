@@ -1,90 +1,85 @@
-# Pelis y Series App
+## Movie Finder API 🎬
 
-Repositorio monorepo para la aplicación de gestión de películas y series, desarrollada como entrega para la materia **Desarrollo para Aplicaciones Móviles** en la Universidad ORT Uruguay.
-
-Incluye tanto el backend (Node.js + Express + MongoDB) como el frontend (próximamente en React Native).
-
----
-
-## Descripción general
-
-Esta aplicación permite a los usuarios:
-
-- Registrarse y autenticarse de forma segura (JWT)
-- Gestionar su lista de proveedores de streaming
-- Consultar y administrar proveedores (CRUD solo para admin)
-- (Próximamente) Gestionar y visualizar series y películas desde el frontend móvil
+**API RESTful de películas** desarrollada con **Node.js**, **Express** y **MongoDB**.
+Permite buscar películas y series, puntuarlas, reseñarlas y ver en qué servicio de streaming se encuentran, entre otras funcionalidades.
 
 ---
 
-## Estructura del proyecto
+### Características principales
 
-```
-pelis-y-series-app/
+- **Autenticación segura:** Registro e inicio de sesión con JWT.
+- **Gestión de usuarios:** Edición de perfil, selección de idioma y administración de proveedores de streaming.
+- **Proveedores de streaming:** Consulta y gestión de proveedores (CRUD solo para admin).
+- **Películas y series:** Búsqueda, visualización de detalles, calificación, reseñas y gestión de watchlist.
+
+---
+
+### Estructura del proyecto
+
+```plaintext
+movie-finder-back/
 │
-├── Backend/           # Backend: Node.js, Express, MongoDB (Mongoose)
-│   ├── src/
-│   ├── .env           # Variables de entorno (ignorado por git)
-│   ├── notas.md       # Notas para el desarrollo (ignorado por git)
-│   ├── swagger.json   # Documentación Swagger de la API
-│   └── ...
-│
-├── Frontend/          # Frontend: React Native (próximamente)
-│   └── ...
-│
-├── .gitignore
-├── .cspell.json       # Archivo de configuración (ignorado por git)
-├── README.md
+├── api/                 # Entrypoints y configuración de la API
+├── src/                 # Código fuente principal (rutas, controladores, modelos, servicios, middlewares, etc.)
+├── .env                 # Variables de entorno (ignorado por git)
+├── swagger.json         # Documentación Swagger de la API
+├── package.json         # Dependencias y scripts
+├── README.md            # Este archivo
 └── ...
 ```
 
 ---
 
-## Instalación y uso
+### Requisitos
 
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/gcostaclases/pelis-y-series-app.git
-cd pelis-y-series-app
-```
-
-### 2. Backend
-
-```bash
-cd Backend
-npm install
-# Copiar .env.example a .env y completar las variables necesarias
-npm start
-```
-El backend corre por defecto en [http://localhost:3000](http://localhost:3000)
-
-### 3. Frontend
-
-> Próximamente: aquí irá la guía para instalar y correr el frontend en React Native.
+- [Node.js](https://nodejs.org/) >= 20.x
+- [npm](https://www.npmjs.com/)
 
 ---
 
-## Documentación
+### Instalación y uso
 
-- La documentación de la API backend está disponible en el endpoint `/swagger` una vez iniciado el servidor.
-- Consulta el archivo [`Backend/swagger.json`](./Backend/swagger.json) para más detalles.
+1. Clona el repositorio:
+
+   ```bash
+   git clone https://github.com/gcostaclases/movie-finder-back.git
+   cd movie-finder-back
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Configura las variables de entorno:
+
+   - Copia `.env.example` a `.env` y completa las variables necesarias.
+   - Ejemplo de variables:
+     ```
+     PORT=3000
+     API_KEY=******
+     ```
+
+4. Inicia el servidor:
+
+   ```bash
+   npm start
+   ```
+
+   El backend corre por defecto en [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Notas
 
-- Los archivos `.env`, `notas.md` y `.cspell.json` están ignorados por git y **no se suben al repo**.
+### Documentación
+
+- La documentación interactiva de la API está disponible en el endpoint `/api/v1/documentation/swagger/` una vez iniciado el servidor.
+- Consulta el archivo [`swagger.json`](./swagger.json) para más detalles sobre los endpoints y los esquemas.
 
 ---
 
-## Autoría
+### Autoría
 
 - **Guillermina Costa**  
   [gcostaclases@gmail.com](mailto:gcostaclases@gmail.com)
-
----
-
-## Licencia
-
-ISC
