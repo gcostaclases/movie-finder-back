@@ -1,7 +1,7 @@
 {
 	"openapi": "3.0.3",
 	"info": {
-		"title": "Pelis API",
+		"title": "Movie Finder API",
 		"description": "API RESTful para la gestión de películas, proveedores de streaming, watchlist y reseñas.\n\n**Funcionalidades:**\n- ✅ Registro y autenticación de usuarios (JWT)\n- ✅ Gestión de proveedores de streaming (CRUD - solo admin)\n- ✅ Gestión de lista de proveedores del usuario\n- ✅ Catálogo de películas con búsqueda avanzada\n- ✅ Sistema de reportes de disponibilidad (crowdsourcing)\n- ✅ Watchlist personal del usuario\n- ✅ Sistema de reseñas y puntuaciones\n\n**Universidad ORT Uruguay - Desarrollo para Aplicaciones Móviles**",
 		"version": "1.0.0",
 		"contact": {
